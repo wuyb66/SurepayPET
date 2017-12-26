@@ -836,9 +836,8 @@ class CalculatedResultAdmin(admin.ModelAdmin):
         # else:
         #     return True
 
-
-    # def has_delete_permission(self, request, obj=None):
-    #     return False
+    def has_delete_permission(self, request, obj=None):
+        return False
 
     def get_readonly_fields(self, request, obj=None):
         if WorkingProject.objects.count() == 0:
@@ -892,17 +891,16 @@ class CalculatedResultAdmin(admin.ModelAdmin):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
 
-
         CalculatedResult.objects.all().filter(
             project=WorkingProject.objects.all()[0].project,
         ).delete()
 
-        callTypeCounterConfiguration = CalculatedResult.objects.create_calculatedResult(
+        CalculatedResult.objects.create_calculatedResult(
             project=WorkingProject.objects.all()[0].project,
-            applicationName = ApplicationName.objects.all().filter(name='EPAY')[0] ,
-            appNodeNumber = 5,
-            dbNodeNumber = 2,
-            ioNodeNumber = 2,
+            applicationName=ApplicationName.objects.all().filter(name='EPAY')[0],
+            appNodeNumber=5,
+            dbNodeNumber=2,
+            ioNodeNumber=2,
         )
 
         return redirect('/admin/project/calculatedresult/')

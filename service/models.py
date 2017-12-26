@@ -19,8 +19,6 @@ class Release(models.Model):
 
     counterNumberPerRecord = models.IntegerField(default=6)     # Counter number per CTRTDB record
 
-
-
     def __str__(self):
         return self.name
 
@@ -36,11 +34,13 @@ class CurrentRelease(models.Model):
 
     name = property(__str__)
 
+
 class ApplicationName(models.Model):
     name = models.CharField(max_length=20)
 
     def __str__(self):
         return self.name
+
 
 class ApplicationInformation(models.Model):
     release = models.ForeignKey(Release, on_delete=models.CASCADE)
@@ -60,6 +60,7 @@ class ApplicationInformation(models.Model):
 
     name = property(__str__)
 
+
 class OtherApplicationInformation(models.Model):
     # release = models.ForeignKey(Release, on_delete=models.CASCADE)
     application = models.ForeignKey(ApplicationName, on_delete=models.CASCADE)
@@ -77,6 +78,7 @@ class OtherApplicationInformation(models.Model):
 
     def __str__(self):
         return self.application.name
+
 
 class DBName(models.Model):
     name = models.CharField(max_length=20)
@@ -133,12 +135,13 @@ class DBName(models.Model):
         verbose_name='Default Factor for Group Counter',
     )
 
-
     def __str__(self):
         return self.name
 
     class Meta:
         ordering = ['name']
+
+
 class DBInformation(models.Model):
     db = models.ForeignKey(DBName, on_delete=models.CASCADE)
     mode = models.ForeignKey(DBMode, on_delete=models.CASCADE)
@@ -149,16 +152,16 @@ class DBInformation(models.Model):
         verbose_name='Record Size',
     )
 
-
-
     @property
     def name(self):
         return self.db.name + '_' +  self.release.name + '_' + self.mode.name
 
     def __str__(self):
         return self.db.name
+
     class Meta:
         ordering = ['db']
+
 
 class FeatureName(models.Model):
     name = models.CharField(max_length=64)
@@ -167,6 +170,7 @@ class FeatureName(models.Model):
 
     def __str__(self):
         return self.name
+
 
 '''
     Define the database impact parameter by feature.
@@ -188,16 +192,16 @@ class FeatureDBImpact(models.Model):
 class FeatureCPUImpact(models.Model):
     featureName = models.ForeignKey(FeatureName, on_delete=models.CASCADE)
 
-    ccImpactCPUTime = models.FloatField(default=0)
+    ccImpactCPUTime = models.FloatField(default=0)      # Time, ms
     ccImpactCPUPercentage = models.FloatField(default=0)
-    ss7In = models.IntegerField(default=0)
-    ss7Out = models.IntegerField(default=0)
-    reImpactCPUTime = models.FloatField(default=0)
+    ss7In = models.IntegerField(default=0)      # Size, Byte
+    ss7Out = models.IntegerField(default=0)     # Size, Byte
+    reImpactCPUTime = models.FloatField(default=0)      # Time, ms
     reImpactCPUPercentage = models.FloatField(default=0)
     #reSS7InSize = models.IntegerField(default=0)
     #reSS7OutSize = models.IntegerField(default=0)
-    ldapMessageSize = models.IntegerField(default=0)
-    diameterMessageSize = models.IntegerField(default=0)
+    ldapMessageSize = models.IntegerField(default=0)        # Size, Byte
+    diameterMessageSize = models.IntegerField(default=0)    # Size, Byte
 
     def __str__(self):
         return self.featureName.name
@@ -215,6 +219,7 @@ class CallType(models.Model):
     tcpipNumber = models.IntegerField(default=0)
     diameterSize = models.IntegerField(default=0)
     diameterNumber = models.IntegerField(default=0)
+    mateUpdateSize = models.IntegerField(default=0)
     mateUpdateNumber = models.IntegerField(default=0)
 
     ndbCPUUsageLimitation = models.FloatField(default=0.6)
@@ -245,7 +250,6 @@ class FeatureCallTypeConfiguration(models.Model):
     featureName = models.ForeignKey(FeatureName, on_delete=models.CASCADE)
 
     featureApplicable = models.FloatField(default=1)
-
 
 
 class CounterCostName(models.Model):

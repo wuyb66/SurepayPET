@@ -169,6 +169,7 @@ BYTES_TO_MILLION = 1024000
 #         verbose_name = u"Maintain Log"
 #         verbose_name_plural = verbose_name
 
+
 class Customer(models.Model):
     name = models.CharField(max_length=30)
     description = models.CharField(max_length=60, blank=True)
@@ -207,11 +208,13 @@ class Project(models.Model):
         verbose_name = 'Project'
         verbose_name_plural = 'Project'
 
+
 class WorkingProject(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.project.name
+
 
 class ProjectInformation(models.Model):
     NDB_DEPLOY_OPTION = (('individual', 'Individual'), ('combo', 'Combo'))
@@ -246,7 +249,6 @@ class ProjectInformation(models.Model):
     cpuUsageTuning = models.ForeignKey(CPUTuning, on_delete=models.CASCADE, verbose_name='CPU Usage Tuning')
     memoryUsageTuning = models.ForeignKey(MemoryUsageTuning, on_delete=models.CASCADE,
                                           verbose_name='Memory Usage Tuning')
-
 
     def __str__(self):
         return self.project.name
@@ -301,17 +303,24 @@ class TrafficInformation(models.Model):
     featureCost = models.FloatField(default=0)
     counterCost = models.FloatField(default=0)
 
-    def getFeatureCost(self):
-        featureTotalCost = 0
-        featureCallTypeConfigList = FeatureCallTypeConfiguration.objects.all().filter(
+    @property
+    def featureCallTypeConfigList(self):
+        return FeatureCallTypeConfiguration.objects.all().filter(
             callType=self.callType,
         )
-        featureList = FeatureConfiguration.objects.all().filter(
+
+    @property
+    def featureList(self):
+        return FeatureConfiguration.objects.all().filter(
             project=self.project,
         )
+
+    def getFeatureCost(self):
+        featureTotalCost = 0
+
         callCost = self.getCallCost()
-        for feature in featureList:
-            featureCallTypeConf = featureCallTypeConfigList.filter(
+        for feature in self.featureList:
+            featureCallTypeConf = self.featureCallTypeConfigList.filter(
                 featureName=feature,
             )
             featureCPUImpact = FeatureCPUImpact.objects.all().filter(
@@ -319,35 +328,42 @@ class TrafficInformation(models.Model):
             )
             if (featureCallTypeConf.count() > 0) and (featureCPUImpact.count() > 0):
                 featureTotalCost += feature.featurePenetration * ((featureCPUImpact[0].ccImpactCPUPercentage +
-                                    featureCPUImpact[0].reImpactCPUPercentage) * \
+                                    featureCPUImpact[0].reImpactCPUPercentage) *
                                     featureCallTypeConf[0].featureApplicable * callCost +
                                     (featureCPUImpact[0].ccImpactCPUTime + featureCPUImpact[0].reImpactCPUTime))
 
         return featureTotalCost
 
+    def getFeatureImpact(self):
+        featureSS7InSize = 0
+        featureSS7OutSize = 0
+        featureLDAPSize = 0
+        featureCallCost = 0
+        featureDiameterSize = 0
 
+        callCost = self.getCallCost()
 
-
-
-
-    def getFeatureSS7InSize(self):
-        pass
-
-    def getFeatureSS7OutSize(self):
-        pass
-
-    def getFeatureLDAPSize(self):
-        pass
-
-    def getFeatureDiameterSize(self):
-        pass
+        for feature in self.featureList:
+            featureCallTypeConf = self.featureCallTypeConfigList.filter(
+                featureName=feature,
+            )
+            featureCPUImpact = FeatureCPUImpact.objects.all().filter(
+                featureName=feature,
+            )
+            if (featureCallTypeConf.count() > 0) and (featureCPUImpact.count() > 0):
+                penetration = feature.featurePenetration * featureCallTypeConf[0].featureApplicable
+                featureCallCost += penetration * (feature.cpuPercentage() * callCost + feature.cpuTime)
+                featureSS7InSize += penetration * feature.ss7InSize
+                featureSS7OutSize += penetration * feature.ss7OutSize
+                featureLDAPSize += penetration * feature.ldapMessageSize
+                featureDiameterSize += penetration * feature.diameterMessageSize
+        return featureCallCost, featureSS7InSize, featureSS7OutSize, featureLDAPSize, featureDiameterSize
 
     def validate_unique(self, exclude=None):
         if (not self.id) and WorkingProject.objects.all().count() > 0:
             qs = TrafficInformation.objects.filter(project=WorkingProject.objects.all()[0].project)
             if qs.filter(callType=self.callType).exists():
                 raise ValidationError('Call Type: %s existed!'%self.callType)
-
 
     def save(self, *args, **kwargs):
         self.validate_unique()
@@ -427,6 +443,7 @@ class TrafficInformation(models.Model):
         # db_table = 'Traffic Information'
         unique_together = ("project", "callType")
 
+
 class FeatureConfiguration(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
@@ -445,7 +462,6 @@ class FeatureConfiguration(models.Model):
             if qs.filter(feature=self.feature).exists():
                 raise ValidationError('Feature Name: %s existed!'%self.feature)
 
-
     def save(self, *args, **kwargs):
         self.validate_unique()
         super(FeatureConfiguration, self).save(*args, **kwargs)
@@ -453,10 +469,55 @@ class FeatureConfiguration(models.Model):
     def __str__(self):
         return self.project.name + "_" + self.feature.name
 
+    @property
+    def featureCPUImpact(self):
+        featureCPUImpactList = FeatureCPUImpact.objects.all().filter(
+            featureName=self.feature
+        )
+        if featureCPUImpactList.count() > 0:
+            return featureCPUImpactList[0]
+        return None
+
+    @property
+    def ss7InSize(self):
+        if self.featureCPUImpact:
+            return self.featureCPUImpact.ss7In
+        return 0
+
+    @property
+    def ss7OutSize(self):
+        if self.featureCPUImpact:
+            return self.featureCPUImpact.ss7Out
+        return 0
+
+    @property
+    def ldapMessageSize(self):
+        if self.featureCPUImpact:
+            return self.featureCPUImpact.ldapMessageSize
+        return 0
+
+    @property
+    def diameterMessageSize(self):
+        if self.featureCPUImpact:
+            return self.featureCPUImpact.diameterMessageSize
+        return 0
+
+    @property
+    def cpuTime(self):
+        if self.featureCPUImpact:
+            return self.featureCPUImpact.ccImpactCPUTime + self.featureCPUImpact.reImpactCPUTime
+        return 0
+
+    def cpuPercentage(self):
+        if self.featureCPUImpact:
+            return self.featureCPUImpact.ccImpactCPUPercentage + self.featureCPUImpact.reImpactCPUPercentage
+        return 0
+
     name = property(__str__)
 
     class Meta:
         unique_together = (("project", "feature"),)
+
 
 class DBConfiguration(models.Model):
     MEMBER_GROUP_OPTION = (('Member', 'Member'), ('Group', 'Group'))
@@ -467,7 +528,6 @@ class DBConfiguration(models.Model):
     placeholderRatio = models.FloatField(default=0, verbose_name='Placeholder Ratio (%)')
     memberGroupOption = models.CharField(max_length=10, choices=MEMBER_GROUP_OPTION,
                                          default='member', verbose_name='DB Option')
-
 
     recordSize = models.IntegerField(default=0)
     subscriberNumber = models.IntegerField(default=0)
@@ -536,7 +596,6 @@ class DBConfiguration(models.Model):
         else:
             return self.getNDBNodeSize()
 
-
     def getCacheSize(self):
         if self.dbInfo.db.name == 'RTDB':
             dbOverhead = self.dbInfo.db.rtdbOverhead
@@ -560,7 +619,6 @@ class DBConfiguration(models.Model):
             return 1000 * 2 * rprocNumber
         else:
             return todoLogSize
-
 
     def getMateLogSize(self, traffic):
         globalConfiguration = GlobalConfiguration.objects.all()
@@ -627,7 +685,6 @@ class DBConfiguration(models.Model):
                                       math.ceil(counterConfiguration[0].groupBundleNumber / 6)) * \
                                      self.dbInfo.db.defaultGroupCounterFactor
         return referenceDBFactor
-
 
     def __str__(self):
         return self.project.name + "_" + self.dbInfo.db.name
@@ -713,6 +770,7 @@ class CounterConfiguration(models.Model):
     def getTotalCounter(self):
         return self.nonAppliedBucketNumber + self.nonAppliedUBDNumber + self.appliedBucketNumber + self.appliedUBDNumber
 
+
 class CallTypeCounterConfigurationManager(models.Manager):
     def create_callTypeCounterConfiguration(
             self, project, callType, averageBundleNumberPerSubscriber,average24hBundleNumberPerSubscriber,
@@ -728,6 +786,7 @@ class CallTypeCounterConfigurationManager(models.Manager):
             appliedBucketNumber = appliedBucketNumber,
         )
         return callTypeCounterConfiguration
+
 
 class CallTypeCounterConfiguration(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
