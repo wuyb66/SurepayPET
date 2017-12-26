@@ -1,0 +1,52 @@
+{% extends 'ajax_select/autocompleteselect.html' %}
+{% block extra_script %}
+
+    <script type="text/javascript">
+
+
+        function enable(isEnable){
+            if(isEnable){
+                $("#id_state_text").removeAttr('disabled');
+                $('id_state_text').val('');
+            }else{
+                $('id_state_text').attr("disabled", 'disabled');
+                $('id_state_text').val('Selecione um Empreendimento');
+                $('id_state_text').children().fadeOut(1.0).remove();
+            }
+        }
+        /*
+         Remove the "idUpset=number" of laster call. The name of
+         the varible request will be idUpset.
+         */
+        function makeLink(link ,idUpset){
+            var newLink = link;
+            var last = link.lastIndexOf("?");
+            if(last!=-1)
+                newLink = newLink.substring(0,last);
+            if(idUpset)
+                newLink = newLink + "?idUpset="+idUpset;
+            return newLink;
+        }
+
+        $("#{{html_id}}_on_deck").bind('added', function () {
+            var countryId = $("#{{html_id}}").val();
+            oldLink = $("#id_state_text").autocomplete("option","source");
+            newLink = makeLink(oldLink,countryId)
+            $("#id_state_text").autocomplete("option","source",newLink);
+            enable(true);
+        });
+        $("#{{html_id}}_on_deck").bind('killed', function() {
+            enable(false);
+        });
+
+        $(document).ready(function () {
+            $(window).trigger('init-autocompletedep');
+            if($("#{{html_id}}").val())
+                enable(true);
+            else
+                enable(false);
+        });
+
+
+    </script>
+{% endblock %}

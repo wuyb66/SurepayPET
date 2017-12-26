@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>三级联动测试</title>
+    <script src="/static/xadmin/vendor/jquery/jquery.js"></script>
+    <script type="text/javascript">
+        //用来获得option元素中selected属性为true的元素的id
+        function Get_Selected_Id(place){
+            var pro = document.getElementById(place);
+            var Selected_Id = pro.options[pro.selectedIndex].id;
+//            console.log("Get_Selected_Id:"+Selected_Id);  //测试使用
+            return Selected_Id;         //返回selected属性为true的元素的id
+        }
+
+        //执行相应的动作，调用相关数据请求函数
+        function Get_Next_Place(This_Place_ID,Action){
+            var Selected_Id = Get_Selected_Id(This_Place_ID);   //Selected_Id用来记录当前被选中的省或市的ID
+            if(Action=='Get_city')                            //从而可以在下一个级联中加载相应的市或县
+                Get_City_Data(Selected_Id);
+            else if(Action=='Get_country')
+                Get_Country_Data(Selected_Id);
+        }
+
+        //向服务器请求城市列表数据并调用添加城市函数
+        function Get_City_Data(Province_Selected_Id){    //这里的Selected_Id应该是被选中的省份的ID
+//            console.log("Province_Selected_Id:"+Province_Selected_Id);   //测试使用
+            if(Province_Selected_Id == 'Not_data1'){    //如果选择了"Province"选项，则表示重置当前City和Country的选项内容，不会向服务器请求数据
+                $("#city").empty();
+                $("#city").append("<option id='Not_data2'>City</option>");
+                $("#country").empty();
+                $("#country").append("<option id='Not_data3'>Country</option>");
+            }else{      //否则就会向服务器请求数据
+                $.getJSON('/GetCityData/',{'Province':Province_Selected_Id},function(City_list){
+//                    console.log(City_list);      //测试使用
+                    Add_city(City_list);    //调用添加城市选项函数
+                });
+            }
+        }
+
+        //在当前页面添加城市选项
+        function Add_city(City_list){
+            $("#city").empty();
+            $("#city").append("<option id='Not_data2'>City</option>");
+            $("#country").empty();
+            $("#country").append("<option id='Not_data3'>Country</option>");
+            //上面的两次清空与两次添加是为了保持级联的一致性
+            for(var index in City_list){     //获得城市列表中的城市索引
+                //添加内容的同时在option标签中添加对应的城市ID
+                var text = "<option"+" id='"+City_list[index]+"'>"+City_list[index]+"</option>";
+                $("#city").append(text);
+                console.log(text);  //用来观察生成的text数据
+            }
+        }
+
+        //向服务器请求县区列表数据并调用添加县区函数
+        function Get_Country_Data(City_Selected_Id){
+//           console.log("City_Selected_Id:"+City_Selected_Id);   //测试使用
+            if(City_Selected_Id == 'Not_data2'){     //如果选择了City选项，则表示重置当前Country的选项内容，不会向服务器请求数据
+                $("#country").empty();
+                $("#country").append("<option id='Not_data3'>Country</option>");
+                //上面的清空与添加是为了保持级联的一致性
+            }else{   //否则就会向服务器请求数据
+                var Province_Selected_ID = Get_Selected_Id("province");  //获得被选中省的ID，从而方便从服务器中加载数据
+                $.getJSON('/GetCountryData/',{'Province':Province_Selected_ID,'City':City_Selected_Id},function(Country_list){
+//                   console.log(Country_list);    //测试使用
+                    Add_country(Country_list);   //调用添加县区选项函数
+                });
+            }
+        }
+
+        //在当前页面添加县区选项
+        function Add_country(Country_list){
+            $("#country").empty();
+            $("#country").append("<option id='Not_data3'>Country</option>");
+            //上面的清空与添加是为了保持级联的一致性
+            for(var index in Country_list){     //获得县区列表中的县区索引
+                //添加内容的同时在option标签中添加对应的城市ID
+                var text = "<option"+" id='"+Country_list[index]+"'>"+Country_list[index]+"</option>";
+                $("#country").append(text);
+                console.log(text);  //用来观察生成的text数据
+            }
+        }
+
+    </script>
+</head>
+<body>
+<p>您的收货地址：</p>
+<select id="province" onchange="Get_Next_Place('province','Get_city')">
+    <option id="Not_data1">Province</option>
+    <option id="GuangDong" value="GuangDong">GuangDong</option>
+    <option id="ShanDong" value="ShanDong">ShanDong</option>
+    <option id="HuNan" value="HuNan">HuNan</option>
+</select>
+<select id="city" onchange="Get_Next_Place('city','Get_country')">
+    <option id="Not_data2">City</option>
+</select>
+<select id="country">
+    <option id="Not_data3">Country</option>
+</select>
+<br/>
+</body>
+</html>

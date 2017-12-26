@@ -1,0 +1,19 @@
+{# Extended just to add disclaimer #}
+
+{% extends "admin/change_list.html" %}
+{% load admin_list %}
+
+{% block search %}
+  {{ block.super }}
+
+    <div class="object-tools">
+{#        {% block object-tools-items %}#}
+
+            <a href="project/calculatedresult/calculate/" class="btn btn-success">
+{#                <i class="icon-plus-sign icon-white"></i>&nbsp;#}
+                Calculate
+            </a>
+
+{#        {% endblock %}#}
+    </div>
+{% endblock %}

@@ -1,0 +1,155 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>Surepay Performance Engineering Tool</title>
+	{% load staticfiles %}
+	<script src="{% static "csrf.js" %}"></script>
+    <!-- Bootstrap Core CSS -->
+    <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
+
+    <!-- Custom CSS: You can use this stylesheet to override any Bootstrap styles and/or apply your own styles -->
+    <link href="{% static "css/custom.css" %}" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+    body {
+        display: flex;
+        min-height: 100vh;
+        flex-direction: column;
+        margin: 0;
+    }
+    #nav1 {
+         display: flex;
+        flex: 1;   	
+    }
+    #main {
+        display: flex;
+        flex: 1;
+    }
+    #main > article {
+        flex: 1;
+    }
+    #main > nav,
+    #main > aside {
+        flex: 0 0 0vw;
+        background: beige;
+    }
+    #main > nav {
+        order: -1;
+    }
+    header, footer {
+        background: yellowgreen;
+        height: 10vh;
+    }
+    header, footer, article, nav, aside {
+        padding: 1em;
+    }
+</style>
+<body>
+<header><h2>Surepay Performance Engineering Tool</h2></header>
+
+<div class="container">
+
+		<div class="col-md-2 column">
+			<ul class="nav nav-pills nav-stacked">
+  				<li role="presentation" class="active"><a href="#">Home</a></li>
+  				<li role="presentation"><a href="#">Profile</a></li>
+  				<li role="presentation"><a href="#">Messages</a></li>
+			</ul>
+
+		</div>
+		<div class="col-md-8 column">
+			<div class="articleContent">
+				<h3 class="title">
+					layoutit-bootstrap layout可视化布局系统
+				</h3>
+				<div class="property">
+					 <span>文章来源：互联网</span> <span>作者：大L</span> <span>发布时间：2013年12月03日</span> <span>点击数：25</span> <span>【字号：<a rel="nofollow" class="fontZoomA" href="javascript:fontZoomA();">小</a><a class="fontZoomB" href="javascript:fontZoomB();">大</a>】</span>
+				</div>
+				<div id="contentTxt">
+					<p>
+						<img src="skin/images/banner1.jpg" alt='' />
+					</p>
+					<p>
+						lbootstrap layout可视化布局系统(layoutit)是一款可在线拖放排序、在线编辑的bootstrap可视化编辑器，通过该工具你可以通过拖放的形式的实现在线编辑基于bootstrap的html模板，并可直接生成模板，生成的模板可以直接下载。
+					</p>
+					<p>
+						lbootstrap layout可视化布局系统(layoutit)是一款可在线拖放排序、在线编辑的bootstrap可视化编辑器，通过该工具你可以通过拖放的形式的实现在线编辑基于bootstrap的html模板，并可直接生成模板，生成的模板可以直接下载。
+					</p>
+					<p>
+						lbootstrap layout可视化布局系统(layoutit)是一款可在线拖放排序、在线编辑的bootstrap可视化编辑器，通过该工具你可以通过拖放的形式的实现在线编辑基于bootstrap的html模板，并可直接生成模板，生成的模板可以直接下载。
+					</p>
+				</div>
+			</div>
+			
+		</div>
+		<div class="col-md-2 column">
+			<div class="box ui-draggable" id="mainBox">
+				<div class="mHd">
+					<div class="path">
+						<em>您现在位置：</em><a rel="nofollow" href="index.html" class="home">首页</a>&gt;<a rel="nofollow" href="#">关于我们</a>&gt;<a rel="nofollow" href="#">公司简介</a>
+					</div>
+					<h3>
+						<span>公司简介</span>
+					</h3>
+				</div>
+				<div class="mBd">
+					<ul class="newsList">
+						<li>
+							 <span class="date">01-02</span> <a rel="nofollow" title="layoutit-bootstrap layout可视化布局系统" href="http://www.layoutit.cn">layoutit-bootstrap layout可视化布局系统</a>
+						</li>
+						<li>
+							 <span class="date">01-02</span> <a rel="nofollow" title="layoutit-bootstrap layout可视化布局系统" href="http://www.layoutit.cn">layoutit-bootstrap layout可视化布局系统</a>
+						</li>
+						<li>
+							 <span class="date">01-02</span> <a rel="nofollow" title="layoutit-bootstrap layout可视化布局系统" href="http://www.layoutit.cn">layoutit-bootstrap layout可视化布局系统</a>
+						</li>
+						<li>
+							 <span class="date">01-02</span> <a rel="nofollow" title="layoutit-bootstrap layout可视化布局系统" href="http://www.layoutit.cn">layoutit-bootstrap layout可视化布局系统</a>
+						</li>
+						<li>
+							 <span class="date">01-02</span> <a rel="nofollow" title="layoutit-bootstrap layout可视化布局系统" href="http://www.layoutit.cn">layoutit-bootstrap layout可视化布局系统</a>
+						</li>
+						<li class="split">
+						</li>
+						<li>
+							 <span class="date">01-02</span> <a rel="nofollow" title="layoutit-bootstrap layout可视化布局系统" href="http://www.layoutit.cn">layoutit-bootstrap layout可视化布局系统</a>
+						</li>
+						<li>
+							 <span class="date">01-02</span> <a rel="nofollow" title="layoutit-bootstrap layout可视化布局系统" href="http://www.layoutit.cn">layoutit-bootstrap layout可视化布局系统</a>
+						</li>
+						<li>
+							 <span class="date">01-02</span> <a rel="nofollow" title="layoutit-bootstrap layout可视化布局系统" href="http://www.layoutit.cn">layoutit-bootstrap layout可视化布局系统</a>
+						</li>
+						<li>
+							 <span class="date">01-02</span> <a rel="nofollow" title="layoutit-bootstrap layout可视化布局系统" href="http://www.layoutit.cn">layoutit-bootstrap layout可视化布局系统</a>
+						</li>
+						<li>
+							 <span class="date">01-02</span> <a rel="nofollow" title="layoutit-bootstrap layout可视化布局系统" href="http://www.layoutit.cn">layoutit-bootstrap layout可视化布局系统</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			
+		</div>
+
+</div>
+<footer>Footer</footer>
+</body></body>

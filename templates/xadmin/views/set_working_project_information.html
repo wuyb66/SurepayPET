@@ -1,0 +1,29 @@
+{% extends base_template %}
+{% load i18n l10n %}
+
+{% load xadmin_tags %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumb">
+<li><a href="{% url 'xadmin:index' %}">{% trans 'Home' %}</a></li>
+<li><a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a></li>
+<li>{% trans 'Delete multiple objects' %}</li>
+</ul>
+{% endblock %}
+{% block nav_title %}{{title}}{% endblock %}
+
+{% block content %}
+
+	{% if setWorkingProjectSuccess %}
+		<div class="alert alert-success">{% blocktrans %} {{ setWorkingProjectMessage }} {% endblocktrans %}</div>
+	{% else %}
+	    <div class="alert alert-warning">{% blocktrans %} {{ setWorkingProjectMessage }} {% endblocktrans %}</div>
+	{% endif %}
+
+    <form action="" method="post">{% csrf_token %}
+	<div>
+		 <a class="btn btn-success btn-lg" onclick="javascript:history.back();" >{% trans 'OK' %}</a>
+    </div>
+    </form>
+
+{% endblock %}

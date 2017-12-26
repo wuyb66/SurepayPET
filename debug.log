@@ -1,0 +1,1343 @@
+"GET /admin/Project/project/ HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/Project/project/ HTTP/1.1" 200 3422
+"POST /admin/login/?next=/admin/Project/project/ HTTP/1.1" 302 0
+"GET /admin/Project/project/ HTTP/1.1" 200 16017
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/add/ HTTP/1.1" 200 21135
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /ajax/chained-hardware-models/?field=cpu&parent_field=hardwareType&parent_value=2 HTTP/1.1" 200 34
+Internal Server Error: /admin/Project/project/add/
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\exception.py", line 41, in inner
+    response = get_response(request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 187, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 552, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\views\decorators\cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\sites.py", line 224, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1509, in add_view
+    return self.changeform_view(request, None, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 67, in _wrapper
+    return bound_func(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 63, in bound_func
+    return func.__get__(self, type(self))(*args2, **kwargs2)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1409, in changeform_view
+    return self._changeform_view(request, object_id, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1449, in _changeform_view
+    self.save_model(request, new_object, form, not add)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 980, in save_model
+    obj.save()
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 806, in save
+    force_update=force_update, update_fields=update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 836, in save_base
+    updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 922, in _save_table
+    result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 961, in _do_insert
+    using=using, raw=raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\query.py", line 1061, in _insert
+    return query.get_compiler(using=using).execute_sql(return_id)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\compiler.py", line 1099, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 80, in execute
+    return super(CursorDebugWrapper, self).execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\utils.py", line 94, in __exit__
+    six.reraise(dj_exc_type, dj_exc_value, traceback)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\six.py", line 685, in reraise
+    raise value.with_traceback(tb)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+"POST /admin/Project/project/add/ HTTP/1.1" 500 188939
+"GET /admin/Project/project/add/ HTTP/1.1" 200 21135
+"GET /ajax/chained-hardware-models/?field=cpu&parent_field=hardwareType&parent_value=1 HTTP/1.1" 200 59
+Internal Server Error: /admin/Project/project/add/
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\exception.py", line 41, in inner
+    response = get_response(request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 187, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 552, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\views\decorators\cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\sites.py", line 224, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1509, in add_view
+    return self.changeform_view(request, None, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 67, in _wrapper
+    return bound_func(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 63, in bound_func
+    return func.__get__(self, type(self))(*args2, **kwargs2)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1409, in changeform_view
+    return self._changeform_view(request, object_id, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1449, in _changeform_view
+    self.save_model(request, new_object, form, not add)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 980, in save_model
+    obj.save()
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 806, in save
+    force_update=force_update, update_fields=update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 836, in save_base
+    updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 922, in _save_table
+    result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 961, in _do_insert
+    using=using, raw=raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\query.py", line 1061, in _insert
+    return query.get_compiler(using=using).execute_sql(return_id)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\compiler.py", line 1099, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 80, in execute
+    return super(CursorDebugWrapper, self).execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\utils.py", line 94, in __exit__
+    six.reraise(dj_exc_type, dj_exc_value, traceback)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\six.py", line 685, in reraise
+    raise value.with_traceback(tb)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+"POST /admin/Project/project/add/ HTTP/1.1" 500 189013
+"GET /admin/Project/project/add/ HTTP/1.1" 200 21135
+"GET /ajax/chained-hardware-models/?field=cpu&parent_field=hardwareType&parent_value=2 HTTP/1.1" 200 34
+Internal Server Error: /admin/Project/project/add/
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\exception.py", line 41, in inner
+    response = get_response(request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 187, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 552, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\views\decorators\cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\sites.py", line 224, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1509, in add_view
+    return self.changeform_view(request, None, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 67, in _wrapper
+    return bound_func(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 63, in bound_func
+    return func.__get__(self, type(self))(*args2, **kwargs2)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1409, in changeform_view
+    return self._changeform_view(request, object_id, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1449, in _changeform_view
+    self.save_model(request, new_object, form, not add)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 980, in save_model
+    obj.save()
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 806, in save
+    force_update=force_update, update_fields=update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 836, in save_base
+    updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 922, in _save_table
+    result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 961, in _do_insert
+    using=using, raw=raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\query.py", line 1061, in _insert
+    return query.get_compiler(using=using).execute_sql(return_id)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\compiler.py", line 1099, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 80, in execute
+    return super(CursorDebugWrapper, self).execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\utils.py", line 94, in __exit__
+    six.reraise(dj_exc_type, dj_exc_value, traceback)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\six.py", line 685, in reraise
+    raise value.with_traceback(tb)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+"POST /admin/Project/project/add/ HTTP/1.1" 500 189017
+"GET /admin/Project/project/add/ HTTP/1.1" 200 21137
+"GET /ajax/chained-hardware-models/?field=cpu&parent_field=hardwareType&parent_value=1 HTTP/1.1" 200 59
+"GET /admin/Project/project/add/ HTTP/1.1" 200 21172
+"GET /static/admin/js/core.js HTTP/1.1" 200 7976
+"GET /static/suit/bootstrap/js/bootstrap.min.js HTTP/1.1" 200 15732
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /static/suit/css/suit.css HTTP/1.1" 200 62873
+"GET /static/suit/bootstrap/css/bootstrap.min.css HTTP/1.1" 200 107369
+"GET /static/admin/js/jquery.init.js HTTP/1.1" 200 363
+"GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 200 6591
+"GET /static/suit/js/jquery-2.2.4.min.js HTTP/1.1" 200 85578
+"GET /static/admin/js/actions.js HTTP/1.1" 200 6501
+"GET /static/admin/js/urlify.js HTTP/1.1" 200 8186
+"GET /static/admin/js/prepopulate.js HTTP/1.1" 200 1538
+"GET /static/js/clever-selects.js HTTP/1.1" 200 1690
+"GET /static/jquery-2.1.1.min.js HTTP/1.1" 200 84245
+"GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 200 128820
+"GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 200 258648
+"GET /static/admin/js/prepopulate_init.js HTTP/1.1" 200 495
+"GET /static/suit/js/suit.js HTTP/1.1" 200 6415
+"GET /static/suit/js/suit-form-confirm.js HTTP/1.1" 200 2333
+"GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+"GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+"GET /static/suit/img/bg_left_white.gif HTTP/1.1" 200 105
+"GET /static/suit/bootstrap/img/glyphicons-halflings.png HTTP/1.1" 200 12799
+"GET /static/suit/img/glyphicons-halflings-white-nav.png HTTP/1.1" 200 40145
+"GET /static/suit/img/cc_active_nav.png HTTP/1.1" 200 432
+"GET /static/suit/img/glyphicons-halflings-white-shadow.png HTTP/1.1" 200 27257
+"GET /favicon.ico HTTP/1.1" 404 3142
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=1 HTTP/1.1" 200 59
+Internal Server Error: /admin/Project/project/add/
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\exception.py", line 41, in inner
+    response = get_response(request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 187, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 552, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\views\decorators\cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\sites.py", line 224, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1509, in add_view
+    return self.changeform_view(request, None, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 67, in _wrapper
+    return bound_func(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 63, in bound_func
+    return func.__get__(self, type(self))(*args2, **kwargs2)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1409, in changeform_view
+    return self._changeform_view(request, object_id, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1449, in _changeform_view
+    self.save_model(request, new_object, form, not add)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 980, in save_model
+    obj.save()
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 806, in save
+    force_update=force_update, update_fields=update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 836, in save_base
+    updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 922, in _save_table
+    result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 961, in _do_insert
+    using=using, raw=raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\query.py", line 1061, in _insert
+    return query.get_compiler(using=using).execute_sql(return_id)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\compiler.py", line 1099, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 80, in execute
+    return super(CursorDebugWrapper, self).execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\utils.py", line 94, in __exit__
+    six.reraise(dj_exc_type, dj_exc_value, traceback)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\six.py", line 685, in reraise
+    raise value.with_traceback(tb)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+"POST /admin/Project/project/add/ HTTP/1.1" 500 188950
+"GET /admin/Project/project/add/ HTTP/1.1" 200 21172
+"GET /admin/Project/project/ HTTP/1.1" 200 16019
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/add/ HTTP/1.1" 200 21172
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=2 HTTP/1.1" 200 34
+Internal Server Error: /admin/Project/project/add/
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\exception.py", line 41, in inner
+    response = get_response(request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 187, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 552, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\views\decorators\cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\sites.py", line 224, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1509, in add_view
+    return self.changeform_view(request, None, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 67, in _wrapper
+    return bound_func(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 63, in bound_func
+    return func.__get__(self, type(self))(*args2, **kwargs2)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1409, in changeform_view
+    return self._changeform_view(request, object_id, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1449, in _changeform_view
+    self.save_model(request, new_object, form, not add)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 980, in save_model
+    obj.save()
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 806, in save
+    force_update=force_update, update_fields=update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 836, in save_base
+    updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 922, in _save_table
+    result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 961, in _do_insert
+    using=using, raw=raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\query.py", line 1061, in _insert
+    return query.get_compiler(using=using).execute_sql(return_id)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\compiler.py", line 1099, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 80, in execute
+    return super(CursorDebugWrapper, self).execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\utils.py", line 94, in __exit__
+    six.reraise(dj_exc_type, dj_exc_value, traceback)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\six.py", line 685, in reraise
+    raise value.with_traceback(tb)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+"POST /admin/Project/project/add/ HTTP/1.1" 500 188843
+"GET /admin/Project/project/add/ HTTP/1.1" 200 21172
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=3 HTTP/1.1" 200 36
+Internal Server Error: /admin/Project/project/add/
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\exception.py", line 41, in inner
+    response = get_response(request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 187, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 552, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\views\decorators\cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\sites.py", line 224, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1509, in add_view
+    return self.changeform_view(request, None, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 67, in _wrapper
+    return bound_func(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 63, in bound_func
+    return func.__get__(self, type(self))(*args2, **kwargs2)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1409, in changeform_view
+    return self._changeform_view(request, object_id, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1449, in _changeform_view
+    self.save_model(request, new_object, form, not add)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 980, in save_model
+    obj.save()
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 806, in save
+    force_update=force_update, update_fields=update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 836, in save_base
+    updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 922, in _save_table
+    result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 961, in _do_insert
+    using=using, raw=raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\query.py", line 1061, in _insert
+    return query.get_compiler(using=using).execute_sql(return_id)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\compiler.py", line 1099, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 80, in execute
+    return super(CursorDebugWrapper, self).execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\utils.py", line 94, in __exit__
+    six.reraise(dj_exc_type, dj_exc_value, traceback)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\six.py", line 685, in reraise
+    raise value.with_traceback(tb)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+"POST /admin/Project/project/add/ HTTP/1.1" 500 188843
+"GET /admin/Project/project/add/ HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/Project/project/add/ HTTP/1.1" 200 3430
+"POST /admin/login/?next=/admin/Project/project/add/ HTTP/1.1" 302 0
+"GET /admin/Project/project/add/ HTTP/1.1" 200 21172
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=4 HTTP/1.1" 200 36
+Internal Server Error: /admin/Project/project/add/
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\exception.py", line 41, in inner
+    response = get_response(request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 187, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 552, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\views\decorators\cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\sites.py", line 224, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1509, in add_view
+    return self.changeform_view(request, None, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 67, in _wrapper
+    return bound_func(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 63, in bound_func
+    return func.__get__(self, type(self))(*args2, **kwargs2)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1409, in changeform_view
+    return self._changeform_view(request, object_id, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1449, in _changeform_view
+    self.save_model(request, new_object, form, not add)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 980, in save_model
+    obj.save()
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 806, in save
+    force_update=force_update, update_fields=update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 836, in save_base
+    updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 922, in _save_table
+    result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 961, in _do_insert
+    using=using, raw=raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\query.py", line 1061, in _insert
+    return query.get_compiler(using=using).execute_sql(return_id)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\compiler.py", line 1099, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 80, in execute
+    return super(CursorDebugWrapper, self).execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\utils.py", line 94, in __exit__
+    six.reraise(dj_exc_type, dj_exc_value, traceback)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\six.py", line 685, in reraise
+    raise value.with_traceback(tb)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+"POST /admin/Project/project/add/ HTTP/1.1" 500 188709
+"GET /admin/Project/project/add/ HTTP/1.1" 200 21172
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=2 HTTP/1.1" 200 34
+Internal Server Error: /admin/Project/project/add/
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\exception.py", line 41, in inner
+    response = get_response(request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 187, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 552, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\views\decorators\cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\sites.py", line 224, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1509, in add_view
+    return self.changeform_view(request, None, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 67, in _wrapper
+    return bound_func(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 63, in bound_func
+    return func.__get__(self, type(self))(*args2, **kwargs2)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1409, in changeform_view
+    return self._changeform_view(request, object_id, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1449, in _changeform_view
+    self.save_model(request, new_object, form, not add)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 980, in save_model
+    obj.save()
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 806, in save
+    force_update=force_update, update_fields=update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 836, in save_base
+    updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 922, in _save_table
+    result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 961, in _do_insert
+    using=using, raw=raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\query.py", line 1061, in _insert
+    return query.get_compiler(using=using).execute_sql(return_id)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\compiler.py", line 1099, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 80, in execute
+    return super(CursorDebugWrapper, self).execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\utils.py", line 94, in __exit__
+    six.reraise(dj_exc_type, dj_exc_value, traceback)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\six.py", line 685, in reraise
+    raise value.with_traceback(tb)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+"POST /admin/Project/project/add/ HTTP/1.1" 500 192443
+"GET /admin/Project/project/add/ HTTP/1.1" 200 21172
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=4 HTTP/1.1" 200 36
+Internal Server Error: /admin/Project/project/add/
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\exception.py", line 41, in inner
+    response = get_response(request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 187, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 552, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\views\decorators\cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\sites.py", line 224, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1509, in add_view
+    return self.changeform_view(request, None, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 67, in _wrapper
+    return bound_func(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 63, in bound_func
+    return func.__get__(self, type(self))(*args2, **kwargs2)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1409, in changeform_view
+    return self._changeform_view(request, object_id, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1449, in _changeform_view
+    self.save_model(request, new_object, form, not add)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 980, in save_model
+    obj.save()
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 806, in save
+    force_update=force_update, update_fields=update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 836, in save_base
+    updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 922, in _save_table
+    result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 961, in _do_insert
+    using=using, raw=raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\query.py", line 1061, in _insert
+    return query.get_compiler(using=using).execute_sql(return_id)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\compiler.py", line 1099, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 80, in execute
+    return super(CursorDebugWrapper, self).execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\utils.py", line 94, in __exit__
+    six.reraise(dj_exc_type, dj_exc_value, traceback)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\six.py", line 685, in reraise
+    raise value.with_traceback(tb)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+"POST /admin/Project/project/add/ HTTP/1.1" 500 192439
+"GET /admin/Project/project/add/ HTTP/1.1" 200 21172
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=1 HTTP/1.1" 200 59
+Internal Server Error: /admin/Project/project/add/
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\exception.py", line 41, in inner
+    response = get_response(request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 187, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 552, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\views\decorators\cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\sites.py", line 224, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1509, in add_view
+    return self.changeform_view(request, None, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 67, in _wrapper
+    return bound_func(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 63, in bound_func
+    return func.__get__(self, type(self))(*args2, **kwargs2)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1409, in changeform_view
+    return self._changeform_view(request, object_id, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1449, in _changeform_view
+    self.save_model(request, new_object, form, not add)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 980, in save_model
+    obj.save()
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 806, in save
+    force_update=force_update, update_fields=update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 836, in save_base
+    updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 922, in _save_table
+    result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 961, in _do_insert
+    using=using, raw=raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\query.py", line 1061, in _insert
+    return query.get_compiler(using=using).execute_sql(return_id)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\compiler.py", line 1099, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 80, in execute
+    return super(CursorDebugWrapper, self).execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\utils.py", line 94, in __exit__
+    six.reraise(dj_exc_type, dj_exc_value, traceback)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\six.py", line 685, in reraise
+    raise value.with_traceback(tb)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+"POST /admin/Project/project/add/ HTTP/1.1" 500 192424
+"GET /admin/Project/project/add/ HTTP/1.1" 200 21172
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=2 HTTP/1.1" 200 34
+Internal Server Error: /admin/Project/project/add/
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\exception.py", line 41, in inner
+    response = get_response(request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 552, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\views\decorators\cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\sites.py", line 224, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1509, in add_view
+    return self.changeform_view(request, None, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 67, in _wrapper
+    return bound_func(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 63, in bound_func
+    return func.__get__(self, type(self))(*args2, **kwargs2)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1409, in changeform_view
+    return self._changeform_view(request, object_id, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1449, in _changeform_view
+    self.save_model(request, new_object, form, not add)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 980, in save_model
+    obj.save()
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 756, in save
+    if obj and obj.pk is None:
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 836, in save_base
+    updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 922, in _save_table
+    result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 961, in _do_insert
+    using=using, raw=raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\query.py", line 1061, in _insert
+    return query.get_compiler(using=using).execute_sql(return_id)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\compiler.py", line 1099, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 80, in execute
+    return super(CursorDebugWrapper, self).execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\utils.py", line 94, in __exit__
+    six.reraise(dj_exc_type, dj_exc_value, traceback)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\six.py", line 685, in reraise
+    raise value.with_traceback(tb)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+"POST /admin/Project/project/add/ HTTP/1.1" 500 192680
+"GET /admin/Project/project/add/ HTTP/1.1" 200 21172
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=4 HTTP/1.1" 200 36
+Internal Server Error: /admin/Project/project/add/
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\exception.py", line 41, in inner
+    response = get_response(request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 552, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\views\decorators\cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\sites.py", line 224, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1509, in add_view
+    return self.changeform_view(request, None, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 67, in _wrapper
+    return bound_func(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 63, in bound_func
+    return func.__get__(self, type(self))(*args2, **kwargs2)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1409, in changeform_view
+    return self._changeform_view(request, object_id, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1449, in _changeform_view
+    self.save_model(request, new_object, form, not add)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 980, in save_model
+    obj.save()
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 742, in save
+    if field.is_relation:
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 836, in save_base
+    updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 922, in _save_table
+    result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 961, in _do_insert
+    using=using, raw=raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\query.py", line 1061, in _insert
+    return query.get_compiler(using=using).execute_sql(return_id)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\compiler.py", line 1099, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 80, in execute
+    return super(CursorDebugWrapper, self).execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\utils.py", line 94, in __exit__
+    six.reraise(dj_exc_type, dj_exc_value, traceback)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\six.py", line 685, in reraise
+    raise value.with_traceback(tb)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+"POST /admin/Project/project/add/ HTTP/1.1" 500 192532
+"GET /admin/Project/project/add/ HTTP/1.1" 200 21172
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=2 HTTP/1.1" 200 34
+"GET / HTTP/1.1" 200 2391
+"GET /static/xadmin/vendor/bootstrap/js/bootstrap.min.js HTTP/1.1" 200 27748
+"GET /static/xadmin/vendor/jquery/jquery.form.js HTTP/1.1" 404 1718
+"GET /static/xadmin/vendor/bootstrap/css/bootstrap.min.css HTTP/1.1" 200 102897
+"GET /static/xadmin/vendor/jquery/jquery.js HTTP/1.1" 200 240196
+"GET /static/xadmin/vendor/jquery/jquery.form.js HTTP/1.1" 404 1718
+"GET /favicon.ico HTTP/1.1" 404 3142
+"GET /admin HTTP/1.1" 301 0
+"GET /admin/ HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/ HTTP/1.1" 200 3390
+"GET /static/suit/css/suit.css HTTP/1.1" 200 62873
+"GET /static/suit/bootstrap/js/bootstrap.min.js HTTP/1.1" 200 15732
+"GET /static/suit/bootstrap/css/bootstrap.min.css HTTP/1.1" 200 107369
+"GET /static/suit/js/suit.js HTTP/1.1" 200 6415
+"GET /static/suit/js/jquery-2.2.4.min.js HTTP/1.1" 200 85578
+"GET /static/suit/bootstrap/img/glyphicons-halflings-white.png HTTP/1.1" 200 8777
+"GET /static/suit/bootstrap/img/glyphicons-halflings.png HTTP/1.1" 200 12799
+"POST /admin/login/?next=/admin/ HTTP/1.1" 302 0
+"GET /admin/ HTTP/1.1" 200 37088
+"GET /static/suit/img/bg_left_white.gif HTTP/1.1" 200 105
+"GET /static/suit/img/glyphicons-halflings-white-nav.png HTTP/1.1" 200 40145
+"GET /static/suit/img/cc_active_nav.png HTTP/1.1" 200 432
+"GET /static/suit/img/glyphicons-halflings-white-shadow.png HTTP/1.1" 200 27257
+"GET /admin/Project/project/add/ HTTP/1.1" 200 21171
+"GET /static/admin/js/core.js HTTP/1.1" 200 7976
+"GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 200 6591
+"GET /static/admin/js/jquery.init.js HTTP/1.1" 200 363
+"GET /static/admin/js/actions.js HTTP/1.1" 200 6501
+"GET /static/admin/js/urlify.js HTTP/1.1" 200 8186
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 200 258648
+"GET /static/admin/js/prepopulate.js HTTP/1.1" 200 1538
+"GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 200 128820
+"GET /static/js/clever-selects.js HTTP/1.1" 200 1690
+"GET /static/jquery-2.1.1.min.js HTTP/1.1" 200 84245
+"GET /static/admin/js/prepopulate_init.js HTTP/1.1" 200 495
+"GET /static/suit/js/suit-form-confirm.js HTTP/1.1" 200 2333
+"GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+"GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=2 HTTP/1.1" 200 34
+Internal Server Error: /admin/Project/project/add/
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\exception.py", line 41, in inner
+    response = get_response(request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 552, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\views\decorators\cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\sites.py", line 224, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1509, in add_view
+    return self.changeform_view(request, None, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 67, in _wrapper
+    return bound_func(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 63, in bound_func
+    return func.__get__(self, type(self))(*args2, **kwargs2)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1409, in changeform_view
+    return self._changeform_view(request, object_id, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1443, in _changeform_view
+    new_object = self.save_form(request, form, change=not add)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 980, in save_model
+    obj.save()
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 806, in save
+    force_update=force_update, update_fields=update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 836, in save_base
+    updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 922, in _save_table
+    result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 961, in _do_insert
+    using=using, raw=raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\query.py", line 1061, in _insert
+    return query.get_compiler(using=using).execute_sql(return_id)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\compiler.py", line 1099, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 80, in execute
+    return super(CursorDebugWrapper, self).execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\utils.py", line 94, in __exit__
+    six.reraise(dj_exc_type, dj_exc_value, traceback)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\six.py", line 685, in reraise
+    raise value.with_traceback(tb)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
+"POST /admin/Project/project/add/ HTTP/1.1" 500 192537
+"GET /admin/Project/project/add/ HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/Project/project/add/ HTTP/1.1" 200 3430
+"POST /admin/login/?next=/admin/Project/project/add/ HTTP/1.1" 302 0
+"GET /admin/Project/project/add/ HTTP/1.1" 200 21171
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/ HTTP/1.1" 200 16018
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/2/change/ HTTP/1.1" 200 21507
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=2 HTTP/1.1" 200 34
+"POST /admin/Project/project/2/change/ HTTP/1.1" 302 0
+"GET /admin/Project/project/ HTTP/1.1" 200 16344
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/add/ HTTP/1.1" 200 21206
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /ajax/chained-hardware-models/?field=hardwareModel&parent_field=hardwareType&parent_value=2 HTTP/1.1" 200 34
+Internal Server Error: /admin/Project/project/add/
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.IntegrityError: NOT NULL constraint failed: Project_project.user_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\exception.py", line 41, in inner
+    response = get_response(request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 187, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 552, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\views\decorators\cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\sites.py", line 224, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1509, in add_view
+    return self.changeform_view(request, None, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 67, in _wrapper
+    return bound_func(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 63, in bound_func
+    return func.__get__(self, type(self))(*args2, **kwargs2)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1409, in changeform_view
+    return self._changeform_view(request, object_id, form_url, extra_context)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1449, in _changeform_view
+    self.save_model(request, new_object, form, not add)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 980, in save_model
+    obj.save()
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 806, in save
+    force_update=force_update, update_fields=update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 836, in save_base
+    updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 922, in _save_table
+    result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\base.py", line 961, in _do_insert
+    using=using, raw=raw)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\query.py", line 1061, in _insert
+    return query.get_compiler(using=using).execute_sql(return_id)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\compiler.py", line 1099, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 80, in execute
+    return super(CursorDebugWrapper, self).execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\utils.py", line 94, in __exit__
+    six.reraise(dj_exc_type, dj_exc_value, traceback)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\six.py", line 685, in reraise
+    raise value.with_traceback(tb)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.user_id
+"POST /admin/Project/project/add/ HTTP/1.1" 500 188472
+"GET /admin/Project/project/add/ HTTP/1.1" 200 21206
+"GET /ajax/chained-hardware-models/?field=hardwareModel&parent_field=hardwareType&parent_value=1 HTTP/1.1" 200 59
+"POST /admin/Project/project/add/ HTTP/1.1" 302 0
+"GET /admin/Project/project/ HTTP/1.1" 200 16642
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+"GET /admin/Project/project/3/change/ HTTP/1.1" 200 21525
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+"GET /admin/Project/project/3/change/ HTTP/1.1" 200 21521
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /favicon.ico HTTP/1.1" 404 3142
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+"GET /admin/Project/project/3/change/ HTTP/1.1" 200 21522
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/ HTTP/1.1" 200 19584
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/ HTTP/1.1" 200 19584
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/add/ HTTP/1.1" 200 21417
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /ajax/chained-hardware-models/?field=hardwareModel&parent_field=hardwareType&parent_value=3 HTTP/1.1" 200 36
+"POST /admin/Project/project/add/ HTTP/1.1" 302 0
+"GET /admin/Project/project/ HTTP/1.1" 200 20498
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/ HTTP/1.1" 200 18862
+"GET /admin/Project/project/ HTTP/1.1" 200 20177
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/ HTTP/1.1" 200 23885
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/ HTTP/1.1" 200 23696
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+Internal Server Error: /admin/Project/project/
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\exception.py", line 41, in inner
+    response = get_response(request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 187, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 552, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\views\decorators\cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\sites.py", line 224, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 67, in _wrapper
+    return bound_func(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 63, in bound_func
+    return func.__get__(self, type(self))(*args2, **kwargs2)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1543, in changelist_view
+    self.list_max_show_all, self.list_editable, self,
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\views\main.py", line 78, in __init__
+    self.queryset = self.get_queryset(request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\views\main.py", line 351, in get_queryset
+    qs, search_use_distinct = self.model_admin.get_search_results(request, qs, self.query)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 911, in get_search_results
+    queryset = queryset.filter(reduce(operator.or_, or_queries))
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\query.py", line 782, in filter
+    return self._filter_or_exclude(False, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\query.py", line 800, in _filter_or_exclude
+    clone.query.add_q(Q(*args, **kwargs))
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\query.py", line 1261, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\query.py", line 1281, in _add_q
+    current_negated, allow_joins, split_subq)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\query.py", line 1287, in _add_q
+    allow_joins=allow_joins, split_subq=split_subq,
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\query.py", line 1212, in build_filter
+    raise FieldError('Related Field got invalid lookup: {}'.format(lookups[0]))
+django.core.exceptions.FieldError: Related Field got invalid lookup: icontains
+"GET /admin/Project/project/?q=vzw HTTP/1.1" 500 154708
+"GET /admin/Project/project/ HTTP/1.1" 200 23696
+"GET /admin/Project/project/ HTTP/1.1" 200 23696
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+Internal Server Error: /admin/Project/project/
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\exception.py", line 41, in inner
+    response = get_response(request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 187, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 552, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\views\decorators\cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\sites.py", line 224, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 67, in _wrapper
+    return bound_func(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 63, in bound_func
+    return func.__get__(self, type(self))(*args2, **kwargs2)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1543, in changelist_view
+    self.list_max_show_all, self.list_editable, self,
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\views\main.py", line 78, in __init__
+    self.queryset = self.get_queryset(request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\views\main.py", line 351, in get_queryset
+    qs, search_use_distinct = self.model_admin.get_search_results(request, qs, self.query)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 911, in get_search_results
+    queryset = queryset.filter(reduce(operator.or_, or_queries))
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\query.py", line 782, in filter
+    return self._filter_or_exclude(False, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\query.py", line 800, in _filter_or_exclude
+    clone.query.add_q(Q(*args, **kwargs))
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\query.py", line 1261, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\query.py", line 1281, in _add_q
+    current_negated, allow_joins, split_subq)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\query.py", line 1287, in _add_q
+    allow_joins=allow_joins, split_subq=split_subq,
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\query.py", line 1212, in build_filter
+    raise FieldError('Related Field got invalid lookup: {}'.format(lookups[0]))
+django.core.exceptions.FieldError: Related Field got invalid lookup: icontains
+"GET /admin/Project/project/?q=vzw HTTP/1.1" 500 154287
+"GET /admin/Project/project/ HTTP/1.1" 200 23696
+Internal Server Error: /admin/Project/project/
+Traceback (most recent call last):
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\exception.py", line 41, in inner
+    response = get_response(request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 187, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\core\handlers\base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 552, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\views\decorators\cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\sites.py", line 224, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 67, in _wrapper
+    return bound_func(*args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 149, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\utils\decorators.py", line 63, in bound_func
+    return func.__get__(self, type(self))(*args2, **kwargs2)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 1543, in changelist_view
+    self.list_max_show_all, self.list_editable, self,
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\views\main.py", line 78, in __init__
+    self.queryset = self.get_queryset(request)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\views\main.py", line 351, in get_queryset
+    qs, search_use_distinct = self.model_admin.get_search_results(request, qs, self.query)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\contrib\admin\options.py", line 911, in get_search_results
+    queryset = queryset.filter(reduce(operator.or_, or_queries))
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\query.py", line 782, in filter
+    return self._filter_or_exclude(False, *args, **kwargs)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\query.py", line 800, in _filter_or_exclude
+    clone.query.add_q(Q(*args, **kwargs))
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\query.py", line 1261, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\query.py", line 1281, in _add_q
+    current_negated, allow_joins, split_subq)
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\query.py", line 1287, in _add_q
+    allow_joins=allow_joins, split_subq=split_subq,
+  File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\models\sql\query.py", line 1212, in build_filter
+    raise FieldError('Related Field got invalid lookup: {}'.format(lookups[0]))
+django.core.exceptions.FieldError: Related Field got invalid lookup: icontains
+"GET /admin/Project/project/?q=17.3 HTTP/1.1" 500 154345
+"GET /admin/Project/project/ HTTP/1.1" 200 23696
+"GET /admin/Project/project/ HTTP/1.1" 200 23696
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/?q=17.3 HTTP/1.1" 200 23937
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/?q=17.3 HTTP/1.1" 200 23937
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/?q=vzw HTTP/1.1" 200 22809
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/? HTTP/1.1" 200 23696
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/? HTTP/1.1" 200 23696
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/?q=17.3 HTTP/1.1" 200 23937
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/?q=17.3 HTTP/1.1" 200 23937
+"GET /static/admin/js/core.js HTTP/1.1" 200 7976
+"GET /static/suit/bootstrap/js/bootstrap.min.js HTTP/1.1" 200 15732
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /static/suit/css/suit.css HTTP/1.1" 200 62873
+"GET /static/suit/js/jquery-2.2.4.min.js HTTP/1.1" 200 85578
+"GET /static/suit/bootstrap/css/bootstrap.min.css HTTP/1.1" 200 107369
+"GET /static/admin/js/jquery.init.js HTTP/1.1" 200 363
+"GET /static/admin/js/actions.js HTTP/1.1" 200 6501
+"GET /static/admin/js/urlify.js HTTP/1.1" 200 8186
+"GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 200 6591
+"GET /static/admin/js/prepopulate.js HTTP/1.1" 200 1538
+"GET /static/suit/js/suit.js HTTP/1.1" 200 6415
+"GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 200 258648
+"GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 200 128820
+"GET /static/jquery-2.1.1.min.js HTTP/1.1" 200 84245
+"GET /admin/Project/project/? HTTP/1.1" 200 23696
+"GET /static/jquery-2.1.1.min.js HTTP/1.1" 200 84245
+"GET /favicon.ico HTTP/1.1" 404 3142
+"GET /admin/Project/project/? HTTP/1.1" 200 23696
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/?q=vzw HTTP/1.1" 200 22809
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/?q=17 HTTP/1.1" 200 23911
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/?q=17 HTTP/1.1" 200 23911
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/?q=hp HTTP/1.1" 200 22798
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET / HTTP/1.1" 200 2391
+"GET /static/xadmin/vendor/bootstrap/js/bootstrap.min.js HTTP/1.1" 200 27748
+"GET /static/xadmin/vendor/bootstrap/css/bootstrap.min.css HTTP/1.1" 200 102897
+"GET /static/xadmin/vendor/jquery/jquery.form.js HTTP/1.1" 404 1718
+"GET /static/xadmin/vendor/jquery/jquery.js HTTP/1.1" 200 240196
+"GET /static/xadmin/vendor/jquery/jquery.form.js HTTP/1.1" 404 1718
+"GET /favicon.ico HTTP/1.1" 404 3142
+"GET /admin HTTP/1.1" 301 0
+"GET /admin/ HTTP/1.1" 200 37097
+"GET /static/suit/bootstrap/js/bootstrap.min.js HTTP/1.1" 200 15732
+"GET /static/suit/js/suit.js HTTP/1.1" 200 6415
+"GET /static/suit/css/suit.css HTTP/1.1" 200 62873
+"GET /static/suit/js/jquery-2.2.4.min.js HTTP/1.1" 200 85578
+"GET /static/suit/bootstrap/css/bootstrap.min.css HTTP/1.1" 200 107369
+"GET /static/suit/img/bg_left_white.gif HTTP/1.1" 200 105
+"GET /static/suit/img/glyphicons-halflings-white-nav.png HTTP/1.1" 200 40145
+"GET /static/suit/bootstrap/img/glyphicons-halflings.png HTTP/1.1" 200 12799
+"GET /static/suit/img/glyphicons-halflings-white-shadow.png HTTP/1.1" 200 27257
+"GET /static/suit/img/cc_active_nav.png HTTP/1.1" 200 432
+"GET /admin/Project/project/ HTTP/1.1" 200 23696
+"GET /static/admin/js/core.js HTTP/1.1" 200 7976
+"GET /static/admin/js/actions.js HTTP/1.1" 200 6501
+"GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 200 6591
+"GET /static/admin/js/jquery.init.js HTTP/1.1" 200 363
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /static/admin/js/prepopulate.js HTTP/1.1" 200 1538
+"GET /static/admin/js/urlify.js HTTP/1.1" 200 8186
+"GET /static/jquery-2.1.1.min.js HTTP/1.1" 200 84245
+"GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 200 258648
+"GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 200 128820
+"GET /static/suit/img/glyphicons-halflings-white-nav.png HTTP/1.1" 200 40145
+"GET /static/suit/bootstrap/img/glyphicons-halflings-white.png HTTP/1.1" 200 8777
+"GET /admin/Project/project/?q=vzw HTTP/1.1" 200 22809
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/?q=vzw HTTP/1.1" 200 23226
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET /admin/Project/project/?q= HTTP/1.1" 200 24374
+"GET /admin/jsi18n/ HTTP/1.1" 200 3189
+"GET / HTTP/1.1" 200 2391
+"GET /static/xadmin/vendor/jquery/jquery.form.js HTTP/1.1" 404 1718
+"GET /static/xadmin/vendor/bootstrap/js/bootstrap.min.js HTTP/1.1" 200 27748
+"GET /static/xadmin/vendor/bootstrap/css/bootstrap.min.css HTTP/1.1" 200 102897
+"GET /static/xadmin/vendor/jquery/jquery.js HTTP/1.1" 200 240196
+"GET / HTTP/1.1" 200 2391
+"GET /static/xadmin/vendor/jquery/jquery.form.js HTTP/1.1" 404 1718
+"GET /static/xadmin/vendor/bootstrap/js/bootstrap.min.js HTTP/1.1" 200 27748
+"GET /static/xadmin/vendor/bootstrap/css/bootstrap.min.css HTTP/1.1" 200 102897
+"GET /static/xadmin/vendor/jquery/jquery.js HTTP/1.1" 200 240196
+"GET /static/xadmin/vendor/jquery/jquery.form.js HTTP/1.1" 404 1718
+"GET / HTTP/1.1" 200 2391
+"GET /static/xadmin/vendor/jquery/jquery.form.js HTTP/1.1" 404 1718
+"GET /static/xadmin/vendor/bootstrap/css/bootstrap.min.css HTTP/1.1" 200 102897
+"GET /static/xadmin/vendor/jquery/jquery.form.js HTTP/1.1" 404 1718
+"GET /favicon.ico HTTP/1.1" 404 3142
+"GET /favicon.ico HTTP/1.1" 404 3142
+"GET / HTTP/1.1" 200 2391
+"GET /static/xadmin/vendor/jquery/jquery.form.js HTTP/1.1" 404 1718
+"GET /static/xadmin/vendor/bootstrap/css/bootstrap.min.css HTTP/1.1" 200 102897
+"GET /static/xadmin/vendor/jquery/jquery.form.js HTTP/1.1" 404 1718
+"GET /admin HTTP/1.1" 301 0
+"GET /admin/ HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/ HTTP/1.1" 200 3390
+"GET /static/suit/bootstrap/js/bootstrap.min.js HTTP/1.1" 200 15732
+"GET /static/suit/js/suit.js HTTP/1.1" 200 6415
+"GET /static/suit/js/jquery-2.2.4.min.js HTTP/1.1" 200 85578
+"GET /static/suit/css/suit.css HTTP/1.1" 200 62873
+"GET /static/suit/bootstrap/css/bootstrap.min.css HTTP/1.1" 200 107369
+"GET /static/suit/bootstrap/img/glyphicons-halflings-white.png HTTP/1.1" 200 8777
+"GET /static/suit/bootstrap/img/glyphicons-halflings.png HTTP/1.1" 200 12799

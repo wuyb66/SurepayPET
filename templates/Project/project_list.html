@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="/static/xadmin/vendor/bootstrap/css/bootstrap.min.css">
+    <script src ="/static/xadmin/vendor/jquery/jquery.js"></script>
+    <script src = "/static/xadmin/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/static/xadmin/vendor/jquery/jquery.form.js"></script>
+
+</head>
+<body>
+{% block content %}
+<form class="form-horizontal" action="{% url 'select_index' %}" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="id_province" class="control-label">Select Province and City</label>
+        <select class="form-control" id="id_province" name="province">
+            <option selected="selected">Please Select</option>
+            {% for foo in province %}
+                <option value="{{ foo.id }}">{{ foo.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="id_city" class="control-label">Select City</label>
+        <select class="form-control" id="id_city" name="city">
+            <option selected="selected">Please Select</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Submit">
+    </div>
+</form>
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>Province</th>
+        <th>City</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for foo in select %}
+        <tr>
+            <td>{{ foo.province.name }}</td>
+            <td>{{ foo.city.name }}</td>
+        </tr>
+    {% endfor %}
+
+    </tbody>
+</table>
+{% endblock %}
+<script>
+    $('#id_province').change(function(){
+        var id = $('#id_province').val();
+        $.getJSON("{% url 'getdata' %}?pk="+id, function(data,textStatus){
+            var content='';
+            $.each(data, function(i, item){
+                content+='<option value='+item.pk+'>'+item.fields.name+'</option>'
+            });
+            $('#id_city').html(content)
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,21 @@
+
+{% extends "xadmin/base_site.html" %}
+{% block title %} Surepay Performance Engineering Tool {{releaseName}} {% endblock %}
+
+
+{% block navigation %} {% include "nav.html" %} {% endblock %}
+
+{% block content %}
+    <data>
+        <h2>Projects</h2>
+        <ul>
+            {% for project in object_list %}
+                <li>{{ project.name }} {{ project.release }}</li>
+            {% endfor %}
+        </ul>
+    </data>
+{% endblock %}
+
+{% block sidebar %} {% include "aside.html" %} {% endblock %}  
+    
+{% block footer %} Footer {% endblock %}
