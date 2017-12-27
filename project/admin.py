@@ -169,7 +169,7 @@ class ProjectInformationAdmin(admin.ModelAdmin):
 
     form = ProjectInformationForm
     def has_add_permission(self, request):
-        if ProjectInformation.objects.all().filter(project=WorkingProject.objects.all()[0].project).count() > 0:
+        if ProjectInformation.current_objects.all().count() > 0:
             return False
         else:
             return True
@@ -283,7 +283,7 @@ class TrafficInformationAdmin(admin.ModelAdmin):
         return self.readonly_fields
 
     def get_TotalBHTATPS(self):
-        trafficInformationList = TrafficInformation.objects.filter(project=WorkingProject.objects.all()[0].project)
+        trafficInformationList = TrafficInformation.current_objects.all()
 
         totalBHTA = 0
         TotalTPS = 0
@@ -462,16 +462,13 @@ class CallTypeCounterConfigurationAdmin(admin.ModelAdmin):
             return CallTypeCounterConfiguration.objects.none()
 
 
-        trafficInformationList = TrafficInformation.objects.all().filter(
-            project=WorkingProject.objects.all()[0].project,
-        )
+        trafficInformationList = TrafficInformation.current_objects.all()
+
         if trafficInformationList.count() == 0:
             self.message_user(request, 'Please configure traffic first!', level=messages.ERROR)
             return CallTypeCounterConfiguration.objects.none()
 
-        counterConfigurationList = CounterConfiguration.objects.all().filter(
-            project=WorkingProject.objects.all()[0].project,
-        )
+        counterConfigurationList = CounterConfiguration.current_objects.all()
 
         if counterConfigurationList.count() == 0:
             self.message_user(request, 'Please configure counter first!', level=messages.ERROR)
@@ -484,12 +481,11 @@ class CallTypeCounterConfigurationAdmin(admin.ModelAdmin):
             return CallTypeCounterConfiguration.objects.none()
 
         for trafficInformation in trafficInformationList:
-            callTypeCounterConfigurationList = CallTypeCounterConfiguration.objects.all().filter(
-                project=WorkingProject.objects.all()[0].project,
+            callTypeCounterConfigurationList = CallTypeCounterConfiguration.current_objects.all().filter(
                 callType = trafficInformation.callType,
             )
             if callTypeCounterConfigurationList.count() == 0:
-                callTypeCounterConfiguration = CallTypeCounterConfiguration.objects.create_callTypeCounterConfiguration(
+                callTypeCounterConfiguration = CallTypeCounterConfiguration.current_objects.create_call_type_counter_configuration(
                     project=WorkingProject.objects.all()[0].project,
                     callType = trafficInformation.callType,
                     average24hBundleNumberPerSubscriber=counterConfiguration.average24hBundleNumberPerSubscriber,
@@ -558,7 +554,7 @@ class CounterConfigurationAdmin(admin.ModelAdmin):
     form = CounterConfigurationForm
 
     def has_add_permission(self, request):
-        if CounterConfiguration.objects.all().filter(project=WorkingProject.objects.all()[0].project).count() > 0:
+        if CounterConfiguration.current_objects.all().count() > 0:
             return False
         else:
             return True
@@ -676,6 +672,7 @@ class DBConfigurationAdmin(admin.ModelAdmin):
         obj.project=WorkingProject.objects.all()[0].project
         super(DBConfigurationAdmin, self).save_model(request, obj, form, change)
 
+
 class SystemConfigurationAdmin(admin.ModelAdmin):
     list_display = ('cabinetNumberPerSystem', 'backupAppNodeNumberPerSystem', 'spareAppNodeNumberPerSystem',
                     'backupDBNodeNumberPerSystem', 'spareDBNodePairNumberPerSystem')
@@ -689,7 +686,7 @@ class SystemConfigurationAdmin(admin.ModelAdmin):
     #                  'project__hardwareModel__cpu__name', 'project__customer',
     #                  'project__vmType__type', 'project__database_type__name')
     def has_add_permission(self, request):
-        if CounterConfiguration.objects.all().filter(project=WorkingProject.objects.all()[0].project).count() > 0:
+        if SystemConfiguration.current_objects.all().count() > 0:
             return False
         else:
             return True
@@ -880,22 +877,31 @@ class CalculatedResultAdmin(admin.ModelAdmin):
         obj.project = WorkingProject.objects.all()[0].project
         super(CalculatedResultAdmin, self).save_model(request, obj, form, change)
 
+    # def get_total_call_cost(self):
+        # if WorkingProject.objects.count() == 0:
+        #     return 0
+        #
+        # trafficInformationList = TrafficInformation.current_objects.all()
+        #
+        # total_call_cost = 0
+        # for traffic in trafficInformationList:
+        #     total_call_cost += traffic.
+
     def get_urls(self):
         urls = super().get_urls()
         my_urls = [url(r'^project/calculatedresult/calculate/$', self.admin_site.admin_view(self.calculate)),]
 
         return my_urls + urls
 
+
     def calculate(self, request):
         # print('doing evil with', CalculatedResult.objects.get(pk=int(pk)))
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
 
-        CalculatedResult.objects.all().filter(
-            project=WorkingProject.objects.all()[0].project,
-        ).delete()
+        CalculatedResult.current_objects.all().delete()
 
-        CalculatedResult.objects.create_calculatedResult(
+        CalculatedResult.current_objects.create_calculated_result(
             project=WorkingProject.objects.all()[0].project,
             applicationName=ApplicationName.objects.all().filter(name='EPAY')[0],
             appNodeNumber=5,
