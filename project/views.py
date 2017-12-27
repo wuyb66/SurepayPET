@@ -128,85 +128,87 @@ def add(request, a, b):
     c = int(a) + int(b)
     r = HttpResponse(ajax_string + str(c))
     return r
-def getRecordSize(request):
+
+
+def get_record_size(request):
     pk = request.GET['pk']
-    memberGroupOption = request.GET['memberGroupOption']
-    dbInformation = get_object_or_404(DBInformation, pk=pk)
-    recordSize = dbInformation.recordSize
-    refDBFactor = getRefDBFactor(dbInformation.db, memberGroupOption)
-    subscriberNumber = getSubscriberNumber(memberGroupOption)
-    data = {'RecordSize':recordSize, 'RefDBFactor':refDBFactor, 'SubscriberNumber':subscriberNumber}
+    member_group_option = request.GET['memberGroupOption']
+    db_information = get_object_or_404(DBInformation, pk=pk)
+    record_size = db_information.recordSize
+    ref_db_factor = get_ref_db_factor(db_information.db, member_group_option)
+    subscriber_number = get_subscriber_number(member_group_option)
+    data = {'RecordSize' : record_size, 'RefDBFactor' : ref_db_factor, 'SubscriberNumber' : subscriber_number}
     return HttpResponse(json.dumps(data), content_type='application/json')
-def getRefDBFactor(DB, memberGroupOption):
-    featureDBImpactList = FeatureDBImpact.objects.all().filter(
+
+
+def get_ref_db_factor(DB, memberGroupOption):
+    feature_db_impact_list = FeatureDBImpact.objects.all().filter(
         dbName=DB,
     )
-    refDBFactor = 0
+    ref_db_factor = 0
     if memberGroupOption == 'Member':
-        for featureDBImpact in featureDBImpactList:
-            refDBFactor += featureDBImpact.memberImpactFactor
+        for feature_db_impact in feature_db_impact_list:
+            ref_db_factor += feature_db_impact.memberImpactFactor
     else:
-        for featureDBImpact in featureDBImpactList:
-            refDBFactor += featureDBImpact.groupImpactFactor
-    return refDBFactor
-def getSubscriberNumber(memberGroupOption):
+        for feature_db_impact in feature_db_impact_list:
+            ref_db_factor += feature_db_impact.groupImpactFactor
+    return ref_db_factor
+
+
+def get_subscriber_number(member_group_option):
     if WorkingProject.objects.all().count() > 0:
-        trafficInformationList = TrafficInformation.objects.all().filter(
+        traffic_information_list = TrafficInformation.objects.all().filter(
             project=WorkingProject.objects.all()[0].project
         )
-        if trafficInformationList.count() > 0:
-            activeSubscriber = trafficInformationList[0].activeSubscriber
+        if traffic_information_list.count() > 0:
+            active_subscriber = traffic_information_list[0].activeSubscriber
         else:
-            activeSubscriber = 0
-        if memberGroupOption == 'Member':
-            return activeSubscriber
+            active_subscriber = 0
+        if member_group_option == 'Member':
+            return active_subscriber
         else:
-            featureNameList = FeatureName.objects.all().filter(
+            feature_name_list = FeatureName.objects.all().filter(
                 name='Online Hierarchy',
             )
-            if featureNameList.count() > 0:
-                penetrationOLH = FeatureConfiguration.objects.all().filter(
+            if feature_name_list.count() > 0:
+                penetration_olh = FeatureConfiguration.objects.all().filter(
                     project=WorkingProject.objects.all()[0].project,
-                    feature=featureNameList[0],
+                    feature=feature_name_list[0],
                 )
             else:
-                penetrationOLH = 0
-            return activeSubscriber * penetrationOLH
+                penetration_olh = 0
+            return active_subscriber * penetration_olh
     else:
         return 0
 
 
-def getOtherApplicationInformation(request):
-    activeSubscriber = 0
-    inactiveSubscriber = 0
-    trafficTPS = 0
+def get_other_application_information(request):
+    active_subscriber = 0
+    inactive_subscriber = 0
+    traffic_tps = 0
     application_id = request.GET['pk']
-    applicationName = get_object_or_404(ApplicationName, pk=application_id)
+    application_name = get_object_or_404(ApplicationName, pk=application_id)
 
-    if (applicationName.name == 'DRouter'):
+    if application_name.name == 'DRouter':
         if WorkingProject.objects.all().count() > 0:
-            projectInformation = ProjectInformation.objects.all().filter(
+            project_information = ProjectInformation.objects.all().filter(
                 project=WorkingProject.objects.all()[0].project,
             )
-            if projectInformation.count() > 0:
-                activeSubscriber = projectInformation[0].activeSubscriber
-                inactiveSubscriber = projectInformation[0].inactiveSubscriber
+            if project_information.count() > 0:
+                active_subscriber = project_information[0].activeSubscriber
+                inactive_subscriber = project_information[0].inactiveSubscriber
 
-            trafficInformationList = TrafficInformation.objects.all().filter(
+            traffic_information_list = TrafficInformation.objects.all().filter(
                 project=WorkingProject.objects.all()[0].project,
             )
-            for trafficInformation in trafficInformationList:
-                if 'Diameter' in trafficInformation.callType.name:
-                    trafficTPS += trafficInformation.trafficTPS
+            for traffic_information in traffic_information_list:
+                if 'Diameter' in traffic_information.callType.name:
+                    traffic_tps += traffic_information.trafficTPS
 
-    data = {'ActiveSubscriber': activeSubscriber,
-            'InactiveSubscriber': inactiveSubscriber,
-            'TrafficTPS': trafficTPS}
+    data = {'ActiveSubscriber': active_subscriber,
+            'InactiveSubscriber': inactive_subscriber,
+            'TrafficTPS': traffic_tps}
     return HttpResponse(json.dumps(data), content_type='application/json')
-
-
-
-
 
 
 # class SetWorkingProjectAction(BaseActionView):
@@ -250,10 +252,12 @@ def getOtherApplicationInformation(request):
 #             form = ProjectForm()
 #     return render('contact_form.html', {'form': form})
 
+
 class ProjectList(ListView):
     template_name = 'Project/templates/project_list.html'
     #c:\Django\SurepayPET\Project\templates\project_list.html
     model = Project
+
 
 class AjaxHardwareModels(ChainedSelectChoicesView):
     def get_child_set(self):

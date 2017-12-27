@@ -52,7 +52,7 @@ class ApplicationInformation(models.Model):
     ldapCIPSize = models.IntegerField(default=0)        # Bytes
     sessionCIPSize = models.IntegerField(default=0)     # Bytes
     otherCIPSize = models.IntegerField(default=0)       # Bytes
-    callCost  = models.FloatField(default=0)            # Call cost(ms) based on Bono blade
+    callCost = models.FloatField(default=0)            # Call cost(ms) based on Bono blade
     cpuCostForServer = models.FloatField(default=0.15)      # Call cost(ms) for server based on Bono blade
 
     def __str__(self):
@@ -176,6 +176,8 @@ class FeatureName(models.Model):
     Define the database impact parameter by feature.
     Need to add the default impact for some tables such as: SIM, ACM, AI, GPRSSIM, GTM
 '''
+
+
 class FeatureDBImpact(models.Model):
     dbName = models.ForeignKey(DBName, on_delete=models.CASCADE)
     featureName = models.ForeignKey(FeatureName, on_delete=models.CASCADE)
@@ -211,6 +213,8 @@ class FeatureCPUImpact(models.Model):
 
 class CallType(models.Model):
     name = models.CharField(max_length=64, verbose_name='Call Type')
+
+    isShow = models.BooleanField(default=True)
 
     ss7InSize = models.IntegerField(default=0)
     ss7OutSize = models.IntegerField(default=0)

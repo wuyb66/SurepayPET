@@ -9,7 +9,7 @@ $(document).ready(function() {
     //         $('#id_recordSize').val(content)
     //     });
     // });
-    // function getRecordSize(dbInfo_id){
+    // function get_record_size(dbInfo_id){
         var dbInfo_id = $('#id_dbInfo').val();
         var memberGroupOption = $('#id_memberGroupOption').val();
 

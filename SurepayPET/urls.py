@@ -34,8 +34,8 @@ urlpatterns = [
     #url(r'xadmin/', xadmin.site.urls, name='xadmin'),
     # url(r'^index/$',project_views.index, name='select_index') ,
     # url(r'^getdata/$', project_views.getdata, name='getdata'),
-    url(r'^getrecordsize/$', project_views.getRecordSize, name='getrecordsize'),
-    url(r'^getotherappinformation/$', project_views.getOtherApplicationInformation, name='getotherappinformation'),
+    url(r'^getrecordsize/$', project_views.get_record_size, name='getrecordsize'),
+    url(r'^getotherappinformation/$', project_views.get_other_application_information, name='getotherappinformation'),
     # url(r'^province_to_city/$', project_views.province_to_city, name='province_to_city'),
 
     url(r'^ajax/chained-hardware-models/$', AjaxHardwareModels.as_view(), name='ajax_hardware_models'),

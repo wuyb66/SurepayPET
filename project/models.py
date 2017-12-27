@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from service.models import Release, CallType, FeatureName, DBInformation, CallCost, \
-    ApplicationName, FeatureDBImpact, FeatureCallTypeConfiguration, FeatureCPUImpact, CounterCost
+    ApplicationName, FeatureDBImpact, FeatureCallTypeConfiguration, FeatureCPUImpact, \
+    CounterCost, ApplicationInformation
 from hardware.models import CPUTuning, MemoryUsageTuning, HardwareModel, VMType, \
     HardwareType, CPU, CPUList, MemoryList
 from common.models import DBMode, GlobalConfiguration
@@ -220,7 +221,7 @@ class CurrentProjectInformationManager(models.Manager):
     def get_queryset(self):
         if WorkingProject.objects.all().count() > 0:
             return super().get_queryset().filter(
-                project=WorkingProject.objects.all().count()[0],
+                project=WorkingProject.objects.all()[0].project,
             )
 
         return ProjectInformation.objects.none()
@@ -276,7 +277,7 @@ class CurrentTrafficInformationManager(models.Manager):
     def get_queryset(self):
         if WorkingProject.objects.all().count() > 0:
             return super().get_queryset().filter(
-                project=WorkingProject.objects.all().count()[0],
+                project=WorkingProject.objects.all()[0].project,
             )
 
         return TrafficInformation.objects.none()
@@ -311,6 +312,8 @@ class TrafficInformation(models.Model):
     totalCPUCost = models.FloatField(default=0)
     ss7CPUCost = models.FloatField(default=0)
     tcpCPUCost = models.FloatField(default=0)
+    aprocCPUCost = models.FloatField(default=0)     # APROC
+    asCPUCost = models.FloatField(default=0)        # Aerospike Server
 
     ss7InSizePerSecond = models.FloatField(default=0)
     ss7OutSizePerSecond = models.FloatField(default=0)
@@ -512,7 +515,7 @@ class CurrentFeatureConfigurationManager(models.Manager):
     def get_queryset(self):
         if WorkingProject.objects.all().count() > 0:
             return super().get_queryset().filter(
-                project=WorkingProject.objects.all().count()[0],
+                project=WorkingProject.objects.all()[0].project,
             )
 
         return FeatureConfiguration.objects.none()
@@ -601,7 +604,7 @@ class CurrentDBConfigurationManager(models.Manager):
     def get_queryset(self):
         if WorkingProject.objects.all().count() > 0:
             return super().get_queryset().filter(
-                project=WorkingProject.objects.all().count()[0],
+                project=WorkingProject.objects.all()[0].project,
             )
 
         return DBConfiguration.objects.none()
@@ -636,10 +639,10 @@ class DBConfiguration(models.Model):
         if WorkingProject.objects.all().count() > 0:
             if self.memberGroupOption == 'Member':
                 return ProjectInformation.objects.all().filter(
-                    project=WorkingProject.objects.all()[0])[0].activeSubscriber
+                    project=WorkingProject.objects.all()[0].project)[0].activeSubscriber
             else:
                 return ProjectInformation.objects.all().filter(
-                    project=WorkingProject.objects.all()[0])[0].groupAccountNumber
+                    project=WorkingProject.objects.all()[0].project)[0].groupAccountNumber
         else:
             return 0
 
@@ -791,7 +794,7 @@ class CurrentCounterConfigurationManager(models.Manager):
     def get_queryset(self):
         if WorkingProject.objects.all().count() > 0:
             return super().get_queryset().filter(
-                project=WorkingProject.objects.all().count()[0],
+                project=WorkingProject.objects.all()[0].project,
             )
 
         return CounterConfiguration.objects.none()
@@ -894,7 +897,7 @@ class CurrentCallTypeCounterConfigurationManager(models.Manager):
     def get_queryset(self):
         if WorkingProject.objects.all().count() > 0:
             return super().get_queryset().filter(
-                project=WorkingProject.objects.all().count()[0],
+                project=WorkingProject.objects.all()[0].project,
             )
 
         return CounterConfiguration.objects.none()
@@ -1136,7 +1139,7 @@ class CurrentSystemConfigurationManager(models.Manager):
     def get_queryset(self):
         if WorkingProject.objects.all().count() > 0:
             return super().get_queryset().filter(
-                project=WorkingProject.objects.all().count()[0],
+                project=WorkingProject.objects.all()[0].project,
             )
 
         return SystemConfiguration.objects.none()
@@ -1197,7 +1200,7 @@ class CurrentApplicationConfigurationManager(models.Manager):
     def get_queryset(self):
         if WorkingProject.objects.all().count() > 0:
             return super().get_queryset().filter(
-                project=WorkingProject.objects.all().count()[0],
+                project=WorkingProject.objects.all()[0].project,
             )
 
         return ApplicationConfiguration.objects.none()
@@ -1279,6 +1282,21 @@ class ApplicationConfiguration(models.Model):
     objects = models.Manager() # The default manager.
     current_objects = CurrentApplicationConfigurationManager() # The current project specific manager.
 
+    @property
+    def current_application_information(self):
+        current_application_information_list  = ApplicationInformation.objects.all().filter(
+            release=self.project.release,
+            application=self.applicationName,
+        )
+        if current_application_information_list.count() > 0:
+            return current_application_information_list[0]
+
+        return None
+
+    @property
+    def traffic_information_list(self):
+        return TrafficInformation.current_objects.all()
+
     def get_node_number_needed(self):
         if self.cpuBaseNodeNumber >= self.memoryBaseNodeNumber:
             self.nodeNumberNeeded = self.cpuBaseNodeNumber
@@ -1286,6 +1304,73 @@ class ApplicationConfiguration(models.Model):
         else:
             self.nodeNumberNeeded = self.memoryBaseNodeNumber
             self.boundType = 'Memory Bound'
+
+    def get_total_client_cpu_cost(self):
+        if WorkingProject.objects.count() == 0:
+            return 0
+
+        total_call_cost = 0
+        for traffic in self.traffic_information_list:
+            total_call_cost += traffic.get_total_cost()
+
+        return total_call_cost
+
+    def get_total_sever_cpu_cost(self):
+        if not self.current_application_information:
+            total_call_cost = 0
+
+            for traffic in self.traffic_information_list:
+                total_call_cost += self.current_application_information.cpuCostForServer * traffic.trafficTPS
+
+            return total_call_cost
+
+        return 0
+
+    def get_tcp_cpu_cost(self):
+        if WorkingProject.objects.count() == 0:
+            return 0
+
+        total_call_cost = 0
+        for traffic in self.traffic_information_list:
+            total_call_cost += traffic.tcpCPUCost
+
+        return total_call_cost
+
+    def get_ss7_cpu_cost(self):
+        if not self.current_application_information:
+            total_call_cost = 0
+
+            for traffic in self.traffic_information_list:
+                total_call_cost += traffic.ss7CPUCost
+
+            return total_call_cost
+
+        return 0
+
+    def get_misc_cpu_cost(self):
+        if WorkingProject.objects.count() == 0:
+            return 0
+
+        total_call_cost = 0
+        for traffic in self.traffic_information_list:
+            total_call_cost += traffic
+
+        return total_call_cost
+
+    def get_total_app_memory(self):
+        pass
+
+    def get_total_db_cache_size(self):
+        pass
+
+    def get_total_ama_disk_size(self):
+        pass
+
+    def get_total_db_disk_size(self):
+        pass
+
+    def get_ama_record_per_second(self):
+        pass
 
     def validate_unique(self, exclude=None):
         if (not self.id) and WorkingProject.objects.all().count() > 0:
@@ -1314,7 +1399,7 @@ class CurrentCalculatedResultanager(models.Manager):
     def get_queryset(self):
         if WorkingProject.objects.all().count() > 0:
             return super().get_queryset().filter(
-                project=WorkingProject.objects.all().count()[0],
+                project=WorkingProject.objects.all()[0].project,
             )
 
         return CalculatedResult.objects.none()
@@ -1344,7 +1429,7 @@ class CurrentDimensioningResultManager(models.Manager):
     def get_queryset(self):
         if WorkingProject.objects.all().count() > 0:
             return super().get_queryset().filter(
-                project=WorkingProject.objects.all().count()[0],
+                project=WorkingProject.objects.all()[0].project,
             )
 
         return DimensioningResult.objects.none()
@@ -1398,7 +1483,7 @@ class CurrentDimensioningResultPerSystemManager(models.Manager):
     def get_queryset(self):
         if WorkingProject.objects.all().count() > 0:
             return super().get_queryset().filter(
-                project=WorkingProject.objects.all().count()[0],
+                project=WorkingProject.objects.all()[0].project,
             )
 
         return DimensioningResultPerSystem.objects.none()

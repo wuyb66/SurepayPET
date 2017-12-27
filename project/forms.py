@@ -526,7 +526,9 @@ class CounterConfigurationForm(forms.ModelForm):
 
 class CallTypeCounterConfigurationForm(forms.ModelForm):
     callType = forms.ModelChoiceField(
-        CallType.objects.all(),
+        CallType.objects.all().filter(
+            isShow=True,
+        ),
         label='Call Type',
         disabled=True,
         # widget={forms.Input}
@@ -534,7 +536,7 @@ class CallTypeCounterConfigurationForm(forms.ModelForm):
     averageBundleNumberPerSubscriber = forms.FloatField(
         label='Bundle Number',
         initial=0,
-        widget=forms.NumberInput(attrs={'Style':'width:100px'}),
+        widget=forms.NumberInput(attrs={'Style': 'width:100px'}),
     )
     average24hBundleNumberPerSubscriber = forms.FloatField(
         label='24h Bundle Number',

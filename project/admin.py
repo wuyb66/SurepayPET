@@ -129,45 +129,46 @@ class ProjectAdmin(admin.ModelAdmin):
     # form = ProjectForm
     form = ProjectForm1
 
-    actions =['setWorkingProject']
+    actions =['set_working_project']
 
     def save_model(self, request, obj, form, change):
         obj.user = request.user
         super(ProjectAdmin, self).save_model(request, obj, form, change)
 
-    def setWorkingProject(self, request, queryset):
+    def set_working_project(self, request, queryset):
         n = queryset.count()
 
         if n == 1:
-            setWorkingProjectMessage = "Project %s has been set as working project!" % queryset[0].name
-            setWorkingProjectSuccess = True
-            messageLevel = messages.SUCCESS
+            set_working_project_message = "Project %s has been set as working project!" % queryset[0].name
+            set_working_project_success = True
+            message_level = messages.SUCCESS
 
         else:
-            setWorkingProjectMessage = "Please select only one project!"
-            setWorkingProjectSuccess = False
-            messageLevel = messages.ERROR
+            set_working_project_message = "Please select only one project!"
+            set_working_project_success = False
+            message_level = messages.ERROR
 
-        if setWorkingProjectSuccess:
+        if set_working_project_success:
             if WorkingProject.objects.count() > 0:
                 WorkingProject.objects.all().delete()
 
-            workingProject = WorkingProject.objects.create(project=queryset[0])
-            workingProject.save()
+            working_project = WorkingProject.objects.create(project=queryset[0])
+            working_project.save()
 
-        self.message_user(request, setWorkingProjectMessage, level=messageLevel, extra_tags='safe')
+        self.message_user(request, set_working_project_message, level=message_level, extra_tags='safe')
 
-
-    setWorkingProject.short_description = "Set selected project to working project"
+    set_working_project.short_description = "Set selected project to working project"
 
     class Media:
         js = ('/static/jquery-2.1.1.min.js',
               )
 
+
 class ProjectInformationAdmin(admin.ModelAdmin):
     # list_display = ('name', 'vmType', 'cpuNumber', 'memory', 'clientNumber', )
 
     form = ProjectInformationForm
+
     def has_add_permission(self, request):
         if ProjectInformation.current_objects.all().count() > 0:
             return False
@@ -199,7 +200,7 @@ class ProjectInformationAdmin(admin.ModelAdmin):
 
         return list_display
     def get_fieldsets(self, request, obj=None):
-        additionMessage = ''
+        addition_message = ''
         fields_row1 = ()
         if WorkingProject.objects.count() > 0:
             if WorkingProject.objects.all()[0].project.hardwareModel.hardwareType.isVM:
@@ -208,12 +209,12 @@ class ProjectInformationAdmin(admin.ModelAdmin):
                 fields_row1 += ('deploy_option',)
         else:
             fields_row1 = ('vmType', 'deploy_option',)
-            additionMessage = ' -- Please set working project first!'
+            addition_message = ' -- Please set working project first!'
 
         return [
             # (None, {
             #     'fields': ('name',)}),
-            ('Hardware Information' + additionMessage, {
+            ('Hardware Information' + addition_message, {
                 'fields': [
                     fields_row1,
                     ('cpuNumber', 'memory',),
@@ -243,15 +244,14 @@ class ProjectInformationAdmin(admin.ModelAdmin):
                 'fields': [
                     ('cpuUsageTuning','memoryUsageTuning',),
                 ]}),
-
         ]
+
     class Media:
         js = ('/static/jquery-2.1.1.min.js',
               '/static/js/set_client_number.js',
               )
 
-
-    def  get_queryset(self, request):
+    def get_queryset(self, request):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return ProjectInformation.objects.none()
@@ -269,8 +269,9 @@ class ProjectInformationAdmin(admin.ModelAdmin):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return ProjectInformation.objects.none()
-        obj.project=WorkingProject.objects.all()[0].project
+        obj.project = WorkingProject.objects.all()[0].project
         super(ProjectInformationAdmin, self).save_model(request, obj, form, change)
+
 
 class TrafficInformationAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
@@ -282,19 +283,19 @@ class TrafficInformationAdmin(admin.ModelAdmin):
                     ]
         return self.readonly_fields
 
-    def get_TotalBHTATPS(self):
-        trafficInformationList = TrafficInformation.current_objects.all()
+    def get_total_bhta_tps(self):
+        traffic_information_list = TrafficInformation.current_objects.all()
 
-        totalBHTA = 0
-        TotalTPS = 0
-        if trafficInformationList.count() > 0:
-            for trafficInformation in trafficInformationList:
-                totalBHTA += trafficInformation.trafficBHTA
-                TotalTPS += trafficInformation.trafficTPS
+        total_bhta = 0
+        total_tps = 0
+        if traffic_information_list.count() > 0:
+            for trafficInformation in traffic_information_list:
+                total_bhta += trafficInformation.trafficBHTA
+                total_tps += trafficInformation.trafficTPS
 
-        return totalBHTA, TotalTPS
+        return total_bhta, total_tps
 
-    # totalBHTA, totalTPS = get_TotalBHTATPS()
+    # totalBHTA, totalTPS = get_total_bhta_tps()
 
     list_display = ('callType', 'activeSubscriber', 'inactiveSubscriber', 'trafficBHTA', 'trafficTPS',
                     'callHoldingTime')
@@ -309,15 +310,15 @@ class TrafficInformationAdmin(admin.ModelAdmin):
     form = TrafficInformationForm
 
     def get_fieldsets(self, request, obj=None):
-        additionMessage = ''
+        addition_message = ''
         fields_row1 = ()
         if WorkingProject.objects.count() == 0:
-            additionMessage = ' -- Please set working project first!'
+            addition_message = ' -- Please set working project first!'
 
         return [
             # (None, {
             #     'fields': ('name',)}),
-            ('Subscriber Information' + additionMessage, {
+            ('Subscriber Information' + addition_message, {
                 'fields': [
                     fields_row1,
                     ('activeSubscriber', 'inactiveSubscriber',),
@@ -340,8 +341,7 @@ class TrafficInformationAdmin(admin.ModelAdmin):
               '/static/js/traffic_information.js',
               )
 
-
-    def  get_queryset(self, request):
+    def get_queryset(self, request):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return TrafficInformation.objects.none()
@@ -354,10 +354,6 @@ class TrafficInformationAdmin(admin.ModelAdmin):
         #         return ProjectInformation.objects.none()
         #
         #     return super(ProjectInformationAdmin,self).changeform_view(request,object_id,form_url,extra_context)
-
-
-
-
 
     def save_model(self, request, obj, form, change):
         if WorkingProject.objects.count() == 0:
@@ -375,6 +371,7 @@ class FeatureConfigurationAdmin(admin.ModelAdmin):
     search_fields = ('feature__name',)
 
     form = FeatureConfigurationForm
+
     def get_readonly_fields(self, request, obj=None):
         if WorkingProject.objects.count() == 0:
             return ['feature', 'featurePenetration', 'colocateMemberGroup', 'rtdbSolution',
@@ -387,7 +384,7 @@ class FeatureConfigurationAdmin(admin.ModelAdmin):
               '/static/js/feature_configuration.js',
               )
 
-    def  get_queryset(self, request):
+    def get_queryset(self, request):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return FeatureConfiguration.objects.none()
@@ -395,13 +392,13 @@ class FeatureConfigurationAdmin(admin.ModelAdmin):
             filter(project=WorkingProject.objects.all()[0].project)
 
     def get_fieldsets(self, request, obj=None):
-        additionMessage = ''
+        addition_message = ''
         fields_row1 = ()
         if WorkingProject.objects.count() == 0:
-            additionMessage = ' -- Please set working project first!'
+            addition_message = ' -- Please set working project first!'
 
         return [
-            ('Feature Information' + additionMessage, {
+            ('Feature Information' + addition_message, {
                 'fields': [
                     fields_row1,
                     ('feature', 'featurePenetration',),
@@ -434,7 +431,7 @@ class FeatureConfigurationAdmin(admin.ModelAdmin):
 
 class CallTypeCounterConfigurationAdmin(admin.ModelAdmin):
     model = CallTypeCounterConfiguration
-    form=CallTypeCounterConfigurationForm
+    form = CallTypeCounterConfigurationForm
     list_display = ('callType', 'averageBundleNumberPerSubscriber','average24hBundleNumberPerSubscriber',
               'nonAppliedBucketNumber', 'nonAppliedUBDNumber', 'appliedBucketNumber',
               'appliedUBDNumber',)
@@ -461,57 +458,55 @@ class CallTypeCounterConfigurationAdmin(admin.ModelAdmin):
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return CallTypeCounterConfiguration.objects.none()
 
+        traffic_information_list = TrafficInformation.current_objects.all()
 
-        trafficInformationList = TrafficInformation.current_objects.all()
-
-        if trafficInformationList.count() == 0:
+        if traffic_information_list.count() == 0:
             self.message_user(request, 'Please configure traffic first!', level=messages.ERROR)
             return CallTypeCounterConfiguration.objects.none()
 
-        counterConfigurationList = CounterConfiguration.current_objects.all()
+        counter_configuration_list = CounterConfiguration.current_objects.all()
 
-        if counterConfigurationList.count() == 0:
+        if counter_configuration_list.count() == 0:
             self.message_user(request, 'Please configure counter first!', level=messages.ERROR)
             return CallTypeCounterConfiguration.objects.none()
 
-        counterConfiguration = counterConfigurationList[0]
+        counter_configuration = counter_configuration_list[0]
 
-        if not counterConfiguration.configureForCallType:
+        if not counter_configuration.configureForCallType:
             self.message_user(request, 'Please check "Configure Counter For Call Types" first!', level=messages.ERROR)
             return CallTypeCounterConfiguration.objects.none()
 
-        for trafficInformation in trafficInformationList:
-            callTypeCounterConfigurationList = CallTypeCounterConfiguration.current_objects.all().filter(
-                callType = trafficInformation.callType,
+        for trafficInformation in traffic_information_list:
+            call_type_counter_configuration_list = CallTypeCounterConfiguration.current_objects.all().filter(
+                callType=trafficInformation.callType,
             )
-            if callTypeCounterConfigurationList.count() == 0:
-                callTypeCounterConfiguration = CallTypeCounterConfiguration.current_objects.create_call_type_counter_configuration(
+            if call_type_counter_configuration_list.count() == 0:
+                call_type_counter_configuration = CallTypeCounterConfiguration.current_objects.create_call_type_counter_configuration(
                     project=WorkingProject.objects.all()[0].project,
-                    callType = trafficInformation.callType,
-                    average24hBundleNumberPerSubscriber=counterConfiguration.average24hBundleNumberPerSubscriber,
-                    averageBundleNumberPerSubscriber = counterConfiguration.averageBundleNumberPerSubscriber,
-                    nonAppliedUBDNumber = counterConfiguration.nonAppliedUBDNumber,
-                    nonAppliedBucketNumber = counterConfiguration.nonAppliedBucketNumber,
-                    appliedUBDNumber = counterConfiguration.appliedUBDNumber,
-                    appliedBucketNumber = counterConfiguration.appliedBucketNumber,
+                    callType=trafficInformation.callType,
+                    average24hBundleNumberPerSubscriber=counter_configuration.average24hBundleNumberPerSubscriber,
+                    averageBundleNumberPerSubscriber=counter_configuration.averageBundleNumberPerSubscriber,
+                    nonAppliedUBDNumber=counter_configuration.nonAppliedUBDNumber,
+                    nonAppliedBucketNumber=counter_configuration.nonAppliedBucketNumber,
+                    appliedUBDNumber=counter_configuration.appliedUBDNumber,
+                    appliedBucketNumber=counter_configuration.appliedBucketNumber,
                 )
-
 
         return super(CallTypeCounterConfigurationAdmin,self).get_queryset(request). \
             filter(project=WorkingProject.objects.all()[0].project)
 
     def get_fieldsets(self, request, obj=None):
-        additionMessage = ''
+        addition_message = ''
         fields_row1 = ()
         if WorkingProject.objects.count() == 0:
-            additionMessage = ' -- Please set working project first!'
+            addition_message = ' -- Please set working project first!'
 
         return [
             (None, {
                 'fields': [
                     ('callType',),
                 ]}),
-            ('Bundle Information' + additionMessage, {
+            ('Bundle Information' + addition_message, {
                 'fields': [
                     fields_row1,
                     ('averageBundleNumberPerSubscriber', 'average24hBundleNumberPerSubscriber',),
@@ -528,7 +523,7 @@ class CallTypeCounterConfigurationAdmin(admin.ModelAdmin):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return CounterConfiguration.objects.none()
-        obj.project=WorkingProject.objects.all()[0].project
+        obj.project = WorkingProject.objects.all()[0].project
         super(CallTypeCounterConfigurationAdmin, self).save_model(request, obj, form, change)
 
     class Media:
@@ -581,13 +576,13 @@ class CounterConfigurationAdmin(admin.ModelAdmin):
             filter(project=WorkingProject.objects.all()[0].project)
 
     def get_fieldsets(self, request, obj=None):
-        additionMessage = ''
+        addition_message = ''
         fields_row1 = ()
         if WorkingProject.objects.count() == 0:
-            additionMessage = ' -- Please set working project first!'
+            addition_message = ' -- Please set working project first!'
 
         return [
-            ('Bundle Information' + additionMessage, {
+            ('Bundle Information' + addition_message, {
                 'fields': [
                     fields_row1,
                     ('averageBundleNumberPerSubscriber', 'average24hBundleNumberPerSubscriber',),
@@ -612,7 +607,7 @@ class CounterConfigurationAdmin(admin.ModelAdmin):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return CounterConfiguration.objects.none()
-        obj.project=WorkingProject.objects.all()[0].project
+        obj.project = WorkingProject.objects.all()[0].project
         super(CounterConfigurationAdmin, self).save_model(request, obj, form, change)
 
 # class CallTypeCounterConfigurationAdmin(admin.ModelAdmin):
@@ -626,23 +621,27 @@ class CounterConfigurationAdmin(admin.ModelAdmin):
 #                      'project__hardwareModel__hardwareType__name',
 #                      'project__hardwareModel__cpu__name', 'project__customer',
 #                      'project__vmType__type', 'project__database_type__name')
+
+
 class DBConfigurationAdmin(admin.ModelAdmin):
     list_display = ('dbInfo', 'recordSize', 'subscriberNumber', 'dbFactor', 'recordNumber',
                     'placeholderRatio', 'cacheSize', 'todoLogSize', 'mateLogSize',)
     list_filter = ('dbInfo__db', 'memberGroupOption')
     search_fields = ('dbInfo__db__name',)
     form = DBConfigurationForm
+
     def get_readonly_fields(self, request, obj=None):
         if WorkingProject.objects.count() == 0:
             return ['dbInfo', 'recordSize', 'subscriberNumber', 'dbFactor', 'recordNumber',
                     'placeholderRatio', 'cacheSize', 'todoLogSize', 'mateLogSize',
                     ]
         return self.readonly_fields
+
     class Media:
         js = ('/static/jquery-2.1.1.min.js',
               '/static/js/db_configuration.js',
               )
-    def  get_queryset(self, request):
+    def get_queryset(self, request):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return DBConfiguration.objects.none()
@@ -650,13 +649,14 @@ class DBConfigurationAdmin(admin.ModelAdmin):
             filter(
                 project=WorkingProject.objects.all()[0].project,
         )
+
     def get_fieldsets(self, request, obj=None):
-        additionMessage = ''
+        addition_message = ''
         fields_row1 = ()
         if WorkingProject.objects.count() == 0:
-            additionMessage = ' -- Please set working project first!'
+            addition_message = ' -- Please set working project first!'
         return [
-            ('DB Information' + additionMessage, {
+            ('DB Information' + addition_message, {
                 'fields': [
                     fields_row1,
                     ('dbInfo','recordSize',),
@@ -665,6 +665,7 @@ class DBConfigurationAdmin(admin.ModelAdmin):
                     ('placeholderRatio',),
                 ]}),
         ]
+
     def save_model(self, request, obj, form, change):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
@@ -685,6 +686,7 @@ class SystemConfigurationAdmin(admin.ModelAdmin):
     #                  'project__hardwareModel__hardwareType__name',
     #                  'project__hardwareModel__cpu__name', 'project__customer',
     #                  'project__vmType__type', 'project__database_type__name')
+
     def has_add_permission(self, request):
         if SystemConfiguration.current_objects.all().count() > 0:
             return False
@@ -702,7 +704,8 @@ class SystemConfigurationAdmin(admin.ModelAdmin):
         js = ('/static/jquery-2.1.1.min.js',
               # '/static/js/db_configuration.js',
               )
-    def  get_queryset(self, request):
+
+    def get_queryset(self, request):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return SystemConfiguration.objects.none()
@@ -710,13 +713,14 @@ class SystemConfigurationAdmin(admin.ModelAdmin):
             filter(
             project=WorkingProject.objects.all()[0].project,
         )
+
     def get_fieldsets(self, request, obj=None):
-        additionMessage = ''
+        addition_message = ''
         fields_row1 = ()
         if WorkingProject.objects.count() == 0:
-            additionMessage = ' -- Please set working project first!'
+            addition_message = ' -- Please set working project first!'
         return [
-            ('DB Information' + additionMessage, {
+            ('DB Information' + addition_message, {
                 'fields': [
                     fields_row1,
                     ('cabinetNumberPerSystem',),
@@ -724,6 +728,7 @@ class SystemConfigurationAdmin(admin.ModelAdmin):
                     ('backupDBNodeNumberPerSystem', 'spareDBNodePairNumberPerSystem',),
                 ]}),
         ]
+
     def save_model(self, request, obj, form, change):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
@@ -764,12 +769,12 @@ class ApplicationConfigurationAdmin(admin.ModelAdmin):
         )
 
     def get_fieldsets(self, request, obj=None):
-        additionMessage = ''
+        addition_message = ''
         fields_row1 = ()
         if WorkingProject.objects.count() == 0:
-            additionMessage = ' -- Please set working project first!'
+            addition_message = ' -- Please set working project first!'
         return [
-            ('Application Information' + additionMessage, {
+            ('Application Information' + addition_message, {
                 'fields': [
                     fields_row1,
                     ('applicationName', 'deployOption',),
@@ -814,6 +819,8 @@ class ApplicationConfigurationAdmin(admin.ModelAdmin):
 #         css = {
 #             'all':'/static/xadmin/vendor/jquery-ui/jquery-ui.theme.css'
 #
+
+
 class CalculatedResultAdmin(admin.ModelAdmin):
     list_display = ('applicationName', 'appNodeNumber', 'dbNodeNumber',
                     'ioNodeNumber')
@@ -853,12 +860,12 @@ class CalculatedResultAdmin(admin.ModelAdmin):
         )
 
     def get_fieldsets(self, request, obj=None):
-        additionMessage = ''
+        addition_message = ''
         fields_row1 = ()
         if WorkingProject.objects.count() == 0:
-            additionMessage = ' -- Please set working project first!'
+            addition_message = ' -- Please set working project first!'
         return [
-            ('Application Information' + additionMessage, {
+            ('Application Information' + addition_message, {
                 'fields': [
                     fields_row1,
                     ('applicationName', ),
@@ -877,22 +884,12 @@ class CalculatedResultAdmin(admin.ModelAdmin):
         obj.project = WorkingProject.objects.all()[0].project
         super(CalculatedResultAdmin, self).save_model(request, obj, form, change)
 
-    # def get_total_call_cost(self):
-        # if WorkingProject.objects.count() == 0:
-        #     return 0
-        #
-        # trafficInformationList = TrafficInformation.current_objects.all()
-        #
-        # total_call_cost = 0
-        # for traffic in trafficInformationList:
-        #     total_call_cost += traffic.
 
     def get_urls(self):
         urls = super().get_urls()
         my_urls = [url(r'^project/calculatedresult/calculate/$', self.admin_site.admin_view(self.calculate)),]
 
         return my_urls + urls
-
 
     def calculate(self, request):
         # print('doing evil with', CalculatedResult.objects.get(pk=int(pk)))
@@ -915,7 +912,6 @@ class CalculatedResultAdmin(admin.ModelAdmin):
         js = ('/static/jquery-2.1.1.min.js',
               '/static/js/other_application_information.js',
               )
-
 
 
 class DimensioningResultAdmin(admin.ModelAdmin):

@@ -49,9 +49,8 @@ class CPU(models.Model):
 #     def __str__(self):
 #         return self.cpu.name
 #
-#     def getOverallCapacity(self):
+#     def get_overall_capacity(self):
 #         return self.capacityRatio * self.cpu.singleThreadCapacity * self.clientNumber
-
 
 
 class HardwareType(models.Model):
@@ -62,7 +61,6 @@ class HardwareType(models.Model):
 
     def __str__(self):
         return self.name
-
 
 
 class HardwareModel(models.Model):
@@ -89,6 +87,8 @@ class HardwareModel(models.Model):
 '''
     Define the client (Native) or vCPU (VM) list.
 '''
+
+
 class CPUList(models.Model):
     hardwareModel = models.ForeignKey(HardwareModel, on_delete=models.CASCADE)
     cpuNumber = models.IntegerField()   # For VM
@@ -99,7 +99,7 @@ class CPUList(models.Model):
     mateCapacityNDB = models.IntegerField()
     dbCapacityNDB = models.IntegerField()
 
-    def getOverallCapacity(self):
+    def get_overall_capacity(self):
         return self.capacityRatio * self.hardwareModel.cpu.singleThreadCapacity * self.clientNumber
 
     def __str__(self):
