@@ -631,6 +631,11 @@ class SystemConfigurationForm(forms.ModelForm):
         label='Number of Cabinet Per System',
         disabled=True,
     )
+    applicationName = forms.ModelChoiceField(
+        ApplicationName.objects.all(),
+        empty_label=_(u'Select an Application Name'),
+        label='Application Name'
+    )
     backupAppNodeNumberPerSystem = forms.IntegerField(
         initial=0,
         label='Number of Backup App Node Per System',
@@ -647,6 +652,29 @@ class SystemConfigurationForm(forms.ModelForm):
         initial=0,
         label='Number of Spare DB Node Pair Per System'
     )
+
+    def clean(self):
+        cleaned_data = super(SystemConfigurationForm, self).clean()
+        if WorkingProject.objects.count() == 0:
+            raise forms.ValidationError(
+                "Please set working project first!"
+            )
+
+        application_name = self.cleaned_data.get("applicationName")
+        app_conf_list = ApplicationConfiguration.current_objects.all().filter(
+            applicationName=application_name,
+        )
+
+        if (application_name.name != 'EPAY') and (app_conf_list.count() == 0):
+            raise forms.ValidationError(
+                _('Application %s has not been configured, please configure first!'%application_name))
+
+        if not self.instance.pk:
+            if SystemConfiguration.current_objects.all().filter(
+                applicationName=application_name,
+            ).count() > 0:
+                raise forms.ValidationError(
+                    _('Application: %s existed!')%application_name)
 
     class Meta:
         model = SystemConfiguration
