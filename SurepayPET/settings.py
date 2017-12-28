@@ -202,6 +202,7 @@ SUIT_CONFIG = {
             {'model': 'DBConfiguration', 'label': 'Database Configuration'},
             {'model': 'CounterConfiguration', 'label': 'Counter Configuration'},
             {'model': 'CallTypeCounterConfiguration', 'label': 'Counter Configuration per Call Type'},
+            {'model': 'ApplicationConfiguration', 'label': 'Other Application Configuration'},
             {'model': 'SystemConfiguration', 'label': 'System Configuration'},
             {'model': 'CalculatedResult', 'label': 'Calculated Result'},
             {'model': '', 'label': ''},

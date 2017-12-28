@@ -453,7 +453,7 @@ class CallTypeCounterConfigurationAdmin(admin.ModelAdmin):
         #     return ['callType', 'totalCounterNumber']
         return self.readonly_fields
 
-    def  get_queryset(self, request):
+    def get_queryset(self, request):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return CallTypeCounterConfiguration.objects.none()
@@ -675,28 +675,23 @@ class DBConfigurationAdmin(admin.ModelAdmin):
 
 
 class SystemConfigurationAdmin(admin.ModelAdmin):
-    list_display = ('cabinetNumberPerSystem', 'backupAppNodeNumberPerSystem', 'spareAppNodeNumberPerSystem',
+    list_display = ('applicationName', 'backupAppNodeNumberPerSystem', 'spareAppNodeNumberPerSystem',
                     'backupDBNodeNumberPerSystem', 'spareDBNodePairNumberPerSystem')
 
     form = SystemConfigurationForm
 
-    # list_filter = ('project',)
-    #
-    # search_fields = ('project__user__username', 'project__release__name',
-    #                  'project__hardwareModel__hardwareType__name',
-    #                  'project__hardwareModel__cpu__name', 'project__customer',
-    #                  'project__vmType__type', 'project__database_type__name')
-
-    def has_add_permission(self, request):
-        if SystemConfiguration.current_objects.all().count() > 0:
-            return False
-        else:
-            return True
+    # def has_add_permission(self, request):
+    #     if SystemConfiguration.current_objects.all().count() > 0:
+    #         return False
+    #     else:
+    #         return True
         
     def get_readonly_fields(self, request, obj=None):
         if WorkingProject.objects.count() == 0:
-            return ['cabinetNumberPerSystem', 'backupAppNodeNumberPerSystem', 'spareAppNodeNumberPerSystem',
-                     'backupDBNodeNumberPerSystem', 'spareDBNodePairNumberPerSystem'
+            return [#'cabinetNumberPerSystem',
+                    'applicationName',
+                    'backupAppNodeNumberPerSystem', 'spareAppNodeNumberPerSystem',
+                    'backupDBNodeNumberPerSystem', 'spareDBNodePairNumberPerSystem'
                     ]
         return self.readonly_fields
 
@@ -709,6 +704,25 @@ class SystemConfigurationAdmin(admin.ModelAdmin):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return SystemConfiguration.objects.none()
+
+        application_epay_list = ApplicationName.objects.all().filter(
+            name='EPAY',
+        )
+        if application_epay_list.count() > 0:
+            app_conf_list = SystemConfiguration.current_objects.all().filter(
+                applicationName=application_epay_list[0],
+            )
+
+            if app_conf_list.count() == 0:
+                SystemConfiguration.current_objects.create_system_configuration(
+                    project=WorkingProject.objects.all()[0].project,
+                    applicationName=application_epay_list[0],
+                    backupAppNodeNumberPerSystem=0,
+                    spareAppNodeNumberPerSystem=0,
+                    backupDBNodeNumberPerSystem=0,
+                    spareDBNodePairNumberPerSystem=0,
+                )
+
         return super(SystemConfigurationAdmin,self).get_queryset(request). \
             filter(
             project=WorkingProject.objects.all()[0].project,
@@ -720,10 +734,10 @@ class SystemConfigurationAdmin(admin.ModelAdmin):
         if WorkingProject.objects.count() == 0:
             addition_message = ' -- Please set working project first!'
         return [
-            ('DB Information' + addition_message, {
+            ('System Configuration' + addition_message, {
                 'fields': [
                     fields_row1,
-                    ('cabinetNumberPerSystem',),
+                    ('applicationName',),
                     ('backupAppNodeNumberPerSystem', 'spareAppNodeNumberPerSystem',),
                     ('backupDBNodeNumberPerSystem', 'spareDBNodePairNumberPerSystem',),
                 ]}),
@@ -733,7 +747,9 @@ class SystemConfigurationAdmin(admin.ModelAdmin):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return SystemConfiguration.objects.none()
+
         obj.project=WorkingProject.objects.all()[0].project
+
         super(SystemConfigurationAdmin, self).save_model(request, obj, form, change)
 
 

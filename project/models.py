@@ -1144,6 +1144,21 @@ class CurrentSystemConfigurationManager(models.Manager):
 
         return SystemConfiguration.objects.none()
 
+    def create_system_configuration(
+        self, project, applicationName,
+        backupAppNodeNumberPerSystem, spareAppNodeNumberPerSystem,
+        backupDBNodeNumberPerSystem, spareDBNodePairNumberPerSystem
+    ):
+        system_configuration = self.create(
+            project=project,
+            applicationName=applicationName,
+            backupAppNodeNumberPerSystem=backupAppNodeNumberPerSystem,
+            spareAppNodeNumberPerSystem=spareAppNodeNumberPerSystem,
+            backupDBNodeNumberPerSystem=backupDBNodeNumberPerSystem,
+            spareDBNodePairNumberPerSystem=spareDBNodePairNumberPerSystem,
+        )
+        return system_configuration
+
 
 class SystemConfiguration(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -1179,7 +1194,7 @@ class SystemConfiguration(models.Model):
     current_objects = CurrentSystemConfigurationManager() # The current project specific manager.
 
     def __str__(self):
-        return self.project.__str__()
+        return self.applicationName.name
 
     name = property(__str__)
 
