@@ -1,23 +1,11 @@
-from django.shortcuts import render
+
 from django.views.generic import ListView
-from .models import Project
-
-# from xadmin.plugins.actions import BaseActionView
-# from xadmin.views.base import filter_hook, ModelAdminView
-from django.template.response import TemplateResponse
 from django.http import HttpResponse
-
-from django.shortcuts import render_to_response, get_object_or_404, redirect
-from django.core import serializers, urlresolvers
-
-from service.models import CurrentRelease
-
-from . import forms
+from django.shortcuts import get_object_or_404
 from .models import Project, TrafficInformation, WorkingProject, FeatureConfiguration, \
     ProjectInformation, ApplicationConfiguration
 from hardware.models import HardwareModel, HardwareType
 from service.models import DBInformation, FeatureDBImpact, FeatureName, ApplicationName
-from .forms import ProjectForm1
 
 import json
 
@@ -137,16 +125,16 @@ def get_record_size(request):
     record_size = db_information.recordSize
     ref_db_factor = get_ref_db_factor(db_information.db, member_group_option)
     subscriber_number = get_subscriber_number(member_group_option)
-    data = {'RecordSize' : record_size, 'RefDBFactor' : ref_db_factor, 'SubscriberNumber' : subscriber_number}
+    data = {'RecordSize': record_size, 'RefDBFactor': ref_db_factor, 'SubscriberNumber': subscriber_number}
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
-def get_ref_db_factor(DB, memberGroupOption):
+def get_ref_db_factor(db, member_group_option):
     feature_db_impact_list = FeatureDBImpact.objects.all().filter(
-        dbName=DB,
+        dbName=db,
     )
     ref_db_factor = 0
-    if memberGroupOption == 'Member':
+    if member_group_option == 'Member':
         for feature_db_impact in feature_db_impact_list:
             ref_db_factor += feature_db_impact.memberImpactFactor
     else:
@@ -255,7 +243,7 @@ def get_other_application_information(request):
 
 class ProjectList(ListView):
     template_name = 'Project/templates/project_list.html'
-    #c:\Django\SurepayPET\Project\templates\project_list.html
+    # c:\Django\SurepayPET\Project\templates\project_list.html
     model = Project
 
 

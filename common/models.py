@@ -2,8 +2,8 @@ from django.db import models
 
 
 class GlobalConfiguration(models.Model):
-    maintananceWindowHour = models.IntegerField(default=10)
-    trafficPercentageUnderMaitananceWindow = models.FloatField(default=1)
+    maintenanceWindowHour = models.IntegerField(default=10)
+    trafficPercentageUnderMaintenanceWindow = models.FloatField(default=1)
     releaseCPUImpact = models.FloatField(default=0.05)
     releaseAppMemoryImpact = models.FloatField(default=0.1)
     releaseDBMemoryImpact = models.FloatField(default=0.1)

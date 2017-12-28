@@ -6,14 +6,16 @@ from .models import Project, ProjectInformation, TrafficInformation, FeatureConf
     DBConfiguration, CounterConfiguration, CallTypeCounterConfiguration, SystemConfiguration, \
     Customer, WorkingProject, ApplicationConfiguration, CalculatedResult, DimensioningResult, \
     DimensioningResultPerSystem
-    # City1, Country, State, Address
-    # Province, City, SelectP
+# City1, Country, State, Address
+# Province, City, SelectP
 from hardware.models import HardwareModel, HardwareType
-from service.models import  ApplicationName
+from service.models import ApplicationName
 from .forms import ProjectForm1, ProjectInformationForm, \
     TrafficInformationForm, FeatureConfigurationForm, CounterConfigurationForm, \
     CallTypeCounterConfigurationForm, DBConfigurationForm, SystemConfigurationForm, ApplicationConfigurationForm
 from django.contrib import messages
+
+
 # from ajax_select import make_ajax_form
 # from ajax_select.admin import AjaxSelectAdmin, AjaxSelectAdminTabularInline, AjaxSelectAdminStackedInline
 
@@ -22,9 +24,11 @@ class ProjectInline(admin.TabularInline):
     model = Project
     suit_classes = 'suit-tab suit-tab-projects suit-tab-hardwares'
 
+
 class HardwareModelForm(forms.ModelForm):
     class Meta:
         forms.model = HardwareModel
+
 
 # class ProjectAdmin(admin.ModelAdmin):
 #     #inlines = [HardwareModel, ]
@@ -65,19 +69,17 @@ class HardwareModelForm(forms.ModelForm):
 #                      'hardwareModel__cpu__name', 'customer', 'vmType__type', 'database_type__name')
 
 
-
 class ProjectAdmin(admin.ModelAdmin):
     # actions = [SetWorkingProjectAction, ]
 
     # form = HardwareModelForm
 
-
     list_display = ('name', 'release', 'customer', 'hardwareModel', 'database_type', 'version',
-                  'comment', 'createTime',)
+                    'comment', 'createTime',)
     #
     # # wizard_form_list = [
     # #     ('General', ('release', 'customer', 'version',)),
-    # #     ('Hardware Information', ('hardwareType', 'database_type', )),
+    # #     ('Hardware Information', ('hardware_type', 'database_type', )),
     # # ]
     # exclude = ('user',)
     # form = ProjectForm
@@ -90,7 +92,7 @@ class ProjectAdmin(admin.ModelAdmin):
     #                     'General Information',
     #                     'name',
     #                     Row('release', 'customer',),
-    #                     Row('hardwareType', 'cpu',),
+    #                     Row('hardware_type', 'cpu',),
     #                     Row('database_type','version',),
     #                     'comment',
     #
@@ -99,9 +101,9 @@ class ProjectAdmin(admin.ModelAdmin):
     #             ),
     #         ),
     #     ),
-        # Side(
-        #     Fieldset("Status data", 'amaRecordPerBillingBlock', 'averageAMARecordPerCall', 'amaStoreDay'),
-        # )
+    # Side(
+    #     Fieldset("Status data", 'amaRecordPerBillingBlock', 'averageAMARecordPerCall', 'amaStoreDay'),
+    # )
     # )
     fieldsets = [
         # (None, {
@@ -109,17 +111,16 @@ class ProjectAdmin(admin.ModelAdmin):
         ('Project', {
 
             'fields': [
-                       ('name','release', 'customer',),
-                       ('hardwareType', 'hardwareModel',),
-                       ('database_type','version',),
-                       'comment',
-                       ]}),
-
+                ('name', 'release', 'customer',),
+                ('hardware_type', 'hardwareModel',),
+                ('database_type', 'version',),
+                'comment',
+            ]}),
 
     ]
 
-    #inlines = [TrafficInline]
-    #inlines = (TrafficInline, DiameterTrafficInline)
+    # inlines = [TrafficInline]
+    # inlines = (TrafficInline, DiameterTrafficInline)
 
     list_filter = ('release', 'hardwareModel', 'customer', 'database_type')
 
@@ -129,7 +130,7 @@ class ProjectAdmin(admin.ModelAdmin):
     # form = ProjectForm
     form = ProjectForm1
 
-    actions =['set_working_project']
+    actions = ['set_working_project']
 
     def save_model(self, request, obj, form, change):
         obj.user = request.user
@@ -178,32 +179,33 @@ class ProjectInformationAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         if WorkingProject.objects.count() == 0:
             return ['vmType', 'deploy_option', 'cpuNumber', 'memory', 'clientNumber',
-                               'sigtranLinkSpeed','sigtranLinkNumber', 'sigtranPortUtil',
-                               'numberReleaseToEstimate','cpuImpactPerRelease',
-                               'memoryImpactPerRelease', 'dbImpactPerRelease',
-                               'amaRecordPerBillingBlock','averageAMARecordPerCall', 'amaStoreDay',
-                               'activeSubscriber','inactiveSubscriber','groupAccountNumber',
-                               'cpuUsageTuning','memoryUsageTuning',
-                               ]
+                    'sigtranLinkSpeed', 'sigtranLinkNumber', 'sigtranPortUtil',
+                    'numberReleaseToEstimate', 'cpuImpactPerRelease',
+                    'memoryImpactPerRelease', 'dbImpactPerRelease',
+                    'amaRecordPerBillingBlock', 'averageAMARecordPerCall', 'amaStoreDay',
+                    'activeSubscriber', 'inactiveSubscriber', 'groupAccountNumber',
+                    'cpuUsageTuning', 'memoryUsageTuning',
+                    ]
         return self.readonly_fields
 
     def get_list_display(self, request):
         list_display = ('name',)
         if WorkingProject.objects.count() > 0:
-            if WorkingProject.objects.all()[0].project.hardwareModel.hardwareType.isVM:
+            if WorkingProject.objects.all()[0].project.hardwareModel.hardware_type.isVM:
                 list_display += ('vmType',)
             if WorkingProject.objects.all()[0].project.database_type.name == 'NDB':
                 list_display += ('deploy_option',)
 
         list_display += ('cpuNumber', 'memory', 'clientNumber', 'numberReleaseToEstimate',
-                         'activeSubscriber','inactiveSubscriber', 'groupAccountNumber', )
+                         'activeSubscriber', 'inactiveSubscriber', 'groupAccountNumber',)
 
         return list_display
+
     def get_fieldsets(self, request, obj=None):
         addition_message = ''
         fields_row1 = ()
         if WorkingProject.objects.count() > 0:
-            if WorkingProject.objects.all()[0].project.hardwareModel.hardwareType.isVM:
+            if WorkingProject.objects.all()[0].project.hardwareModel.hardware_type.isVM:
                 fields_row1 += ('vmType',)
             if WorkingProject.objects.all()[0].project.database_type.name == 'NDB':
                 fields_row1 += ('deploy_option',)
@@ -222,27 +224,27 @@ class ProjectInformationAdmin(admin.ModelAdmin):
                 ]}),
             ('Network Information', {
                 'fields': [
-                    ('sigtranLinkSpeed','sigtranLinkNumber',),
-                    ('sigtranPortUtil', ),
+                    ('sigtranLinkSpeed', 'sigtranLinkNumber',),
+                    ('sigtranPortUtil',),
                 ]}),
             ('Release Impact Information', {
                 'fields': [
-                    ('numberReleaseToEstimate','cpuImpactPerRelease',),
+                    ('numberReleaseToEstimate', 'cpuImpactPerRelease',),
                     ('memoryImpactPerRelease', 'dbImpactPerRelease',),
                 ]}),
             ('AMA Information', {
                 'fields': [
-                    ('amaRecordPerBillingBlock','averageAMARecordPerCall',),
-                    ('amaStoreDay', ),
+                    ('amaRecordPerBillingBlock', 'averageAMARecordPerCall',),
+                    ('amaStoreDay',),
                 ]}),
             ('Account Information', {
                 'fields': [
-                    ('activeSubscriber','inactiveSubscriber',),
-                    ('groupAccountNumber', ),
+                    ('activeSubscriber', 'inactiveSubscriber',),
+                    ('groupAccountNumber',),
                 ]}),
             ('Usage Tuning', {
                 'fields': [
-                    ('cpuUsageTuning','memoryUsageTuning',),
+                    ('cpuUsageTuning', 'memoryUsageTuning',),
                 ]}),
         ]
 
@@ -255,7 +257,7 @@ class ProjectInformationAdmin(admin.ModelAdmin):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return ProjectInformation.objects.none()
-        return super(ProjectInformationAdmin,self).get_queryset(request).\
+        return super(ProjectInformationAdmin, self).get_queryset(request). \
             filter(project=WorkingProject.objects.all()[0].project)
 
     # def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
@@ -277,9 +279,9 @@ class TrafficInformationAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         if WorkingProject.objects.count() == 0:
             return ['callType', 'activeSubscriber', 'inactiveSubscriber', 'trafficBHTA', 'trafficTPS',
-                     'callHoldingTime', 'averageActiveSessionPerSubscriber', 'averageCategoryPerCCR',
-                     'averageCategoryPerSession', 'volumeCCRiBHTA', 'volumeCCRuBHTA', 'volumeCCRtBHTA',
-                     'timeCCRiBHTA', 'timeCCRuBHTA', 'timeCCRtBHTA'
+                    'callHoldingTime', 'averageActiveSessionPerSubscriber', 'averageCategoryPerCCR',
+                    'averageCategoryPerSession', 'volumeCCRiBHTA', 'volumeCCRuBHTA', 'volumeCCRtBHTA',
+                    'timeCCRiBHTA', 'timeCCRuBHTA', 'timeCCRtBHTA'
                     ]
         return self.readonly_fields
 
@@ -345,7 +347,7 @@ class TrafficInformationAdmin(admin.ModelAdmin):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return TrafficInformation.objects.none()
-        return super(TrafficInformationAdmin,self).get_queryset(request). \
+        return super(TrafficInformationAdmin, self).get_queryset(request). \
             filter(project=WorkingProject.objects.all()[0].project)
 
         # def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
@@ -359,12 +361,12 @@ class TrafficInformationAdmin(admin.ModelAdmin):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return TrafficInformation.objects.none()
-        obj.project=WorkingProject.objects.all()[0].project
+        obj.project = WorkingProject.objects.all()[0].project
         super(TrafficInformationAdmin, self).save_model(request, obj, form, change)
 
 
 class FeatureConfigurationAdmin(admin.ModelAdmin):
-    list_display = ('feature', 'featurePenetration', )
+    list_display = ('feature', 'featurePenetration',)
 
     list_filter = ('feature',)
 
@@ -388,7 +390,7 @@ class FeatureConfigurationAdmin(admin.ModelAdmin):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return FeatureConfiguration.objects.none()
-        return super(FeatureConfigurationAdmin,self).get_queryset(request). \
+        return super(FeatureConfigurationAdmin, self).get_queryset(request). \
             filter(project=WorkingProject.objects.all()[0].project)
 
     def get_fieldsets(self, request, obj=None):
@@ -415,8 +417,9 @@ class FeatureConfigurationAdmin(admin.ModelAdmin):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return FeatureConfiguration.objects.none()
-        obj.project=WorkingProject.objects.all()[0].project
+        obj.project = WorkingProject.objects.all()[0].project
         super(FeatureConfigurationAdmin, self).save_model(request, obj, form, change)
+
 
 # class DBConfigurationAdmin(admin.ModelAdmin):
 #     list_display = ('name', 'dbFactor', 'placeholderRatio', 'memberGroupOption')
@@ -432,9 +435,9 @@ class FeatureConfigurationAdmin(admin.ModelAdmin):
 class CallTypeCounterConfigurationAdmin(admin.ModelAdmin):
     model = CallTypeCounterConfiguration
     form = CallTypeCounterConfigurationForm
-    list_display = ('callType', 'averageBundleNumberPerSubscriber','average24hBundleNumberPerSubscriber',
-              'nonAppliedBucketNumber', 'nonAppliedUBDNumber', 'appliedBucketNumber',
-              'appliedUBDNumber',)
+    list_display = ('callType', 'averageBundleNumberPerSubscriber', 'average24hBundleNumberPerSubscriber',
+                    'nonAppliedBucketNumber', 'nonAppliedUBDNumber', 'appliedBucketNumber',
+                    'appliedUBDNumber',)
     list_filter = ('project', 'callType',)
 
     def has_delete_permission(self, request, obj=None):
@@ -447,7 +450,7 @@ class CallTypeCounterConfigurationAdmin(admin.ModelAdmin):
         if WorkingProject.objects.count() == 0:
             return ['averageBundleNumberPerSubscriber', 'average24hBundleNumberPerSubscriber',
                     'nonAppliedBucketNumber', 'nonAppliedUBDNumber', 'appliedBucketNumber',
-                    'appliedUBDNumber','callType', 'totalCounterNumber',
+                    'appliedUBDNumber', 'callType', 'totalCounterNumber',
                     ]
         # else:
         #     return ['callType', 'totalCounterNumber']
@@ -483,16 +486,16 @@ class CallTypeCounterConfigurationAdmin(admin.ModelAdmin):
             if call_type_counter_configuration_list.count() == 0:
                 call_type_counter_configuration = CallTypeCounterConfiguration.current_objects.create_call_type_counter_configuration(
                     project=WorkingProject.objects.all()[0].project,
-                    callType=trafficInformation.callType,
-                    average24hBundleNumberPerSubscriber=counter_configuration.average24hBundleNumberPerSubscriber,
-                    averageBundleNumberPerSubscriber=counter_configuration.averageBundleNumberPerSubscriber,
-                    nonAppliedUBDNumber=counter_configuration.nonAppliedUBDNumber,
-                    nonAppliedBucketNumber=counter_configuration.nonAppliedBucketNumber,
-                    appliedUBDNumber=counter_configuration.appliedUBDNumber,
-                    appliedBucketNumber=counter_configuration.appliedBucketNumber,
+                    call_type=trafficInformation.callType,
+                    average_24h_bundle_number_per_subscriber=counter_configuration.average24hBundleNumberPerSubscriber,
+                    average_bundle_number_per_subscriber=counter_configuration.averageBundleNumberPerSubscriber,
+                    non_applied_ubd_number=counter_configuration.nonAppliedUBDNumber,
+                    non_applied_bucket_number=counter_configuration.nonAppliedBucketNumber,
+                    applied_ubd_number=counter_configuration.appliedUBDNumber,
+                    applied_bucket_number=counter_configuration.appliedBucketNumber,
                 )
 
-        return super(CallTypeCounterConfigurationAdmin,self).get_queryset(request). \
+        return super(CallTypeCounterConfigurationAdmin, self).get_queryset(request). \
             filter(project=WorkingProject.objects.all()[0].project)
 
     def get_fieldsets(self, request, obj=None):
@@ -535,7 +538,7 @@ class CallTypeCounterConfigurationAdmin(admin.ModelAdmin):
 class CounterConfigurationAdmin(admin.ModelAdmin):
     list_display = ('averageBundleNumberPerSubscriber', 'average24hBundleNumberPerSubscriber',
                     'nonAppliedBucketNumber', 'nonAppliedUBDNumber', 'appliedBucketNumber',
-                    'appliedUBDNumber','groupBundleNumber', 'groupBucketNumber',
+                    'appliedUBDNumber', 'groupBundleNumber', 'groupBucketNumber',
                     )
 
     list_filter = ('project',)
@@ -568,11 +571,11 @@ class CounterConfigurationAdmin(admin.ModelAdmin):
               '/static/js/counter_configuration.js',
               )
 
-    def  get_queryset(self, request):
+    def get_queryset(self, request):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return CounterConfiguration.objects.none()
-        return super(CounterConfigurationAdmin,self).get_queryset(request). \
+        return super(CounterConfigurationAdmin, self).get_queryset(request). \
             filter(project=WorkingProject.objects.all()[0].project)
 
     def get_fieldsets(self, request, obj=None):
@@ -610,6 +613,7 @@ class CounterConfigurationAdmin(admin.ModelAdmin):
         obj.project = WorkingProject.objects.all()[0].project
         super(CounterConfigurationAdmin, self).save_model(request, obj, form, change)
 
+
 # class CallTypeCounterConfigurationAdmin(admin.ModelAdmin):
 #     list_display = ('name', 'averageBundleNumberPerSubscriber', 'average24hBundleNumberPerSubscriber',
 #                     'nonAppliedBucketNumber', 'nonAppliedUBDNumber', 'appliedBucketNumber',
@@ -641,13 +645,14 @@ class DBConfigurationAdmin(admin.ModelAdmin):
         js = ('/static/jquery-2.1.1.min.js',
               '/static/js/db_configuration.js',
               )
+
     def get_queryset(self, request):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return DBConfiguration.objects.none()
-        return super(DBConfigurationAdmin,self).get_queryset(request). \
+        return super(DBConfigurationAdmin, self).get_queryset(request). \
             filter(
-                project=WorkingProject.objects.all()[0].project,
+            project=WorkingProject.objects.all()[0].project,
         )
 
     def get_fieldsets(self, request, obj=None):
@@ -659,9 +664,9 @@ class DBConfigurationAdmin(admin.ModelAdmin):
             ('DB Information' + addition_message, {
                 'fields': [
                     fields_row1,
-                    ('dbInfo','recordSize',),
-                    ('memberGroupOption','subscriberNumber',),
-                    ('dbFactor','referencePlaceholderRatio',),
+                    ('dbInfo', 'recordSize',),
+                    ('memberGroupOption', 'subscriberNumber',),
+                    ('dbFactor', 'referencePlaceholderRatio',),
                     ('placeholderRatio',),
                 ]}),
         ]
@@ -670,7 +675,7 @@ class DBConfigurationAdmin(admin.ModelAdmin):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return DBConfiguration.objects.none()
-        obj.project=WorkingProject.objects.all()[0].project
+        obj.project = WorkingProject.objects.all()[0].project
         super(DBConfigurationAdmin, self).save_model(request, obj, form, change)
 
 
@@ -685,19 +690,19 @@ class SystemConfigurationAdmin(admin.ModelAdmin):
     #         return False
     #     else:
     #         return True
-        
+
     def get_readonly_fields(self, request, obj=None):
         if WorkingProject.objects.count() == 0:
-            return [#'cabinetNumberPerSystem',
-                    'applicationName',
-                    'backupAppNodeNumberPerSystem', 'spareAppNodeNumberPerSystem',
-                    'backupDBNodeNumberPerSystem', 'spareDBNodePairNumberPerSystem'
-                    ]
+            return [  # 'cabinetNumberPerSystem',
+                'applicationName',
+                'backupAppNodeNumberPerSystem', 'spareAppNodeNumberPerSystem',
+                'backupDBNodeNumberPerSystem', 'spareDBNodePairNumberPerSystem'
+            ]
         return self.readonly_fields
 
     class Media:
         js = ('/static/jquery-2.1.1.min.js',
-              # '/static/js/db_configuration.js',
+            # '/static/js/db_configuration.js',
               )
 
     def get_queryset(self, request):
@@ -716,14 +721,14 @@ class SystemConfigurationAdmin(admin.ModelAdmin):
             if app_conf_list.count() == 0:
                 SystemConfiguration.current_objects.create_system_configuration(
                     project=WorkingProject.objects.all()[0].project,
-                    applicationName=application_epay_list[0],
-                    backupAppNodeNumberPerSystem=0,
-                    spareAppNodeNumberPerSystem=0,
-                    backupDBNodeNumberPerSystem=0,
-                    spareDBNodePairNumberPerSystem=0,
+                    application_name=application_epay_list[0],
+                    backup_app_node_number_per_system=0,
+                    spare_app_node_number_per_system=0,
+                    backup_db_node_number_per_system=0,
+                    spare_db_node_pair_number_per_system=0,
                 )
 
-        return super(SystemConfigurationAdmin,self).get_queryset(request). \
+        return super(SystemConfigurationAdmin, self).get_queryset(request). \
             filter(
             project=WorkingProject.objects.all()[0].project,
         )
@@ -748,7 +753,7 @@ class SystemConfigurationAdmin(admin.ModelAdmin):
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return SystemConfiguration.objects.none()
 
-        obj.project=WorkingProject.objects.all()[0].project
+        obj.project = WorkingProject.objects.all()[0].project
 
         super(SystemConfigurationAdmin, self).save_model(request, obj, form, change)
 
@@ -762,6 +767,7 @@ class ApplicationConfigurationAdmin(admin.ModelAdmin):
     list_filter = ('applicationName',)
 
     search_fields = ('applicationName__name',)
+
     # def has_add_permission(self, request):
     #     if CounterConfiguration.objects.all().filter(project=WorkingProject.objects.all()[0].project).count() > 0:
     #         return False
@@ -801,7 +807,7 @@ class ApplicationConfigurationAdmin(admin.ModelAdmin):
                 ]}),
             ('Traffic Information', {
                 'fields': [
-                    ('trafficTPS', ),
+                    ('trafficTPS',),
                 ]}),
         ]
 
@@ -884,12 +890,12 @@ class CalculatedResultAdmin(admin.ModelAdmin):
             ('Application Information' + addition_message, {
                 'fields': [
                     fields_row1,
-                    ('applicationName', ),
+                    ('applicationName',),
                 ]}),
             ('Calculated Nodes Information', {
                 'fields': [
                     ('appNodeNumber', 'dbNodeNumber',),
-                    ('ioNodeNumber', ),
+                    ('ioNodeNumber',),
                 ]}),
         ]
 
@@ -900,10 +906,9 @@ class CalculatedResultAdmin(admin.ModelAdmin):
         obj.project = WorkingProject.objects.all()[0].project
         super(CalculatedResultAdmin, self).save_model(request, obj, form, change)
 
-
     def get_urls(self):
         urls = super().get_urls()
-        my_urls = [url(r'^project/calculatedresult/calculate/$', self.admin_site.admin_view(self.calculate)),]
+        my_urls = [url(r'^project/calculatedresult/calculate/$', self.admin_site.admin_view(self.calculate)), ]
 
         return my_urls + urls
 
@@ -916,10 +921,10 @@ class CalculatedResultAdmin(admin.ModelAdmin):
 
         CalculatedResult.current_objects.create_calculated_result(
             project=WorkingProject.objects.all()[0].project,
-            applicationName=ApplicationName.objects.all().filter(name='EPAY')[0],
-            appNodeNumber=5,
-            dbNodeNumber=2,
-            ioNodeNumber=2,
+            application_name=ApplicationName.objects.all().filter(name='EPAY')[0],
+            app_node_number=5,
+            db_node_number=2,
+            io_node_number=2,
         )
 
         return redirect('/admin/project/calculatedresult/')

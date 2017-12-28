@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.forms import ModelForm, TextInput, NumberInput
-from suit.widgets import EnclosedInput, HTML5Input
+from suit.widgets import EnclosedInput
 from .models import Release, ApplicationName, ApplicationInformation, DBName, DBInformation, FeatureName, \
     FeatureCPUImpact, FeatureDBImpact, CallCost, CallType, CounterCost, CounterCostName, OtherApplicationInformation, \
     CurrentRelease, FeatureCallTypeConfiguration
@@ -11,7 +11,6 @@ class ReleaseForm(ModelForm):
         widgets = {
             'name': TextInput(attrs={'class': 'input-mini'}),
             'sequence': NumberInput(attrs={'class': 'input-mini'}),
-            #'sequence': HTML5Input(input_type='color'),
             'callRecordSize': EnclosedInput(append='byte'),
             'ldapCIPSize': EnclosedInput(append='byte'),
             'sessionCIPSize': EnclosedInput(append='byte'),
@@ -84,7 +83,7 @@ class CallCostAdmin(admin.ModelAdmin):
 class CounterCostAdmin(admin.ModelAdmin):
     list_display = ('name', 'counterNumberPerRecord', 'costDBReadUpdatePerRecord', 'costPerAppliedBucket',
                     'costPerAppliedUBD', 'costPerUnappliedBucket', 'costPerUnappliedUBD',
-                    'costPerUnappliedCounterWithBasicCriteria', 'costTurnOnbucket', 'costTurnOnUBD',
+                    'costPerUnappliedCounterWithBasicCriteria', 'costTurnOnBucket', 'costTurnOnUBD',
                     'costTurnOnUnappliedCounter', 'costCounterNumberImpact', 'percentageCounterNumberImpact',
                     'costGroupDBReadUpdatePerRecord', 'costTurnOnGroupBucket', 'costPerGroupSideBucket',
                     'costBundlePerRecord', 'costPer24hBundle',

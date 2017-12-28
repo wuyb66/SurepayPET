@@ -6,15 +6,11 @@ from service.models import Release, CallType, FeatureName, DBInformation, CallCo
 from hardware.models import CPUTuning, MemoryUsageTuning, HardwareModel, VMType, \
     HardwareType, CPU, CPUList, MemoryList
 from common.models import DBMode, GlobalConfiguration
-from django.utils.encoding import python_2_unicode_compatible
 from django.contrib.auth.models import Group
 from django.conf import settings
 from django.core.exceptions import ValidationError
 
 import math
-
-# from smart_selects.db_fields import ChainedForeignKey, ChainedManyToManyField, ChainedManyToManyField2
-
 
 AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
@@ -37,6 +33,7 @@ SERVICE_TYPES = (
 )
 
 BYTES_TO_MILLION = 1024000
+
 
 # class Province(models.Model):
 #     name = models.CharField(max_length=30)
@@ -61,7 +58,7 @@ BYTES_TO_MILLION = 1024000
 #         auto_choose=True,
 #         help_text='Location aaa',
 #     )
-    # city = models.ForeignKey(City)
+# city = models.ForeignKey(City)
 
 # class Country(models.Model):
 #     name = models.CharField(max_length=50)
@@ -195,14 +192,10 @@ class Project(models.Model):
     database_type = models.ForeignKey(DBMode, verbose_name='Database Type')
 
     def __str__(self):
-        # return u'%(hardwareType)s %(hardwareModel)s' % {
-        #     'hardwareType': self.hardwareType,
-        #     'hardwareModel': self.hardwareModel,
-        # }
         return self.name
 
     @property
-    def hardwareType(self):
+    def hardware_type(self):
         return self.hardwareModel.hardwareType
 
     class Meta:
@@ -226,13 +219,14 @@ class CurrentProjectInformationManager(models.Manager):
 
         return ProjectInformation.objects.none()
 
+
 class ProjectInformation(models.Model):
     NDB_DEPLOY_OPTION = (('individual', 'Individual'), ('combo', 'Combo'))
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
     vmType = models.ForeignKey(VMType, on_delete=models.CASCADE, verbose_name='VM Type')
-    cpuNumber = models.ForeignKey(CPUList, verbose_name='CPU Number',)
+    cpuNumber = models.ForeignKey(CPUList, verbose_name='CPU Number', )
 
     memory = models.ForeignKey(MemoryList, verbose_name='Memory')
     clientNumber = models.IntegerField(verbose_name='Client Number')
@@ -246,8 +240,8 @@ class ProjectInformation(models.Model):
     cpuImpactPerRelease = models.FloatField(default=0.05, verbose_name='CPU Impact per Release')
     memoryImpactPerRelease = models.FloatField(default=0.1, verbose_name='Memory Impact per Release')
     dbImpactPerRelease = models.FloatField(default=0.1, verbose_name='DB Impact per Release')
-    deploy_option=models.CharField(max_length=16, choices=NDB_DEPLOY_OPTION, default='combo',
-                                   verbose_name='NDB Deploy Option')
+    deploy_option = models.CharField(max_length=16, choices=NDB_DEPLOY_OPTION, default='combo',
+                                     verbose_name='NDB Deploy Option')
 
     averageAMARecordPerCall = models.FloatField(verbose_name='Average AMA Record per Call')
     amaStoreDay = models.FloatField(verbose_name='AMA Store Days')
@@ -260,8 +254,8 @@ class ProjectInformation(models.Model):
     memoryUsageTuning = models.ForeignKey(MemoryUsageTuning, on_delete=models.CASCADE,
                                           verbose_name='Memory Usage Tuning')
 
-    objects = models.Manager() # The default manager.
-    current_objects = CurrentProjectInformationManager() # The project-specific manager.
+    objects = models.Manager()  # The default manager.
+    current_objects = CurrentProjectInformationManager()  # The project-specific manager.
 
     def __str__(self):
         return self.project.name
@@ -289,8 +283,10 @@ class TrafficInformation(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     callType = models.ForeignKey(CallType, on_delete=models.CASCADE, verbose_name='Call Type')
 
-    activeSubscriber = models.IntegerField(verbose_name='Active Subscriber') # Need to set default=project.activeSubscriber
-    inactiveSubscriber = models.IntegerField(verbose_name='Inctive Subscriber') # Need to set default=project.inactiveSubscriber
+    activeSubscriber = models.IntegerField(
+        verbose_name='Active Subscriber')  # Need to set default=project.activeSubscriber
+    inactiveSubscriber = models.IntegerField(
+        verbose_name='Inactive Subscriber')  # Need to set default=project.inactiveSubscriber
 
     trafficBHTA = models.FloatField(verbose_name='BHCA/BHTA', default=0)
     trafficTPS = models.FloatField(verbose_name='CPS/TPS', default=0)
@@ -312,14 +308,14 @@ class TrafficInformation(models.Model):
     totalCPUCost = models.FloatField(default=0)
     ss7CPUCost = models.FloatField(default=0)
     tcpCPUCost = models.FloatField(default=0)
-    aprocCPUCost = models.FloatField(default=0)     # APROC
-    asCPUCost = models.FloatField(default=0)        # Aerospike Server
+    aprocCPUCost = models.FloatField(default=0)  # APROC
+    asCPUCost = models.FloatField(default=0)  # Aerospike Server
 
     ss7InSizePerSecond = models.FloatField(default=0)
     ss7OutSizePerSecond = models.FloatField(default=0)
     ldapSizePerSecond = models.FloatField(default=0)
     diameterSizePerSecond = models.FloatField(default=0)
-    muTCPSize = models.FloatField(default=0)    # Mate update Size
+    muTCPSize = models.FloatField(default=0)  # Mate update Size
     featureLDAPSize = models.FloatField(default=0)
     featureDiameterSize = models.FloatField(default=0)
 
@@ -328,8 +324,14 @@ class TrafficInformation(models.Model):
     featureCost = models.FloatField(default=0)
     counterCost = models.FloatField(default=0)
 
-    objects = models.Manager() # The default manager.
-    current_objects = CurrentTrafficInformationManager() # The project-specific manager.
+    objects = models.Manager()  # The default manager.
+    current_objects = CurrentTrafficInformationManager()  # The project-specific manager.
+
+    @property
+    def feature_information(self):
+        if ProjectInformation.current_objects.all().count() > 0:
+            return ProjectInformation.current_objects.all()[0]
+        return None
 
     @property
     def feature_call_type_config_list(self):
@@ -341,7 +343,8 @@ class TrafficInformation(models.Model):
     def feature_list(self):
         return FeatureConfiguration.current_objects.all()
 
-    def get_feature_cost(self):
+    @property
+    def feature_cost(self):
         feature_total_cost = 0
 
         call_cost = self.get_call_cost()
@@ -353,14 +356,17 @@ class TrafficInformation(models.Model):
                 featureName=feature,
             )
             if (feature_call_type_conf.count() > 0) and (feature_cpu_impact.count() > 0):
-                feature_total_cost += feature.featurePenetration * ((feature_cpu_impact[0].ccImpactCPUPercentage +
-                                    feature_cpu_impact[0].reImpactCPUPercentage) *
-                                    feature_call_type_conf[0].featureApplicable * call_cost +
-                                    (feature_cpu_impact[0].ccImpactCPUTime + feature_cpu_impact[0].reImpactCPUTime))
+                feature_total_cost += feature.featurePenetration * \
+                                      ((feature_cpu_impact[0].ccImpactCPUPercentage +
+                                        feature_cpu_impact[0].reImpactCPUPercentage) *
+                                       feature_call_type_conf[0].featureApplicable * call_cost +
+                                       (feature_cpu_impact[0].ccImpactCPUTime +
+                                        feature_cpu_impact[0].reImpactCPUTime))
 
         return feature_total_cost
 
-    def get_feature_ss7_in_size(self):
+    @property
+    def feature_ss7_in_size(self):
         feature_ss7_in_size = 0
 
         for feature in self.feature_list:
@@ -376,7 +382,8 @@ class TrafficInformation(models.Model):
 
         return feature_ss7_in_size
 
-    def get_feature_ss7_out_size(self):
+    @property
+    def feature_ss7_out_size(self):
         feature_ss7_out_size = 0
 
         for feature in self.feature_list:
@@ -392,7 +399,8 @@ class TrafficInformation(models.Model):
 
         return feature_ss7_out_size
 
-    def get_feature_ldap_size(self):
+    @property
+    def feature_ldap_size(self):
         feature_ldap_size = 0
 
         for feature in self.feature_list:
@@ -408,7 +416,8 @@ class TrafficInformation(models.Model):
 
         return feature_ldap_size
 
-    def get_feature_diameter_size(self):
+    @property
+    def feature_diameter_size(self):
         feature_diameter_size = 0
 
         for feature in self.feature_list:
@@ -427,7 +436,7 @@ class TrafficInformation(models.Model):
         if (not self.id) and WorkingProject.objects.all().count() > 0:
             qs = TrafficInformation.objects.filter(project=WorkingProject.objects.all()[0].project)
             if qs.filter(callType=self.callType).exists():
-                raise ValidationError('Call Type: %s existed!'%self.callType)
+                raise ValidationError('Call Type: %s existed!' % self.callType)
 
     def save(self, *args, **kwargs):
         self.validate_unique()
@@ -440,10 +449,13 @@ class TrafficInformation(models.Model):
         return self.trafficBHTA * 3600 / self.activeSubscriber if self.activeSubscriber > 0 else 0
 
     def get_default_active_subscriber(self):
-        return self.project.activeSubscriber
+        if self.feature_information:
+            return self.feature_information.activeSubscriber
+        return 0
 
     def get_default_inactive_subscriber(self):
-        return self.project.inactiveSubscriber
+        if self.feature_information:
+            return self.feature_information.inactiveSubscriber
 
     def __str__(self):
         return self.project.name + '_' + self.callType.name
@@ -461,21 +473,22 @@ class TrafficInformation(models.Model):
                 dbMode=self.project.database_type,
             )
 
-            if call_cost_list.count() > 0:    # exact match
+            if call_cost_list.count() > 0:  # exact match
                 return call_cost_list[0].callCost * call_cost_list[0].hardwareModel.cpu.singleThreadCapacity
 
             call_cost_list = call_cost_orig_list.filter(
                 hardwareModel=self.project.hardwareModel,
             )
-            if call_cost_list.count() > 0:    # Database type not match
+            if call_cost_list.count() > 0:  # Database type not match
                 cost_ratio = 1
                 if GlobalConfiguration.objects.all().count() > 0:
-                    if call_cost_list[0].dbMode.name == 'RTDB':    # RTDB cost --> NDB cost
+                    if call_cost_list[0].dbMode.name == 'RTDB':  # RTDB cost --> NDB cost
                         cost_ratio = GlobalConfiguration.objects.all()[0].ndbRTDBCostRatio
-                    else:       # NDB cost --> RTDB cost
+                    else:  # NDB cost --> RTDB cost
                         if GlobalConfiguration.objects.all()[0].ndbRTDBCostRatio > 0:
                             cost_ratio = 1 / GlobalConfiguration.objects.all()[0].ndbRTDBCostRatio
-                return call_cost_list[0].callCost * call_cost_list[0].hardwareModel.cpu.singleThreadCapacity * cost_ratio
+                return call_cost_list[0].callCost * call_cost_list[
+                    0].hardwareModel.cpu.singleThreadCapacity * cost_ratio
 
             call_cost_list = call_cost_orig_list.filter(
                 dbMode=self.project.database_type,
@@ -484,25 +497,27 @@ class TrafficInformation(models.Model):
             call_cost_priority = 0
             if call_cost_list.count() > 0:
                 for call_cost_object in call_cost_list:
-                    if call_cost_object.hardwareModel.hardwareType == self.project.hardwareModel.hardwareType:
+                    if call_cost_object.hardwareModel.hardware_type == self.project.hardwareModel.hardwareType:
                         call_cost = call_cost_object.callCost * call_cost_object.hardwareModel.cpu.singleThreadCapacity
                         call_cost_priority = 3
                     elif call_cost_object.hardwareModel.cpu == self.project.hardwareModel.cpu:
                         if (call_cost == 0) or (call_cost_priority < 2):
                             call_cost_priority = 2
-                            call_cost = call_cost_object.callCost * call_cost_object.hardwareModel.cpu.singleThreadCapacity
+                            call_cost = call_cost_object.callCost * \
+                                        call_cost_object.hardwareModel.cpu.singleThreadCapacity
                     else:
                         if call_cost == 0:
                             call_cost_priority = 1
-                            call_cost = call_cost_object.callCost * call_cost_object.hardwareModel.cpu.singleThreadCapacity
+                            call_cost = call_cost_object.callCost * \
+                                        call_cost_object.hardwareModel.cpu.singleThreadCapacity
 
                 return call_cost
         else:
-            raise ValidationError('Call Cost for Call Type: %s of Release %s not configured!'
-                                  %(self.callType, self.project.release))
+            raise ValidationError(
+                f'Call Cost for Call Type: {self.callType} of Release {self.project.release} not configured!')
 
     def get_total_cost(self):
-        return self.get_call_cost() + self.get_feature_cost()
+        return self.get_call_cost() + self.feature_cost
 
     name = property(__str__)
 
@@ -533,15 +548,14 @@ class FeatureConfiguration(models.Model):
     groupNumber = models.FloatField(default=1)
     ratioOfLevel1 = models.FloatField(default=1)
 
-    objects = models.Manager() # The default manager.
-    current_objects = CurrentFeatureConfigurationManager() # The current project specific manager.
-
+    objects = models.Manager()  # The default manager.
+    current_objects = CurrentFeatureConfigurationManager()  # The current project specific manager.
 
     def validate_unique(self, exclude=None):
         if (not self.id) and WorkingProject.objects.all().count() > 0:
             qs = FeatureConfiguration.objects.filter(project=WorkingProject.objects.all()[0].project)
             if qs.filter(feature=self.feature).exists():
-                raise ValidationError('Feature Name: %s existed!'%self.feature)
+                raise ValidationError('Feature Name: %s existed!' % self.feature)
 
     def save(self, *args, **kwargs):
         self.validate_unique()
@@ -629,8 +643,8 @@ class DBConfiguration(models.Model):
     referencePlaceholderRatio = models.IntegerField(default=0)
     referenceDBFactor = models.IntegerField(default=0)
 
-    objects = models.Manager() # The default manager.
-    current_objects = CurrentDBConfigurationManager() # The current project specific manager.
+    objects = models.Manager()  # The default manager.
+    current_objects = CurrentDBConfigurationManager()  # The current project specific manager.
 
     def get_record_size(self):
         return self.dbInfo.recordSize
@@ -670,7 +684,8 @@ class DBConfiguration(models.Model):
 
             total_nodes = math.ceil(self.get_record_number() * 1.2 / rproc_number / kpn)
             tree_level = math.ceil(math.log2(total_nodes))
-            node_size = math.ceil(math.pow(tree_level, 2) / BYTES_TO_MILLION * per_node_size * factor) * rproc_number * index_number
+            node_size = math.ceil(
+                math.pow(tree_level, 2) / BYTES_TO_MILLION * per_node_size * factor) * rproc_number * index_number
 
         return node_size
 
@@ -680,7 +695,7 @@ class DBConfiguration(models.Model):
         index_number = self.dbInfo.db.prefixTableIndexNumber
 
         ndb_node_size = math.ceil(record_number / BYTES_TO_MILLION * 64 * 2 +
-                                (record_number * 3 + 2 * r) / BYTES_TO_MILLION * 28.44 * index_number)
+                                  (record_number * 3 + 2 * r) / BYTES_TO_MILLION * 28.44 * index_number)
 
         return ndb_node_size
 
@@ -697,14 +712,13 @@ class DBConfiguration(models.Model):
             db_overhead = 1
 
         return math.ceil(self.recordSize * self.recordNumber * db_overhead *
-                         (1 - self.placeholderRatio) / BYTES_TO_MILLION) + \
-               self.get_node_size()
+                         (1 - self.placeholderRatio) / BYTES_TO_MILLION) + self.get_node_size()
 
-    def get_todo_log_size(self, dbBladeNeeded, traffic):
+    def get_todo_log_size(self, db_blade_needed, traffic):
         if self.dbInfo.db.name == 'NDB':
             return 0
         cache_size = self.get_cache_size()
-        rproc_number = math.ceil(cache_size / 2000, dbBladeNeeded)
+        rproc_number = math.ceil(cache_size / 2000, db_blade_needed)
         impact_size = self.dbInfo.db.todoLogSize
 
         todo_log_size = math.ceil(impact_size * traffic * 3600 * 24 * 2 / BYTES_TO_MILLION / 10) * 10
@@ -717,68 +731,70 @@ class DBConfiguration(models.Model):
     def get_mate_log_size(self, traffic):
         global_configuration = GlobalConfiguration.objects.all()
         if global_configuration.count() > 0:
-            maintanance_window_hour = global_configuration[0].maintananceWindowHour
-            traffic_percentage_under_maitanance_window = global_configuration[0].trafficPercentageUnderMaitananceWindow
+            maintenance_window_hour = global_configuration[0].maintananceWindowHour
+            traffic_percentage_under_maintenance_window = global_configuration[0].trafficPercentageUnderMaitananceWindow
         else:
-            maintanance_window_hour = 10
-            traffic_percentage_under_maitanance_window = 1
+            maintenance_window_hour = 10
+            traffic_percentage_under_maintenance_window = 1
 
         impact_size = self.dbInfo.db.mateLogSize
 
-        b = 3600 * maintanance_window_hour * traffic_percentage_under_maitanance_window / BYTES_TO_MILLION
+        b = 3600 * maintenance_window_hour * traffic_percentage_under_maintenance_window / BYTES_TO_MILLION
         return math.ceil(impact_size * traffic * b / 10) * 10
 
-    def get_ndb_reference_placeholder_ratio(self):
+    @property
+    def ndb_reference_placeholder_ratio(self):
         return self.dbInfo.db.ndbRefPlaceholderRatio
 
-    def get_reference_db_factor(self):
+    @property
+    def reference_db_factor(self):
         if WorkingProject.objects.all().count() > 0:
-            featureList = FeatureConfiguration.objects.all().filter(
+            feature_list = FeatureConfiguration.objects.all().filter(
                 project=WorkingProject.objects.all()[0].project,
             )
 
-            if featureList.count() == 0:
+            if feature_list.count() == 0:
                 return 0
         else:
             return 0
 
-        featureDBImpactList = FeatureDBImpact.objects.all().filter(
+        feature_db_impact_list = FeatureDBImpact.objects.all().filter(
             dbName=self.dbInfo.db,
         )
-        if featureDBImpactList.count() == 0:
+        if feature_db_impact_list.count() == 0:
             return 0
 
-        referenceDBFactor = 0
-        for feature in featureList:
-            featureDBImpact = featureDBImpactList.filter(
+        reference_db_factor = 0
+        for feature in feature_list:
+            feature_db_impact = feature_db_impact_list.filter(
                 featureName=feature.feature,
             )
 
-            if featureDBImpact.count() > 0:
+            if feature_db_impact.count() > 0:
                 if self.memberGroupOption == 'Member':
-                    referenceDBFactor += feature.featurePenetration * featureDBImpact[0].memberImpactFactor
+                    reference_db_factor += feature.featurePenetration * feature_db_impact[0].memberImpactFactor
                 else:
-                    referenceDBFactor += feature.featurePenetration * featureDBImpact[0].groupImpactFactor
+                    reference_db_factor += feature.featurePenetration * feature_db_impact[0].groupImpactFactor
 
         if self.memberGroupOption == 'Member':
-            referenceDBFactor += self.dbInfo.db.defaultMemberFactor
-            counterConfiguration = CounterConfiguration.objects.all().filter(
+            reference_db_factor += self.dbInfo.db.defaultMemberFactor
+            counter_configuration = CounterConfiguration.objects.all().filter(
                 project=self.project,
             )
-            if counterConfiguration.count() > 0:
-                referenceDBFactor += (math.ceil(counterConfiguration[0].total_bundle_number() / 6) +
-                                      math.ceil(counterConfiguration[0].get_total_counter() / 6)) * \
-                                     self.dbInfo.db.defaultMemberCounterFactor
+            if counter_configuration.count() > 0:
+                reference_db_factor += (math.ceil(counter_configuration[0].total_bundle_number() / 6) +
+                                        math.ceil(counter_configuration[0].get_total_counter() / 6)) * \
+                                       self.dbInfo.db.defaultMemberCounterFactor
         else:
-            referenceDBFactor += self.dbInfo.db.defaultGroupFactor
-            counterConfiguration = CounterConfiguration.objects.all().filter(
+            reference_db_factor += self.dbInfo.db.defaultGroupFactor
+            counter_configuration = CounterConfiguration.objects.all().filter(
                 project=self.project,
             )
-            if counterConfiguration.count() > 0:
-                referenceDBFactor += (math.ceil(counterConfiguration[0].groupBucketNumber / 6) +
-                                      math.ceil(counterConfiguration[0].groupBundleNumber / 6)) * \
-                                     self.dbInfo.db.defaultGroupCounterFactor
-        return referenceDBFactor
+            if counter_configuration.count() > 0:
+                reference_db_factor += (math.ceil(counter_configuration[0].groupBucketNumber / 6) +
+                                        math.ceil(counter_configuration[0].groupBundleNumber / 6)) * \
+                                       self.dbInfo.db.defaultGroupCounterFactor
+        return reference_db_factor
 
     def __str__(self):
         return self.project.name + "_" + self.dbInfo.db.name
@@ -790,6 +806,8 @@ class DBConfiguration(models.Model):
     Define counter configuration for the project.
     Need to calculate the db impact for CTRTDB.
 '''
+
+
 class CurrentCounterConfigurationManager(models.Manager):
     def get_queryset(self):
         if WorkingProject.objects.all().count() > 0:
@@ -849,8 +867,8 @@ class CounterConfiguration(models.Model):
         verbose_name='Configure Counter For Call Types',
     )
 
-    objects = models.Manager() # The default manager.
-    current_objects = CurrentCounterConfigurationManager() # The current project specific manager.
+    objects = models.Manager()  # The default manager.
+    current_objects = CurrentCounterConfigurationManager()  # The current project specific manager.
 
     @property
     def total_bundle_number(self):
@@ -859,7 +877,7 @@ class CounterConfiguration(models.Model):
     @property
     def total_counter_number(self):
         return self.nonAppliedBucketNumber + self.nonAppliedUBDNumber + \
-            self.appliedBucketNumber + self.appliedUBDNumber
+               self.appliedBucketNumber + self.appliedUBDNumber
 
     @property
     def total_group_counter_number(self):
@@ -880,19 +898,19 @@ class CounterConfiguration(models.Model):
 
 class CurrentCallTypeCounterConfigurationManager(models.Manager):
     def create_call_type_counter_configuration(
-            self, project, callType, averageBundleNumberPerSubscriber,average24hBundleNumberPerSubscriber,
-            nonAppliedBucketNumber, nonAppliedUBDNumber, appliedBucketNumber, appliedUBDNumber):
-        callTypeCounterConfiguration = self.create(
-            project = project,
-            callType = callType,
-            average24hBundleNumberPerSubscriber=average24hBundleNumberPerSubscriber,
-            averageBundleNumberPerSubscriber = averageBundleNumberPerSubscriber,
-            nonAppliedUBDNumber = nonAppliedUBDNumber,
-            nonAppliedBucketNumber = nonAppliedBucketNumber,
-            appliedUBDNumber = appliedUBDNumber,
-            appliedBucketNumber = appliedBucketNumber,
+            self, project, call_type, average_bundle_number_per_subscriber, average_24h_bundle_number_per_subscriber,
+            non_applied_bucket_number, non_applied_ubd_number, applied_bucket_number, applied_ubd_number):
+        call_type_counter_configuration = self.create(
+            project=project,
+            callType=call_type,
+            average24hBundleNumberPerSubscriber=average_24h_bundle_number_per_subscriber,
+            averageBundleNumberPerSubscriber=average_bundle_number_per_subscriber,
+            nonAppliedUBDNumber=non_applied_ubd_number,
+            nonAppliedBucketNumber=non_applied_bucket_number,
+            appliedUBDNumber=applied_ubd_number,
+            appliedBucketNumber=applied_bucket_number,
         )
-        return callTypeCounterConfiguration
+        return call_type_counter_configuration
 
     def get_queryset(self):
         if WorkingProject.objects.all().count() > 0:
@@ -932,8 +950,8 @@ class CallTypeCounterConfiguration(models.Model):
         verbose_name='Applied UBD Number',
     )
 
-    objects = models.Manager() # The default manager.
-    current_objects = CurrentCallTypeCounterConfigurationManager() # The current project specific manager.
+    objects = models.Manager()  # The default manager.
+    current_objects = CurrentCallTypeCounterConfigurationManager()  # The current project specific manager.
 
     @property
     def total_counter_number(self):
@@ -943,11 +961,6 @@ class CallTypeCounterConfiguration(models.Model):
     @property
     def total_bundle_number(self):
         return self.averageBundleNumberPerSubscriber + self.average24hBundleNumberPerSubscriber
-
-    @property
-    def total_counter_number(self):
-        return self.nonAppliedBucketNumber + self.nonAppliedUBDNumber + \
-               self.appliedBucketNumber + self.appliedUBDNumber
 
     class Meta:
         verbose_name = 'Counter Configuration For Call Type'
@@ -969,166 +982,169 @@ class CallTypeCounterConfiguration(models.Model):
 
     def get_total_cpu_impact(self):
         pass
-        #return getCounterCPUImpact() + getMultipleAMANumber() + getMultipleAMAImpact()
+        # return getCounterCPUImpact() + getMultipleAMANumber() + getMultipleAMAImpact()
 
     def get_counter_cost_record(self):
         if WorkingProject.objects.all().count() > 0:
             project = WorkingProject.objects.all()[0].project
-            counterCostList = CounterCost.objects.all().filter(
+            counter_cost_list = CounterCost.objects.all().filter(
                 release=project.release,
                 hardwareModel=project.hardwareModel,
             )
-            if counterCostList.count() > 0:
-                return counterCostList[0]
+            if counter_cost_list.count() > 0:
+                return counter_cost_list[0]
 
-            counterCostList = CounterCost.objects.order_by('-release__sequence')
-            if counterCostList.count() > 0:
-                release = counterCostList[0].release
-                counterCostList0 = counterCostList.filter(
+            counter_cost_list = CounterCost.objects.order_by('-release__sequence')
+            if counter_cost_list.count() > 0:
+                release = counter_cost_list[0].release
+                counter_cost_list0 = counter_cost_list.filter(
                     release=release,
                     hardwareModel=project.hardwareModel,
                 )
-                if counterCostList0.count() > 0:
-                    return counterCostList0[0]
+                if counter_cost_list0.count() > 0:
+                    return counter_cost_list0[0]
 
-                counterCostList0 = counterCostList.filter(
+                counter_cost_list0 = counter_cost_list.filter(
                     release=release,
                 )
-                if counterCostList0.count() > 0:
-                    for counterCost in counterCostList0:
-                        if counterCost.hardwareModel.hardwareType == project.hardwareModel.hardwareType:
+                if counter_cost_list0.count() > 0:
+                    for counterCost in counter_cost_list0:
+                        if counterCost.hardwareModel.hardware_type == project.hardwareModel.hardware_type:
                             return counterCost
 
-                    return counterCostList0[0]
+                    return counter_cost_list0[0]
 
                 return None
         else:
             return None
 
     def get_counter_cost(self):
-        counterCostRecord = self.get_counter_cost_record()
+        counter_cost_record = self.get_counter_cost_record()
 
-        if not counterCostRecord:
+        if not counter_cost_record:
             return 0
 
         if GlobalConfiguration.objects.all().count() > 0:
-            releaseCountCPUImpact = GlobalConfiguration.objects.all()[0].releaseCountCPUImpact
+            release_count_cpu_impact = GlobalConfiguration.objects.all()[0].releaseCountCPUImpact
         else:
-            releaseCountCPUImpact = 0.05
+            release_count_cpu_impact = 0.05
 
-        releaseGap = 0
+        release_gap = 0
         if WorkingProject.objects.all().count() > 0:
             project = WorkingProject.objects.all()[0].project
 
-            releaseGap = project.release.sequence - counterCostRecord.release.sequence
+            release_gap = project.release.sequence - counter_cost_record.release.sequence
 
-            if releaseGap < 0:
-                releaseGap = 0
+            if release_gap < 0:
+                release_gap = 0
 
-        releaseImpact = math.pow((1 + releaseCountCPUImpact), releaseGap)
+        release_impact = math.pow((1 + release_count_cpu_impact), release_gap)
 
-        counterConfigurationList = CounterConfiguration.objects.all().filter(
+        counter_configuration_list = CounterConfiguration.objects.all().filter(
             project=self.project,
         )
 
-        if counterConfigurationList.count() > 0:
-            counterConfiguration = counterConfigurationList[0]
+        if counter_configuration_list.count() > 0:
+            counter_configuration = counter_configuration_list[0]
         else:
             return 0
 
-        if counterConfiguration.turnOnBasicCriteriaCheck:
-            cpuPerNonappliedCounter = counterCostRecord.costPerUnappliedCounterWithBasicCriteria
-            cpuPerNonappliedUBD = counterCostRecord.costPerUnappliedCounterWithBasicCriteria
-            totalUsedUBDNumber = self.appliedUBDNumber
-            totalUsedBucketNumber = self.appliedBucketNumber
+        if counter_configuration.turnOnBasicCriteriaCheck:
+            cpu_per_non_applied_counter = counter_cost_record.costPerUnappliedCounterWithBasicCriteria
+            cpu_per_non_applied_ubd = counter_cost_record.costPerUnappliedCounterWithBasicCriteria
+            total_used_ubd_number = self.appliedUBDNumber
+            total_used_bucket_number = self.appliedBucketNumber
 
-            nonappliedCounterOverhead = counterCostRecord.costCounterNumberImpact / 4
+            non_applied_counter_overhead = counter_cost_record.costCounterNumberImpact / 4
         else:
-            cpuPerNonappliedCounter = 0
-            cpuPerNonappliedUBD = 0
-            nonappliedCounterOverhead = 0
-            totalUsedUBDNumber = self.appliedUBDNumber + self.nonAppliedUBDNumber
-            totalUsedBucketNumber = self.appliedBucketNumber + self.nonAppliedBucketNumber
+            cpu_per_non_applied_counter = 0
+            cpu_per_non_applied_ubd = 0
+            non_applied_counter_overhead = 0
+            total_used_ubd_number = self.appliedUBDNumber + self.nonAppliedUBDNumber
+            total_used_bucket_number = self.appliedBucketNumber + self.nonAppliedBucketNumber
 
-        totalCounterNumber = self.appliedUBDNumber + self.nonAppliedUBDNumber + \
-                             self.appliedBucketNumber + self.nonAppliedBucketNumber
+        total_counter_number = self.appliedUBDNumber + self.nonAppliedUBDNumber + \
+                               self.appliedBucketNumber + self.nonAppliedBucketNumber
 
-        cpuImpact = 0
-        if self.nonAppliedBucketNumber > 0:     # need to include overhead for non-applied bucket
-            cpuImpact = cpuImpact + nonappliedCounterOverhead + cpuPerNonappliedCounter * self.nonAppliedBucketNumber
+        cpu_impact = 0
+        if self.nonAppliedBucketNumber > 0:  # need to include overhead for non-applied bucket
+            cpu_impact = cpu_impact + non_applied_counter_overhead + \
+                         cpu_per_non_applied_counter * self.nonAppliedBucketNumber
 
-        if self.nonAppliedUBDNumber > 0:    # need to include overhead for non-applied UBD
-            cpuImpact = cpuImpact + nonappliedCounterOverhead + cpuPerNonappliedUBD * self.nonAppliedUBDNumber
+        if self.nonAppliedUBDNumber > 0:  # need to include overhead for non-applied UBD
+            cpu_impact = cpu_impact + non_applied_counter_overhead + \
+                         cpu_per_non_applied_ubd * self.nonAppliedUBDNumber
 
-        if self.appliedBucketNumber > 0:    # need to include overhead for bucket
-            cpuImpact = cpuImpact + counterCostRecord.costTurnOnbucket + \
-                        self.appliedBucketNumber * counterCostRecord.costPerAppliedBucket
+        if self.appliedBucketNumber > 0:  # need to include overhead for bucket
+            cpu_impact = cpu_impact + counter_cost_record.costTurnOnbucket + \
+                         self.appliedBucketNumber * counter_cost_record.costPerAppliedBucket
 
-        if self.appliedUBDNumber > 0:   # need to include overhead for UBD
-            cpuImpact = cpuImpact + counterCostRecord.costTurnOnUBD + \
-                        self.appliedUBDNumber * counterCostRecord.costPerAppliedUBD
+        if self.appliedUBDNumber > 0:  # need to include overhead for UBD
+            cpu_impact = cpu_impact + counter_cost_record.costTurnOnUBD + \
+                         self.appliedUBDNumber * counter_cost_record.costPerAppliedUBD
 
-        if totalCounterNumber > 0:  # need to include RTDB read/update overhead
-            cpuImpact = cpuImpact + math.ceil(totalCounterNumber / counterCostRecord.counterNumberPerRecord) * \
-                        counterCostRecord.costDBReadUpdatePerRecord
+        if total_counter_number > 0:  # need to include RTDB read/update overhead
+            cpu_impact = cpu_impact + math.ceil(total_counter_number / counter_cost_record.counterNumberPerRecord) * \
+                         counter_cost_record.costDBReadUpdatePerRecord
 
-        if totalUsedUBDNumber > 0:
-            cpuImpact = cpuImpact + counterCostRecord.costCounterNumberImpact * \
-                        math.pow(1 + counterCostRecord.percentageCounterNumberImpact, totalUsedUBDNumber)
+        if total_used_ubd_number > 0:
+            cpu_impact = cpu_impact + counter_cost_record.costCounterNumberImpact * \
+                         math.pow(1 + counter_cost_record.percentageCounterNumberImpact, total_used_ubd_number)
 
-        if totalUsedBucketNumber > 0:
-            cpuImpact = cpuImpact + counterCostRecord.costCounterNumberImpact * \
-                        math.pow(1 + counterCostRecord.percentageCounterNumberImpact, totalUsedBucketNumber)
+        if total_used_bucket_number > 0:
+            cpu_impact = cpu_impact + counter_cost_record.costCounterNumberImpact * \
+                         math.pow(1 + counter_cost_record.percentageCounterNumberImpact, total_used_bucket_number)
 
-        if counterConfiguration.generateMultipleAMAForCounter:  # Multiple AMA
-            cpuImpact = cpuImpact + self.project.release.cPUCostForMultipleAMA * math.ceil(totalCounterNumber / 10)
+        if counter_configuration.generateMultipleAMAForCounter:  # Multiple AMA
+            cpu_impact = cpu_impact + self.project.release.cPUCostForMultipleAMA * math.ceil(total_counter_number / 10)
 
         if self.averageBundleNumberPerSubscriber > 0:
-            cpuImpact = cpuImpact + counterCostRecord.costBundlePerRecord * self.averageBundleNumberPerSubscriber
+            cpu_impact = cpu_impact + counter_cost_record.costBundlePerRecord * self.averageBundleNumberPerSubscriber
 
         if self.average24hBundleNumberPerSubscriber > 0:
-            cpuImpact = cpuImpact + counterCostRecord.costPer24hBundle * self.average24hBundleNumberPerSubscriber
+            cpu_impact = cpu_impact + counter_cost_record.costPer24hBundle * self.average24hBundleNumberPerSubscriber
 
-        return cpuImpact * releaseImpact
+        return cpu_impact * release_impact
 
     def get_group_counter_cost(self):
-        counterCostRecord = self.get_counter_cost_record()
+        counter_cost_record = self.get_counter_cost_record()
 
-        if not counterCostRecord:
+        if not counter_cost_record:
             return 0
 
         if GlobalConfiguration.objects.all().count() > 0:
-            releaseCountCPUImpact = GlobalConfiguration.objects.all()[0].releaseCountCPUImpact
+            release_count_cpu_impact = GlobalConfiguration.objects.all()[0].releaseCountCPUImpact
         else:
-            releaseCountCPUImpact = 0.05
+            release_count_cpu_impact = 0.05
 
-        releaseGap = 0
+        release_gap = 0
         if WorkingProject.objects.all().count() > 0:
             project = WorkingProject.objects.all()[0].project
 
-            releaseGap = project.release.sequence - counterCostRecord.release.sequence
+            release_gap = project.release.sequence - counter_cost_record.release.sequence
 
-            if releaseGap < 0:
-                releaseGap = 0
+            if release_gap < 0:
+                release_gap = 0
 
-        releaseImpact = math.pow((1 + releaseCountCPUImpact), releaseGap)
+        release_impact = math.pow((1 + release_count_cpu_impact), release_gap)
 
-        counterConfigurationList = CounterConfiguration.objects.all().filter(
+        counter_configuration_list = CounterConfiguration.objects.all().filter(
             project=self.project,
         )
 
-        if counterConfigurationList.count() > 0:
-            counterConfiguration = counterConfigurationList[0]
+        if counter_configuration_list.count() > 0:
+            counter_configuration = counter_configuration_list[0]
         else:
             return 0
 
-        totalGroupCounterNumber = counterConfiguration.total_group_counter_number
+        total_group_counter_number = counter_configuration.total_group_counter_number
 
-        cpuImpact = math.ceil(totalGroupCounterNumber / counterCostRecord.counterNumberPerRecord) * \
-                    counterCostRecord.costGroupDBReadUpdatePerRecord + counterCostRecord.costTurnOnGroupBucket + \
-                    counterCostRecord.costPerGroupSideBucket * totalGroupCounterNumber
+        cpu_impact = math.ceil(total_group_counter_number / counter_cost_record.counterNumberPerRecord) * \
+                     counter_cost_record.costGroupDBReadUpdatePerRecord + \
+                     counter_cost_record.costTurnOnGroupBucket + \
+                     counter_cost_record.costPerGroupSideBucket * total_group_counter_number
 
-        return cpuImpact * releaseImpact
+        return cpu_impact * release_impact
 
     class Meta:
         verbose_name = 'Counter Configuration for Call Type'
@@ -1145,17 +1161,17 @@ class CurrentSystemConfigurationManager(models.Manager):
         return SystemConfiguration.objects.none()
 
     def create_system_configuration(
-        self, project, applicationName,
-        backupAppNodeNumberPerSystem, spareAppNodeNumberPerSystem,
-        backupDBNodeNumberPerSystem, spareDBNodePairNumberPerSystem
+            self, project, application_name,
+            backup_app_node_number_per_system, spare_app_node_number_per_system,
+            backup_db_node_number_per_system, spare_db_node_pair_number_per_system
     ):
         system_configuration = self.create(
             project=project,
-            applicationName=applicationName,
-            backupAppNodeNumberPerSystem=backupAppNodeNumberPerSystem,
-            spareAppNodeNumberPerSystem=spareAppNodeNumberPerSystem,
-            backupDBNodeNumberPerSystem=backupDBNodeNumberPerSystem,
-            spareDBNodePairNumberPerSystem=spareDBNodePairNumberPerSystem,
+            applicationName=application_name,
+            backupAppNodeNumberPerSystem=backup_app_node_number_per_system,
+            spareAppNodeNumberPerSystem=spare_app_node_number_per_system,
+            backupDBNodeNumberPerSystem=backup_db_node_number_per_system,
+            spareDBNodePairNumberPerSystem=spare_db_node_pair_number_per_system,
         )
         return system_configuration
 
@@ -1190,8 +1206,8 @@ class SystemConfiguration(models.Model):
         verbose_name='Number of Spare DB Node Pair Per System'
     )
 
-    objects = models.Manager() # The default manager.
-    current_objects = CurrentSystemConfigurationManager() # The current project specific manager.
+    objects = models.Manager()  # The default manager.
+    current_objects = CurrentSystemConfigurationManager()  # The current project specific manager.
 
     def __str__(self):
         return self.applicationName.name
@@ -1241,12 +1257,12 @@ class ApplicationConfiguration(models.Model):
     activeSubscriber = models.IntegerField(
         default=0,
         verbose_name='Active Subscriber',
-    )   # Need to set default=project.activeSubscriber
+    )  # Need to set default=project.activeSubscriber
 
     inactiveSubscriber = models.IntegerField(
         default=0,
-        verbose_name='Inctive Subscriber',
-    )   # Need to set default=project.inactiveSubscriber
+        verbose_name='Inactive Subscriber',
+    )  # Need to set default=project.inactiveSubscriber
 
     trafficTPS = models.FloatField(
         verbose_name='CPS/TPS',
@@ -1258,6 +1274,7 @@ class ApplicationConfiguration(models.Model):
     totalCPUCost = models.FloatField(default=0)
     ss7CPUCost = models.FloatField(default=0)
     tcpCPUCost = models.FloatField(default=0)
+    dbCPUCost = models.FloatField(default=0)
     miscCPUCost = models.FloatField(default=0)
     cpuBudget = models.FloatField(default=0)
 
@@ -1265,7 +1282,7 @@ class ApplicationConfiguration(models.Model):
     ss7OutSizePerSecond = models.FloatField(default=0)
     ldapSizePerSecond = models.FloatField(default=0)
     diameterSizePerSecond = models.FloatField(default=0)
-    muTCPSize = models.FloatField(default=0)    # Mate update Size
+    muTCPSize = models.FloatField(default=0)  # Mate update Size
     featureLDAPSize = models.FloatField(default=0)
     featureDiameterSize = models.FloatField(default=0)
 
@@ -1294,12 +1311,12 @@ class ApplicationConfiguration(models.Model):
     boundType = models.CharField(max_length=20, choices=BOUND_TYPE_OPTION,
                                  default='CPU Bound', verbose_name='Bound Type')
 
-    objects = models.Manager() # The default manager.
-    current_objects = CurrentApplicationConfigurationManager() # The current project specific manager.
+    objects = models.Manager()  # The default manager.
+    current_objects = CurrentApplicationConfigurationManager()  # The current project specific manager.
 
     @property
     def current_application_information(self):
-        current_application_information_list  = ApplicationInformation.objects.all().filter(
+        current_application_information_list = ApplicationInformation.objects.all().filter(
             release=self.project.release,
             application=self.applicationName,
         )
@@ -1320,7 +1337,8 @@ class ApplicationConfiguration(models.Model):
             self.nodeNumberNeeded = self.memoryBaseNodeNumber
             self.boundType = 'Memory Bound'
 
-    def get_total_client_cpu_cost(self):
+    @property
+    def total_client_cpu_cost(self):
         if WorkingProject.objects.count() == 0:
             return 0
 
@@ -1330,7 +1348,8 @@ class ApplicationConfiguration(models.Model):
 
         return total_call_cost
 
-    def get_total_sever_cpu_cost(self):
+    @property
+    def total_sever_cpu_cost(self):
         if not self.current_application_information:
             total_call_cost = 0
 
@@ -1341,7 +1360,8 @@ class ApplicationConfiguration(models.Model):
 
         return 0
 
-    def get_tcp_cpu_cost(self):
+    @property
+    def tcp_cpu_cost(self):
         if WorkingProject.objects.count() == 0:
             return 0
 
@@ -1351,7 +1371,8 @@ class ApplicationConfiguration(models.Model):
 
         return total_call_cost
 
-    def get_ss7_cpu_cost(self):
+    @property
+    def ss7_cpu_cost(self):
         if not self.current_application_information:
             total_call_cost = 0
 
@@ -1362,15 +1383,25 @@ class ApplicationConfiguration(models.Model):
 
         return 0
 
-    def get_misc_cpu_cost(self):
-        if WorkingProject.objects.count() == 0:
-            return 0
+    @property
+    def db_cpu_cost(self):
+        # if not self.current_application_information:
+        #     total_call_cost = 0
+        #
+        #     for traffic in self.traffic_information_list:
+        #         total_call_cost += traffic.ss7CPUCost
+        #
+        #     return total_call_cost
 
-        total_call_cost = 0
-        for traffic in self.traffic_information_list:
-            total_call_cost += traffic
+        return 0
 
-        return total_call_cost
+    @property
+    def misc_cpu_cost(self):
+        return self.ss7_cpu_cost + self.tcp_cpu_cost + self.db_cpu_cost + self.total_sever_cpu_cost
+
+    @property
+    def total_cpu_cost(self):
+        return self.misc_cpu_cost + self.total_client_cpu_cost   
 
     def get_total_app_memory(self):
         pass
@@ -1391,25 +1422,25 @@ class ApplicationConfiguration(models.Model):
         if (not self.id) and WorkingProject.objects.all().count() > 0:
             qs = ApplicationConfiguration.objects.filter(project=WorkingProject.objects.all()[0].project)
             if qs.filter(applicationName=self.applicationName).exists():
-                raise ValidationError('Application: %s existed!'%self.applicationName)
+                raise ValidationError('Application: %s existed!' % self.applicationName)
 
     class Meta:
         verbose_name = 'Application Configuration'
         verbose_name_plural = 'Application Configuration'
 
 
-class CurrentCalculatedResultanager(models.Manager):
+class CurrentCalculatedResultManager(models.Manager):
     def create_calculated_result(
-            self, project, applicationName, appNodeNumber,
-            dbNodeNumber, ioNodeNumber, ):
-        calculatedResult = self.create(
-            project = project,
-            applicationName = applicationName,
-            appNodeNumber = appNodeNumber,
-            dbNodeNumber = dbNodeNumber,
-            ioNodeNumber = ioNodeNumber,
+            self, project, application_name, app_node_number,
+            db_node_number, io_node_number, ):
+        calculated_result = self.create(
+            project=project,
+            applicationName=application_name,
+            appNodeNumber=app_node_number,
+            dbNodeNumber=db_node_number,
+            ioNodeNumber=io_node_number,
         )
-        return calculatedResult
+        return calculated_result
 
     def get_queryset(self):
         if WorkingProject.objects.all().count() > 0:
@@ -1418,6 +1449,7 @@ class CurrentCalculatedResultanager(models.Manager):
             )
 
         return CalculatedResult.objects.none()
+
 
 class CalculatedResult(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -1432,8 +1464,8 @@ class CalculatedResult(models.Model):
     dbNodeNumber = models.IntegerField(default=0)
     ioNodeNumber = models.IntegerField(default=0)
 
-    objects = models.Manager() # The default manager.
-    current_objects = CurrentCalculatedResultanager() # The current project specific manager.
+    objects = models.Manager()  # The default manager.
+    current_objects = CurrentCalculatedResultManager()  # The current project specific manager.
 
     class Meta:
         verbose_name = 'Calculated Result'
@@ -1467,27 +1499,27 @@ class DimensioningResult(models.Model):
     totalNodeNeededNumber = models.IntegerField(default=0)
 
     averageClientCPUUsage = models.FloatField(default=0)
-    dbCacheSize = models.FloatField(default=0)     # MB
-    totalMemoryUsage = models.FloatField(default=0)     # MB
-    sigtranSpeed = models.FloatField(default=0)    # Byte/Second
+    dbCacheSize = models.FloatField(default=0)  # MB
+    totalMemoryUsage = models.FloatField(default=0)  # MB
+    sigtranSpeed = models.FloatField(default=0)  # Byte/Second
     ethernetPortsRequiredNumber = models.IntegerField(default=0)
-    totalTCPUDPSpeed = models.FloatField(default=0)    # Byte/Second
+    totalTCPUDPSpeed = models.FloatField(default=0)  # Byte/Second
     amaRecordNumberPerSecond = models.FloatField(default=0)
-    dialyBillingFileSize = models.FloatField(default=0)     # MB
-    amaRetrieveSpeed = models.FloatField(default=0)    # Byte/Second
-    ladpDiameterUDP = models.FloatField(default=0)    # Byte/Second
-    muSpeed = models.FloatField(default=0)    # Byte/Second
+    dialyBillingFileSize = models.FloatField(default=0)  # MB
+    amaRetrieveSpeed = models.FloatField(default=0)  # Byte/Second
+    ladpDiameterUDP = models.FloatField(default=0)  # Byte/Second
+    muSpeed = models.FloatField(default=0)  # Byte/Second
 
-    memoryUsagePerAppNode = models.FloatField(default=0)     # MB
-    memoryUsagePerClient = models.FloatField(default=0)     # MB
-    appNodeMemoryUsagePercent = models.FloatField(default=0)     # %
+    memoryUsagePerAppNode = models.FloatField(default=0)  # MB
+    memoryUsagePerClient = models.FloatField(default=0)  # MB
+    appNodeMemoryUsagePercent = models.FloatField(default=0)  # %
 
-    pilotSharedDiskSize = models.FloatField(default=0)     # MB
-    dbDiskSizeForMateUpdate = models.FloatField(default=0)     # MB
-    diskSizeForDB = models.FloatField(default=0)     # MB
+    pilotSharedDiskSize = models.FloatField(default=0)  # MB
+    dbDiskSizeForMateUpdate = models.FloatField(default=0)  # MB
+    diskSizeForDB = models.FloatField(default=0)  # MB
 
-    objects = models.Manager() # The default manager.
-    current_objects = CurrentDimensioningResultManager() # The current project specific manager.
+    objects = models.Manager()  # The default manager.
+    current_objects = CurrentDimensioningResultManager()  # The current project specific manager.
 
     class Meta:
         verbose_name = 'Dimensioning Result'
@@ -1514,27 +1546,26 @@ class DimensioningResultPerSystem(models.Model):
     totalNodeNumber = models.IntegerField(default=0)
 
     averageClientCPUUsage = models.FloatField(default=0)
-    dbCacheSize = models.FloatField(default=0)     # MB
-    totalMemoryUsage = models.FloatField(default=0)     # MB
-    sigtranSpeed = models.FloatField(default=0)    # Byte/Second
-    totalTCPUDPSpeed = models.FloatField(default=0)    # Byte/Second
+    dbCacheSize = models.FloatField(default=0)  # MB
+    totalMemoryUsage = models.FloatField(default=0)  # MB
+    sigtranSpeed = models.FloatField(default=0)  # Byte/Second
+    totalTCPUDPSpeed = models.FloatField(default=0)  # Byte/Second
     amaRecordNumberPerSecond = models.FloatField(default=0)
-    dialyBillingFileSize = models.FloatField(default=0)     # MB
-    amaRetrieveSpeed = models.FloatField(default=0)    # Byte/Second
-    ladpDiameterUDP = models.FloatField(default=0)    # Byte/Second
-    muSpeed = models.FloatField(default=0)    # Byte/Second
+    dialyBillingFileSize = models.FloatField(default=0)  # MB
+    amaRetrieveSpeed = models.FloatField(default=0)  # Byte/Second
+    ladpDiameterUDP = models.FloatField(default=0)  # Byte/Second
+    muSpeed = models.FloatField(default=0)  # Byte/Second
 
-    memoryUsagePerAppNode = models.FloatField(default=0)     # MB
-    memoryUsagePerClient = models.FloatField(default=0)     # MB
-    appNodeMemoryUsagePercent = models.FloatField(default=0)     # %
+    memoryUsagePerAppNode = models.FloatField(default=0)  # MB
+    memoryUsagePerClient = models.FloatField(default=0)  # MB
+    appNodeMemoryUsagePercent = models.FloatField(default=0)  # %
 
-    pilotSharedDiskSize = models.FloatField(default=0)     # MB
-    dbDiskSizeForMateUpdate = models.FloatField(default=0)     # MB
-    diskSizeForDB = models.FloatField(default=0)     # MB
+    pilotSharedDiskSize = models.FloatField(default=0)  # MB
+    dbDiskSizeForMateUpdate = models.FloatField(default=0)  # MB
+    diskSizeForDB = models.FloatField(default=0)  # MB
 
-    objects = models.Manager() # The default manager.
-    current_objects = CurrentDimensioningResultPerSystemManager() # The current project specific manager.
-
+    objects = models.Manager()  # The default manager.
+    current_objects = CurrentDimensioningResultPerSystemManager()  # The current project specific manager.
 
     class Meta:
         verbose_name = 'Dimensioning Result Per System'

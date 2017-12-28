@@ -1,12 +1,15 @@
 '''
     The file is used to define the tables related to hardware.
 '''
+
 from django.db import models
 from common.models import DBMode
 
 '''
     Define virtualization type.
 '''
+
+
 class VMType(models.Model):
     VM_TYPE_OPTION = (('Native', 'Native'), ('Openstack', 'Openstack'), ('VMWare', 'VMWare'), ('CBIS', 'CBIS'))
     type = models.CharField(max_length=16,choices=VM_TYPE_OPTION)
@@ -26,6 +29,8 @@ class VMType(models.Model):
         
     Add new CPU when hyperthread is OFF.
 '''
+
+
 class CPU(models.Model):
     name = models.CharField(max_length=16)
     virtualizationSupported = models.BooleanField(default=True)
@@ -150,8 +155,3 @@ class MemoryUsageTuning(models.Model):
 
     def __str__(self):
         return self.name
-
-
-
-
-

@@ -69,7 +69,7 @@ from django.contrib import messages
 # class ProjectForm(forms.ModelForm):
 #     # name = fields.CharField(widget=TextInput(attrs={'size': 19,}),required=False,label='name')
 #     # comment = fields.CharField(widget=Textarea(attrs={'rows':3,'cols':85}),required=False,label= 'comment')
-#     # hardwareType = fields.m(widget=)
+#     # hardware_type = fields.m(widget=)
 #
 #     class Meta:
 #         model = Project
@@ -94,7 +94,7 @@ class ProjectForm1(ChainedChoicesModelForm):
 
     hardwareType = ModelChoiceField(queryset=HardwareType.objects.all(), required=True,
                                     empty_label=_(u'Select a hardware type'), label='Hardware Type')
-    hardwareModel = ChainedModelChoiceField(parent_field='hardwareType', ajax_url=reverse_lazy('ajax_hardware_models'),
+    hardwareModel = ChainedModelChoiceField(parent_field='hardware_type', ajax_url=reverse_lazy('ajax_hardware_models'),
                                     empty_label=_(u'Select a CPU model'), model=HardwareModel, required=True,
                                     label='CPU Model')
 
@@ -152,12 +152,12 @@ class ProjectInformationForm(forms.ModelForm):
         cpuUsageTuning = forms.ModelChoiceField(
             CPUTuning.objects.all().filter(
                 dbMode=WorkingProject.objects.all()[0].project.database_type,
-                hardwareType=WorkingProject.objects.all()[0].project.hardwareType),
+                hardwareType=WorkingProject.objects.all()[0].project.hardware_type),
             empty_label=_(u'Select a CPU Usage Tuning Option'),
             label='CPU Usage Tuning',
             initial=CPUTuning.objects.all().filter(
                 dbMode=WorkingProject.objects.all()[0].project.database_type,
-                hardwareType=WorkingProject.objects.all()[0].project.hardwareType,
+                hardwareType=WorkingProject.objects.all()[0].project.hardware_type,
                 tuningOption='Normal')[0].pk
         )
 

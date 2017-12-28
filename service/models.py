@@ -65,7 +65,7 @@ class OtherApplicationInformation(models.Model):
     # release = models.ForeignKey(Release, on_delete=models.CASCADE)
     application = models.ForeignKey(ApplicationName, on_delete=models.CASCADE)
     hardwareModel = models.ForeignKey(HardwareModel, on_delete=models.CASCADE)
-    #dbMode = models.ForeignKey(DBMode, on_delete=models.CASCADE)
+    # dbMode = models.ForeignKey(DBMode, on_delete=models.CASCADE)
 
     maxTrafficPerNode = models.IntegerField()
     clientNumber = models.IntegerField()
@@ -106,7 +106,7 @@ class DBName(models.Model):
         default=0,
         verbose_name='Todo Log Size',
     )
-    mateLogSize  = models.IntegerField(
+    mateLogSize = models.IntegerField(
         default=0,
         verbose_name='Mate Log Size',
     )
@@ -154,7 +154,7 @@ class DBInformation(models.Model):
 
     @property
     def name(self):
-        return self.db.name + '_' +  self.release.name + '_' + self.mode.name
+        return self.db.name + '_' + self.release.name + '_' + self.mode.name
 
     def __str__(self):
         return self.db.name
@@ -200,8 +200,8 @@ class FeatureCPUImpact(models.Model):
     ss7Out = models.IntegerField(default=0)     # Size, Byte
     reImpactCPUTime = models.FloatField(default=0)      # Time, ms
     reImpactCPUPercentage = models.FloatField(default=0)
-    #reSS7InSize = models.IntegerField(default=0)
-    #reSS7OutSize = models.IntegerField(default=0)
+    # reSS7InSize = models.IntegerField(default=0)
+    # reSS7OutSize = models.IntegerField(default=0)
     ldapMessageSize = models.IntegerField(default=0)        # Size, Byte
     diameterMessageSize = models.IntegerField(default=0)    # Size, Byte
 
@@ -244,7 +244,7 @@ class CallCost(models.Model):
     callCost = models.FloatField()
 
     def __str__(self):
-        return self.callType.name + '_' +  self.release.name + '_' + self.hardwareModel.name + '_' + self.dbMode.name
+        return self.callType.name + '_' + self.release.name + '_' + self.hardwareModel.name + '_' + self.dbMode.name
 
     name = property(__str__)
 
@@ -273,7 +273,7 @@ class CounterCost(models.Model):
     costPerUnappliedBucket = models.FloatField(default=0)
     costPerUnappliedUBD = models.FloatField(default=0)
     costPerUnappliedCounterWithBasicCriteria = models.FloatField(default=0)
-    costTurnOnbucket = models.FloatField(default=0)
+    costTurnOnBucket = models.FloatField(default=0)
     costTurnOnUBD = models.FloatField(default=0)
     costTurnOnUnappliedCounter = models.FloatField(default=0)
     costCounterNumberImpact = models.FloatField(default=0)
