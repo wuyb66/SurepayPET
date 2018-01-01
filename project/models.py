@@ -319,6 +319,8 @@ class TrafficInformation(models.Model):
     ldapSizePerSecond = models.FloatField(default=0)
     diameterSizePerSecond = models.FloatField(default=0)
     muTCPSize = models.FloatField(default=0)  # Mate update Size
+    featureSS7InSize = models.FloatField(default=0)
+    featureSS7OutSize = models.FloatField(default=0)
     featureLDAPSize = models.FloatField(default=0)
     featureDiameterSize = models.FloatField(default=0)
 
@@ -326,9 +328,19 @@ class TrafficInformation(models.Model):
 
     featureCost = models.FloatField(default=0)
     counterCost = models.FloatField(default=0)
+    groupCounterCost = models.FloatField(default=0)
 
     objects = models.Manager()  # The default manager.
     current_objects = CurrentTrafficInformationManager()  # The project-specific manager.
+
+    @property
+    def counter_configuration(self):
+        counter_configuration_list = CallTypeCounterConfiguration.current_objects.all().filter(
+            callType=self.callType
+        )
+        if counter_configuration_list.count() > 0:
+            return counter_configuration_list[0]
+        return None
 
     @property
     def application(self):
@@ -586,6 +598,21 @@ class TrafficInformation(models.Model):
             return self.get_spa_data_size_for_diameter_session()
         return self.trafficTPS * self.callHoldingTime * self.project.release.callRecordSize
 
+    def get_ss7_in_size(self):
+        return self.trafficTPS * self.callType.ss7InSize
+
+    def get_ss7_out_size(self):
+        return self.trafficTPS * self.callType.ss7OutSize
+
+    def get_ldap_size(self):
+        return self.trafficTPS * self.callType.tcpipSize
+
+    def get_diameter_size(self):
+        return self.trafficTPS * self.callType.diameterSize
+
+    def get_mu_size(self):
+        return self.trafficTPS * self.callType.mateUpdateSize
+
     def calculate_for_traffic(self):
         self.serverCPUCost = self.get_server_cost()
         self.cpuCostPerCall = self.get_total_cost()
@@ -597,6 +624,26 @@ class TrafficInformation(models.Model):
         self.asCPUCost = self.get_as_cost()
 
         self.spaDataSize = self.get_spa_data_size()
+
+        self.ss7InSizePerSecond = self.get_ss7_in_size()
+        self.ss7OutSizePerSecond = self.get_ss7_out_size()
+        self.ldapSizePerSecond = self.get_ldap_size()
+        self.diameterSizePerSecond = self.get_diameter_size()
+        self.muTCPSize = self.get_mu_size()  # Mate update Size
+        self.featureSS7InSize = self.feature_ss7_in_size
+        self.featureSS7OutSize = self.feature_ss7_out_size
+        self.featureLDAPSize = self.feature_ldap_size
+        self.featureDiameterSize = self.feature_diameter_size
+
+        self.ndbCPULimitation = self.callType.ndbCPUUsageLimitation
+
+        self.featureCost = self.feature_cost
+        if not self.counter_configuration:
+            self.counterCost = self.counter_configuration.get_counter_cost()
+            self.groupCounterCost = self.counter_configuration.get_group_counter_cost()
+        else:
+            self.counterCost = 0
+            self.groupCounterCost = 0
 
     name = property(__str__)
 
@@ -1430,8 +1477,29 @@ class ApplicationConfiguration(models.Model):
                 self.aprocCPUCost += traffic.aprocCPUCost
                 self.asCPUCost += traffic.asCPUCost
 
+                self.spaDataSize += traffic.spaDataSize
+
+                self.ss7InSizePerSecond += traffic.ss7InSizePerSecond
+                self.ss7OutSizePerSecond += traffic.ss7OutSizePerSecond
+                self.ldapSizePerSecond += traffic.ldapSizePerSecond
+                self.diameterSizePerSecond += traffic.diameterSizePerSecond
+                self.muTCPSize += traffic.muTCPSize  # Mate update Size
+                self.featureSS7InSize += traffic.featureSS7InSize
+                self.featureSS7OutSize += traffic.featureSS7OutSize
+                self.featureLDAPSize += traffic.featureLDAPSize
+                self.featureDiameterSize += traffic.featureDiameterSize
+
+                self.ndbCPULimitation += traffic.ndbCPUUsageLimitation * self.trafficTPS
+                self.trafficTPS += traffic.trafficTPS
+
+                self.featureCost += traffic.featureCost
+
+                self.counterCost += traffic.counterCost
+                self.groupCounterCost += traffic.groupCounterCost
+
         self.totalCPUCost = self.serverCPUCost + self.clientCPUCost
         self.miscCPUCost = self.ss7CPUCost + self.tcpCPUCost + self.diamCPUCost
+        self.ndbCPULimitation = self.ndbCPULimitation / self.trafficTPS
 
     @property
     def total_client_cpu_cost(self):
