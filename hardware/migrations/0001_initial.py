@@ -100,12 +100,12 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='hardwaremodel',
-            name='hardware_type',
+            name='hardwareType',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='hardware.HardwareType'),
         ),
         migrations.AddField(
             model_name='cputuning',
-            name='hardware_type',
+            name='hardwareType',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='hardware.HardwareType'),
         ),
         migrations.AddField(

@@ -8,8 +8,8 @@ from xadmin.plugins.inline import Inline
 
 class HardwareModelInline(object):
     model = HardwareModel
-    fk_name = 'hardware_type'
-    fields = ('hardware_type', 'cpu')
+    fk_name = 'hardwareType'
+    fields = ('hardwareType', 'cpu')
 
 @xadmin.sites.register(HardwareType)
 class HardwareTypeAdmin(object):

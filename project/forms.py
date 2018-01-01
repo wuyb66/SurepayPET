@@ -69,7 +69,7 @@ from django.contrib import messages
 # class ProjectForm(forms.ModelForm):
 #     # name = fields.CharField(widget=TextInput(attrs={'size': 19,}),required=False,label='name')
 #     # comment = fields.CharField(widget=Textarea(attrs={'rows':3,'cols':85}),required=False,label= 'comment')
-#     # hardware_type = fields.m(widget=)
+#     # hardwareType = fields.m(widget=)
 #
 #     class Meta:
 #         model = Project
@@ -94,7 +94,7 @@ class ProjectForm1(ChainedChoicesModelForm):
 
     hardwareType = ModelChoiceField(queryset=HardwareType.objects.all(), required=True,
                                     empty_label=_(u'Select a hardware type'), label='Hardware Type')
-    hardwareModel = ChainedModelChoiceField(parent_field='hardware_type', ajax_url=reverse_lazy('ajax_hardware_models'),
+    hardwareModel = ChainedModelChoiceField(parent_field='hardwareType', ajax_url=reverse_lazy('ajax_hardware_models'),
                                     empty_label=_(u'Select a CPU model'), model=HardwareModel, required=True,
                                     label='CPU Model')
 
@@ -106,6 +106,7 @@ class ProjectForm1(ChainedChoicesModelForm):
 
 class ProjectInformationForm(forms.ModelForm):
     if WorkingProject.objects.count() > 0:
+        project = WorkingProject.objects.all()[0].project
         vmType = forms.ModelChoiceField(
             VMType.objects.all(),
             empty_label=_(u'Select a VM Type'),
@@ -115,23 +116,23 @@ class ProjectInformationForm(forms.ModelForm):
         )
 
         if CPUList.objects.all().filter(
-                hardwareModel=WorkingProject.objects.all()[0].project.hardwareModel,
-                cpuNumber=WorkingProject.objects.all()[0].project.hardwareModel.defaultCPUNumber
+                hardwareModel=project.hardwareModel,
+                cpuNumber=project.hardwareModel.defaultCPUNumber
         ).count() > 0:
             cpuNumber = forms.ModelChoiceField(
                 CPUList.objects.all().filter(
-                    hardwareModel=WorkingProject.objects.all()[0].project.hardwareModel),
+                    hardwareModel=project.hardwareModel),
                 empty_label=_(u'Select a CPU Number'),
                 label='CPU Number',
                 initial=CPUList.objects.all().filter(
-                    hardwareModel=WorkingProject.objects.all()[0].project.hardwareModel,
-                    cpuNumber=WorkingProject.objects.all()[0].project.hardwareModel.defaultCPUNumber
+                    hardwareModel=project.hardwareModel,
+                    cpuNumber=project.hardwareModel.defaultCPUNumber
                 )[0].pk,
             )
         else:
             cpuNumber = forms.ModelChoiceField(
                 CPUList.objects.all().filter(
-                    hardwareModel=WorkingProject.objects.all()[0].project.hardwareModel),
+                    hardwareModel=project.hardwareModel),
                 empty_label=_(u'Select a CPU Number'),
                 label='CPU Number',
                 initial=CPUList.objects.none(),
@@ -139,25 +140,26 @@ class ProjectInformationForm(forms.ModelForm):
 
         memory = forms.ModelChoiceField(
             MemoryList.objects.all().filter(
-                hardwareModel=WorkingProject.objects.all()[0].project.hardwareModel),
+                hardwareModel=project.hardwareModel),
             empty_label=_(u'Select a Memory'),
             label='Memory (G)',
             initial=MemoryList.objects.all().filter(
-                hardwareModel=WorkingProject.objects.all()[0].project.hardwareModel,
-                memory=WorkingProject.objects.all()[0].project.hardwareModel.defaultMemory
+                hardwareModel=project.hardwareModel,
+                memory=project.hardwareModel.defaultMemory
             )[0].pk,
         )
 
-        clientNumber=forms.IntegerField(initial=WorkingProject.objects.all()[0].project.hardwareModel.defaultCPUNumber/2)
+        clientNumber = forms.IntegerField(initial=project.hardwareModel.defaultCPUNumber/2)
         cpuUsageTuning = forms.ModelChoiceField(
             CPUTuning.objects.all().filter(
-                dbMode=WorkingProject.objects.all()[0].project.database_type,
-                hardwareType=WorkingProject.objects.all()[0].project.hardware_type),
+                dbMode=project.database_type,
+                hardwareType=project.hardwareType),
             empty_label=_(u'Select a CPU Usage Tuning Option'),
             label='CPU Usage Tuning',
+
             initial=CPUTuning.objects.all().filter(
-                dbMode=WorkingProject.objects.all()[0].project.database_type,
-                hardwareType=WorkingProject.objects.all()[0].project.hardware_type,
+                dbMode=project.database_type,
+                hardwareType=project.hardwareType,
                 tuningOption='Normal')[0].pk
         )
 

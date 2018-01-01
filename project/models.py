@@ -195,7 +195,7 @@ class Project(models.Model):
         return self.name
 
     @property
-    def hardware_type(self):
+    def hardwareType(self):
         return self.hardwareModel.hardwareType
 
     class Meta:
@@ -308,8 +308,11 @@ class TrafficInformation(models.Model):
     totalCPUCost = models.FloatField(default=0)
     ss7CPUCost = models.FloatField(default=0)
     tcpCPUCost = models.FloatField(default=0)
+    diamCPUCost = models.FloatField(default=0)
     aprocCPUCost = models.FloatField(default=0)  # APROC
     asCPUCost = models.FloatField(default=0)  # Aerospike Server
+
+    spaDataSize = models.IntegerField(default=0)
 
     ss7InSizePerSecond = models.FloatField(default=0)
     ss7OutSizePerSecond = models.FloatField(default=0)
@@ -326,6 +329,26 @@ class TrafficInformation(models.Model):
 
     objects = models.Manager()  # The default manager.
     current_objects = CurrentTrafficInformationManager()  # The project-specific manager.
+
+    @property
+    def application(self):
+        application_name_list = ApplicationName.objects.all().filter(
+            name='EPAY',
+        )
+
+        if application_name_list.count() > 0:
+            return application_name_list[0]
+        return None
+
+    @property
+    def application_information(self):
+        application_information_list = ApplicationInformation.objects.all().filter(
+            release=self.project.release,
+            application=self.application,
+        )
+        if application_information_list.count() > 0:
+            return application_information_list[0]
+        return None
 
     @property
     def feature_information(self):
@@ -458,7 +481,7 @@ class TrafficInformation(models.Model):
             return self.feature_information.inactiveSubscriber
 
     def __str__(self):
-        return self.project.name + '_' + self.callType.name
+        return self.callType.name
 
     def get_call_cost(self):
         # get call cost list for current call type and release
@@ -497,7 +520,7 @@ class TrafficInformation(models.Model):
             call_cost_priority = 0
             if call_cost_list.count() > 0:
                 for call_cost_object in call_cost_list:
-                    if call_cost_object.hardwareModel.hardware_type == self.project.hardwareModel.hardwareType:
+                    if call_cost_object.hardwareModel.hardwareType == self.project.hardwareModel.hardwareType:
                         call_cost = call_cost_object.callCost * call_cost_object.hardwareModel.cpu.singleThreadCapacity
                         call_cost_priority = 3
                     elif call_cost_object.hardwareModel.cpu == self.project.hardwareModel.cpu:
@@ -518,6 +541,62 @@ class TrafficInformation(models.Model):
 
     def get_total_cost(self):
         return self.get_call_cost() + self.feature_cost
+
+    def get_server_cost(self):
+        if not self.application_information:
+            return self.trafficTPS * self.application_information.cpuCostForServer
+        return 0
+
+    def get_tcp_cost(self):
+        if (not self.application_information) and (self.callType.tcpipNumber > 0):
+            return self.trafficTPS * self.application_information.tcpCost
+        return 0
+
+    def get_diam_cost(self):
+        if (not self.application_information) and (self.callType.diameterNumber > 0):
+            return self.trafficTPS * self.application_information.diamCost
+        return 0
+
+    def get_ss7_cost(self):
+        if (not self.application_information) and (self.callType.ss7Number > 0):
+            return self.trafficTPS * self.application_information.ss7Cost
+        return 0
+
+    def get_aproc_cost(self):
+        if not self.application_information:
+            return self.trafficTPS * self.application_information.aprocCost
+        return 0
+
+    def get_as_cost(self):
+        if not self.application_information:
+            return self.trafficTPS * self.application_information.asCost
+        return 0
+
+    def get_spa_data_size_for_diameter_session(self):
+        diameter_cps = self.activeSubscriber * (self.timeCCRiBHTA + self.volumeCCRiBHTA) / 3600
+        diameter_session_size = self.project.release.ldapCIPSize + self.project.release.otherCIPSize + \
+                                self.project.release.sessionCIPSize * self.averageCategoryPerSession
+        if self.averageActiveSessionPerSubscriber > 0:
+            return diameter_session_size * self.averageActiveSessionPerSubscriber * \
+                   self.activeSubscriber / BYTES_TO_MILLION
+        return diameter_session_size * diameter_cps * self.callHoldingTime / BYTES_TO_MILLION
+
+    def get_spa_data_size(self):
+        if self.volumeCCRiBHTA > 0 or self.timeCCRiBHTA > 0:
+            return self.get_spa_data_size_for_diameter_session()
+        return self.trafficTPS * self.callHoldingTime * self.project.release.callRecordSize
+
+    def calculate_for_traffic(self):
+        self.serverCPUCost = self.get_server_cost()
+        self.cpuCostPerCall = self.get_total_cost()
+        self.totalCPUCost = self.serverCPUCost + self.cpuCostPerCall
+        self.ss7CPUCost = self.get_ss7_cost()
+        self.tcpCPUCost = self.get_tcp_cost()
+        self.diamCPUCost = self.get_diam_cost()
+        self.aprocCPUCost = self.get_aproc_cost()
+        self.asCPUCost = self.get_as_cost()
+
+        self.spaDataSize = self.get_spa_data_size()
 
     name = property(__str__)
 
@@ -1009,7 +1088,7 @@ class CallTypeCounterConfiguration(models.Model):
                 )
                 if counter_cost_list0.count() > 0:
                     for counterCost in counter_cost_list0:
-                        if counterCost.hardwareModel.hardware_type == project.hardwareModel.hardware_type:
+                        if counterCost.hardwareModel.hardwareType == project.hardwareModel.hardwareType:
                             return counterCost
 
                     return counter_cost_list0[0]
@@ -1274,7 +1353,9 @@ class ApplicationConfiguration(models.Model):
     totalCPUCost = models.FloatField(default=0)
     ss7CPUCost = models.FloatField(default=0)
     tcpCPUCost = models.FloatField(default=0)
-    dbCPUCost = models.FloatField(default=0)
+    diamCPUCost = models.FloatField(default=0)
+    aprocCPUCost = models.FloatField(default=0)  # APROC
+    asCPUCost = models.FloatField(default=0)  # Aerospike Server
     miscCPUCost = models.FloatField(default=0)
     cpuBudget = models.FloatField(default=0)
 
@@ -1336,6 +1417,21 @@ class ApplicationConfiguration(models.Model):
         else:
             self.nodeNumberNeeded = self.memoryBaseNodeNumber
             self.boundType = 'Memory Bound'
+
+    def calculate_cost_for_epay(self):
+        if not self.traffic_information_list:
+            for traffic in self.traffic_information_list:
+                self.serverCPUCost += traffic.serverCPUCost
+                self.clientCPUCost += traffic.clientCPUCost
+                self.totalCPUCost += traffic.totalCPUCost
+                self.ss7CPUCost += traffic.ss7CPUCost
+                self.tcpCPUCost += traffic.tcpCPUCost
+                self.diamCPUCost += traffic.diamCPUCost
+                self.aprocCPUCost += traffic.aprocCPUCost
+                self.asCPUCost += traffic.asCPUCost
+
+        self.totalCPUCost = self.serverCPUCost + self.clientCPUCost
+        self.miscCPUCost = self.ss7CPUCost + self.tcpCPUCost + self.diamCPUCost
 
     @property
     def total_client_cpu_cost(self):
@@ -1401,7 +1497,7 @@ class ApplicationConfiguration(models.Model):
 
     @property
     def total_cpu_cost(self):
-        return self.misc_cpu_cost + self.total_client_cpu_cost   
+        return self.misc_cpu_cost + self.total_client_cpu_cost
 
     def get_total_app_memory(self):
         pass

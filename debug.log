@@ -5,7 +5,7 @@
 "GET /admin/jsi18n/ HTTP/1.1" 200 3189
 "GET /admin/Project/project/add/ HTTP/1.1" 200 21135
 "GET /admin/jsi18n/ HTTP/1.1" 200 3189
-"GET /ajax/chained-hardware-models/?field=cpu&parent_field=hardware_type&parent_value=2 HTTP/1.1" 200 34
+"GET /ajax/chained-hardware-models/?field=cpu&parent_field=hardwareType&parent_value=2 HTTP/1.1" 200 34
 Internal Server Error: /admin/Project/project/add/
 Traceback (most recent call last):
   File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
@@ -74,7 +74,7 @@ Traceback (most recent call last):
 django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
 "POST /admin/Project/project/add/ HTTP/1.1" 500 188939
 "GET /admin/Project/project/add/ HTTP/1.1" 200 21135
-"GET /ajax/chained-hardware-models/?field=cpu&parent_field=hardware_type&parent_value=1 HTTP/1.1" 200 59
+"GET /ajax/chained-hardware-models/?field=cpu&parent_field=hardwareType&parent_value=1 HTTP/1.1" 200 59
 Internal Server Error: /admin/Project/project/add/
 Traceback (most recent call last):
   File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
@@ -143,7 +143,7 @@ Traceback (most recent call last):
 django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
 "POST /admin/Project/project/add/ HTTP/1.1" 500 189013
 "GET /admin/Project/project/add/ HTTP/1.1" 200 21135
-"GET /ajax/chained-hardware-models/?field=cpu&parent_field=hardware_type&parent_value=2 HTTP/1.1" 200 34
+"GET /ajax/chained-hardware-models/?field=cpu&parent_field=hardwareType&parent_value=2 HTTP/1.1" 200 34
 Internal Server Error: /admin/Project/project/add/
 Traceback (most recent call last):
   File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
@@ -212,7 +212,7 @@ Traceback (most recent call last):
 django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
 "POST /admin/Project/project/add/ HTTP/1.1" 500 189017
 "GET /admin/Project/project/add/ HTTP/1.1" 200 21137
-"GET /ajax/chained-hardware-models/?field=cpu&parent_field=hardware_type&parent_value=1 HTTP/1.1" 200 59
+"GET /ajax/chained-hardware-models/?field=cpu&parent_field=hardwareType&parent_value=1 HTTP/1.1" 200 59
 "GET /admin/Project/project/add/ HTTP/1.1" 200 21172
 "GET /static/admin/js/core.js HTTP/1.1" 200 7976
 "GET /static/suit/bootstrap/js/bootstrap.min.js HTTP/1.1" 200 15732
@@ -240,7 +240,7 @@ django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hard
 "GET /static/suit/img/cc_active_nav.png HTTP/1.1" 200 432
 "GET /static/suit/img/glyphicons-halflings-white-shadow.png HTTP/1.1" 200 27257
 "GET /favicon.ico HTTP/1.1" 404 3142
-"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardware_type&parent_value=1 HTTP/1.1" 200 59
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=1 HTTP/1.1" 200 59
 Internal Server Error: /admin/Project/project/add/
 Traceback (most recent call last):
   File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
@@ -313,7 +313,7 @@ django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hard
 "GET /admin/jsi18n/ HTTP/1.1" 200 3189
 "GET /admin/Project/project/add/ HTTP/1.1" 200 21172
 "GET /admin/jsi18n/ HTTP/1.1" 200 3189
-"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardware_type&parent_value=2 HTTP/1.1" 200 34
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=2 HTTP/1.1" 200 34
 Internal Server Error: /admin/Project/project/add/
 Traceback (most recent call last):
   File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
@@ -382,7 +382,7 @@ Traceback (most recent call last):
 django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
 "POST /admin/Project/project/add/ HTTP/1.1" 500 188843
 "GET /admin/Project/project/add/ HTTP/1.1" 200 21172
-"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardware_type&parent_value=3 HTTP/1.1" 200 36
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=3 HTTP/1.1" 200 36
 Internal Server Error: /admin/Project/project/add/
 Traceback (most recent call last):
   File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
@@ -455,7 +455,7 @@ django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hard
 "POST /admin/login/?next=/admin/Project/project/add/ HTTP/1.1" 302 0
 "GET /admin/Project/project/add/ HTTP/1.1" 200 21172
 "GET /admin/jsi18n/ HTTP/1.1" 200 3189
-"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardware_type&parent_value=4 HTTP/1.1" 200 36
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=4 HTTP/1.1" 200 36
 Internal Server Error: /admin/Project/project/add/
 Traceback (most recent call last):
   File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
@@ -524,7 +524,7 @@ Traceback (most recent call last):
 django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
 "POST /admin/Project/project/add/ HTTP/1.1" 500 188709
 "GET /admin/Project/project/add/ HTTP/1.1" 200 21172
-"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardware_type&parent_value=2 HTTP/1.1" 200 34
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=2 HTTP/1.1" 200 34
 Internal Server Error: /admin/Project/project/add/
 Traceback (most recent call last):
   File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
@@ -593,7 +593,7 @@ Traceback (most recent call last):
 django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
 "POST /admin/Project/project/add/ HTTP/1.1" 500 192443
 "GET /admin/Project/project/add/ HTTP/1.1" 200 21172
-"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardware_type&parent_value=4 HTTP/1.1" 200 36
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=4 HTTP/1.1" 200 36
 Internal Server Error: /admin/Project/project/add/
 Traceback (most recent call last):
   File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
@@ -662,7 +662,7 @@ Traceback (most recent call last):
 django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
 "POST /admin/Project/project/add/ HTTP/1.1" 500 192439
 "GET /admin/Project/project/add/ HTTP/1.1" 200 21172
-"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardware_type&parent_value=1 HTTP/1.1" 200 59
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=1 HTTP/1.1" 200 59
 Internal Server Error: /admin/Project/project/add/
 Traceback (most recent call last):
   File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
@@ -731,7 +731,7 @@ Traceback (most recent call last):
 django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
 "POST /admin/Project/project/add/ HTTP/1.1" 500 192424
 "GET /admin/Project/project/add/ HTTP/1.1" 200 21172
-"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardware_type&parent_value=2 HTTP/1.1" 200 34
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=2 HTTP/1.1" 200 34
 Internal Server Error: /admin/Project/project/add/
 Traceback (most recent call last):
   File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
@@ -800,7 +800,7 @@ Traceback (most recent call last):
 django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
 "POST /admin/Project/project/add/ HTTP/1.1" 500 192680
 "GET /admin/Project/project/add/ HTTP/1.1" 200 21172
-"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardware_type&parent_value=4 HTTP/1.1" 200 36
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=4 HTTP/1.1" 200 36
 Internal Server Error: /admin/Project/project/add/
 Traceback (most recent call last):
   File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
@@ -869,7 +869,7 @@ Traceback (most recent call last):
 django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hardwareModel_id
 "POST /admin/Project/project/add/ HTTP/1.1" 500 192532
 "GET /admin/Project/project/add/ HTTP/1.1" 200 21172
-"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardware_type&parent_value=2 HTTP/1.1" 200 34
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=2 HTTP/1.1" 200 34
 "GET / HTTP/1.1" 200 2391
 "GET /static/xadmin/vendor/bootstrap/js/bootstrap.min.js HTTP/1.1" 200 27748
 "GET /static/xadmin/vendor/jquery/jquery.form.js HTTP/1.1" 404 1718
@@ -909,7 +909,7 @@ django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hard
 "GET /static/suit/js/suit-form-confirm.js HTTP/1.1" 200 2333
 "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
 "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
-"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardware_type&parent_value=2 HTTP/1.1" 200 34
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=2 HTTP/1.1" 200 34
 Internal Server Error: /admin/Project/project/add/
 Traceback (most recent call last):
   File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
@@ -986,13 +986,13 @@ django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.hard
 "GET /admin/jsi18n/ HTTP/1.1" 200 3189
 "GET /admin/Project/project/2/change/ HTTP/1.1" 200 21507
 "GET /admin/jsi18n/ HTTP/1.1" 200 3189
-"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardware_type&parent_value=2 HTTP/1.1" 200 34
+"GET /ajax/chained-hardware-models/?field=cpuModel&parent_field=hardwareType&parent_value=2 HTTP/1.1" 200 34
 "POST /admin/Project/project/2/change/ HTTP/1.1" 302 0
 "GET /admin/Project/project/ HTTP/1.1" 200 16344
 "GET /admin/jsi18n/ HTTP/1.1" 200 3189
 "GET /admin/Project/project/add/ HTTP/1.1" 200 21206
 "GET /admin/jsi18n/ HTTP/1.1" 200 3189
-"GET /ajax/chained-hardware-models/?field=hardwareModel&parent_field=hardware_type&parent_value=2 HTTP/1.1" 200 34
+"GET /ajax/chained-hardware-models/?field=hardwareModel&parent_field=hardwareType&parent_value=2 HTTP/1.1" 200 34
 Internal Server Error: /admin/Project/project/add/
 Traceback (most recent call last):
   File "C:\Users\Yunbo\Anaconda3\lib\site-packages\django\db\backends\utils.py", line 65, in execute
@@ -1061,7 +1061,7 @@ Traceback (most recent call last):
 django.db.utils.IntegrityError: NOT NULL constraint failed: Project_project.user_id
 "POST /admin/Project/project/add/ HTTP/1.1" 500 188472
 "GET /admin/Project/project/add/ HTTP/1.1" 200 21206
-"GET /ajax/chained-hardware-models/?field=hardwareModel&parent_field=hardware_type&parent_value=1 HTTP/1.1" 200 59
+"GET /ajax/chained-hardware-models/?field=hardwareModel&parent_field=hardwareType&parent_value=1 HTTP/1.1" 200 59
 "POST /admin/Project/project/add/ HTTP/1.1" 302 0
 "GET /admin/Project/project/ HTTP/1.1" 200 16642
 "GET /admin/jsi18n/ HTTP/1.1" 200 3189
@@ -1081,7 +1081,7 @@ Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLO
 "GET /admin/jsi18n/ HTTP/1.1" 200 3189
 "GET /admin/Project/project/add/ HTTP/1.1" 200 21417
 "GET /admin/jsi18n/ HTTP/1.1" 200 3189
-"GET /ajax/chained-hardware-models/?field=hardwareModel&parent_field=hardware_type&parent_value=3 HTTP/1.1" 200 36
+"GET /ajax/chained-hardware-models/?field=hardwareModel&parent_field=hardwareType&parent_value=3 HTTP/1.1" 200 36
 "POST /admin/Project/project/add/ HTTP/1.1" 302 0
 "GET /admin/Project/project/ HTTP/1.1" 200 20498
 "GET /admin/jsi18n/ HTTP/1.1" 200 3189

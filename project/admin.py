@@ -79,7 +79,7 @@ class ProjectAdmin(admin.ModelAdmin):
     #
     # # wizard_form_list = [
     # #     ('General', ('release', 'customer', 'version',)),
-    # #     ('Hardware Information', ('hardware_type', 'database_type', )),
+    # #     ('Hardware Information', ('hardwareType', 'database_type', )),
     # # ]
     # exclude = ('user',)
     # form = ProjectForm
@@ -92,7 +92,7 @@ class ProjectAdmin(admin.ModelAdmin):
     #                     'General Information',
     #                     'name',
     #                     Row('release', 'customer',),
-    #                     Row('hardware_type', 'cpu',),
+    #                     Row('hardwareType', 'cpu',),
     #                     Row('database_type','version',),
     #                     'comment',
     #
@@ -112,7 +112,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
             'fields': [
                 ('name', 'release', 'customer',),
-                ('hardware_type', 'hardwareModel',),
+                ('hardwareType', 'hardwareModel',),
                 ('database_type', 'version',),
                 'comment',
             ]}),
@@ -191,7 +191,7 @@ class ProjectInformationAdmin(admin.ModelAdmin):
     def get_list_display(self, request):
         list_display = ('name',)
         if WorkingProject.objects.count() > 0:
-            if WorkingProject.objects.all()[0].project.hardwareModel.hardware_type.isVM:
+            if WorkingProject.objects.all()[0].project.hardwareModel.hardwareType.isVM:
                 list_display += ('vmType',)
             if WorkingProject.objects.all()[0].project.database_type.name == 'NDB':
                 list_display += ('deploy_option',)
@@ -205,7 +205,7 @@ class ProjectInformationAdmin(admin.ModelAdmin):
         addition_message = ''
         fields_row1 = ()
         if WorkingProject.objects.count() > 0:
-            if WorkingProject.objects.all()[0].project.hardwareModel.hardware_type.isVM:
+            if WorkingProject.objects.all()[0].project.hardwareModel.hardwareType.isVM:
                 fields_row1 += ('vmType',)
             if WorkingProject.objects.all()[0].project.database_type.name == 'NDB':
                 fields_row1 += ('deploy_option',)

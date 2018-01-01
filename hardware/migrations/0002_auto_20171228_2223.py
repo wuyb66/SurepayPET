@@ -14,12 +14,12 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RenameField(
             model_name='cputuning',
-            old_name='hardware_type',
+            old_name='hardwareType',
             new_name='hardwareType',
         ),
         migrations.RenameField(
             model_name='hardwaremodel',
-            old_name='hardware_type',
+            old_name='hardwareType',
             new_name='hardwareType',
         ),
     ]

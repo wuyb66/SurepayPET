@@ -55,8 +55,14 @@ class ApplicationInformation(models.Model):
     callCost = models.FloatField(default=0)            # Call cost(ms) based on Bono blade
     cpuCostForServer = models.FloatField(default=0.15)      # Call cost(ms) for server based on Bono blade
 
+    aprocCost = models.FloatField(default=0)            # APROC cost(ms) based on Bono blade
+    asCost = models.FloatField(default=0)            # Aerospike cost(ms) based on Bono blade
+    tcpCost = models.FloatField(default=0)            # TCP cost(ms) based on Bono blade
+    diamCost = models.FloatField(default=0)            # Diameter cost(ms) based on Bono blade
+    ss7Cost = models.FloatField(default=0)            # SS7 cost(ms) based on Bono blade
+
     def __str__(self):
-        return self.release.name + '_' + self.application.name
+        return self.application.name
 
     name = property(__str__)
 
