@@ -385,10 +385,10 @@ class TrafficInformation(models.Model):
         call_cost = self.get_call_cost()
         for feature in self.feature_list:
             feature_call_type_conf = self.feature_call_type_config_list.filter(
-                featureName=feature,
+                featureName=feature.feature,
             )
             feature_cpu_impact = FeatureCPUImpact.objects.all().filter(
-                featureName=feature,
+                featureName=feature.feature,
             )
             if (feature_call_type_conf.count() > 0) and (feature_cpu_impact.count() > 0):
                 feature_total_cost += feature.featurePenetration * \
@@ -406,10 +406,10 @@ class TrafficInformation(models.Model):
 
         for feature in self.feature_list:
             feature_call_type_conf = self.feature_call_type_config_list.filter(
-                featureName=feature,
+                featureName=feature.feature,
             )
             feature_cpu_impact = FeatureCPUImpact.objects.all().filter(
-                featureName=feature,
+                featureName=feature.feature,
             )
             if (feature_call_type_conf.count() > 0) and (feature_cpu_impact.count() > 0):
                 penetration = feature.featurePenetration * feature_call_type_conf[0].featureApplicable
@@ -423,10 +423,10 @@ class TrafficInformation(models.Model):
 
         for feature in self.feature_list:
             feature_call_type_conf = self.feature_call_type_config_list.filter(
-                featureName=feature,
+                featureName=feature.feature,
             )
             feature_cpu_impact = FeatureCPUImpact.objects.all().filter(
-                featureName=feature,
+                featureName=feature.feature,
             )
             if (feature_call_type_conf.count() > 0) and (feature_cpu_impact.count() > 0):
                 penetration = feature.featurePenetration * feature_call_type_conf[0].featureApplicable
@@ -440,10 +440,10 @@ class TrafficInformation(models.Model):
 
         for feature in self.feature_list:
             feature_call_type_conf = self.feature_call_type_config_list.filter(
-                featureName=feature,
+                featureName=feature.feature,
             )
             feature_cpu_impact = FeatureCPUImpact.objects.all().filter(
-                featureName=feature,
+                featureName=feature.feature,
             )
             if (feature_call_type_conf.count() > 0) and (feature_cpu_impact.count() > 0):
                 penetration = feature.featurePenetration * feature_call_type_conf[0].featureApplicable
@@ -457,10 +457,10 @@ class TrafficInformation(models.Model):
 
         for feature in self.feature_list:
             feature_call_type_conf = self.feature_call_type_config_list.filter(
-                featureName=feature,
+                featureName=feature.feature,
             )
             feature_cpu_impact = FeatureCPUImpact.objects.all().filter(
-                featureName=feature,
+                featureName=feature.feature,
             )
             if (feature_call_type_conf.count() > 0) and (feature_cpu_impact.count() > 0):
                 penetration = feature.featurePenetration * feature_call_type_conf[0].featureApplicable
@@ -555,32 +555,32 @@ class TrafficInformation(models.Model):
         return self.get_call_cost() + self.feature_cost
 
     def get_server_cost(self):
-        if not self.application_information:
+        if self.application_information is not None:
             return self.trafficTPS * self.application_information.cpuCostForServer
         return 0
 
     def get_tcp_cost(self):
-        if (not self.application_information) and (self.callType.tcpipNumber > 0):
+        if (self.application_information is not None) and (self.callType.tcpipNumber > 0):
             return self.trafficTPS * self.application_information.tcpCost
         return 0
 
     def get_diam_cost(self):
-        if (not self.application_information) and (self.callType.diameterNumber > 0):
+        if (self.application_information is not None) and (self.callType.diameterNumber > 0):
             return self.trafficTPS * self.application_information.diamCost
         return 0
 
     def get_ss7_cost(self):
-        if (not self.application_information) and (self.callType.ss7Number > 0):
+        if (self.application_information is not None) and (self.callType.ss7Number > 0):
             return self.trafficTPS * self.application_information.ss7Cost
         return 0
 
     def get_aproc_cost(self):
-        if not self.application_information:
+        if self.application_information is not None:
             return self.trafficTPS * self.application_information.aprocCost
         return 0
 
     def get_as_cost(self):
-        if not self.application_information:
+        if self.application_information is not None:
             return self.trafficTPS * self.application_information.asCost
         return 0
 
@@ -616,7 +616,7 @@ class TrafficInformation(models.Model):
     def calculate_for_traffic(self):
         self.serverCPUCost = self.get_server_cost()
         self.cpuCostPerCall = self.get_total_cost()
-        self.totalCPUCost = self.serverCPUCost + self.cpuCostPerCall
+        self.totalCPUCost = self.cpuCostPerCall * self.trafficTPS
         self.ss7CPUCost = self.get_ss7_cost()
         self.tcpCPUCost = self.get_tcp_cost()
         self.diamCPUCost = self.get_diam_cost()
@@ -638,12 +638,14 @@ class TrafficInformation(models.Model):
         self.ndbCPULimitation = self.callType.ndbCPUUsageLimitation
 
         self.featureCost = self.feature_cost
-        if not self.counter_configuration:
+        if self.counter_configuration is not None:
             self.counterCost = self.counter_configuration.get_counter_cost()
             self.groupCounterCost = self.counter_configuration.get_group_counter_cost()
         else:
             self.counterCost = 0
             self.groupCounterCost = 0
+
+        self.save()
 
     name = property(__str__)
 
@@ -1147,7 +1149,7 @@ class CallTypeCounterConfiguration(models.Model):
     def get_counter_cost(self):
         counter_cost_record = self.get_counter_cost_record()
 
-        if not counter_cost_record:
+        if counter_cost_record is not None:
             return 0
 
         if GlobalConfiguration.objects.all().count() > 0:
@@ -1235,7 +1237,7 @@ class CallTypeCounterConfiguration(models.Model):
     def get_group_counter_cost(self):
         counter_cost_record = self.get_counter_cost_record()
 
-        if not counter_cost_record:
+        if counter_cost_record is not None:
             return 0
 
         if GlobalConfiguration.objects.all().count() > 0:
@@ -1362,6 +1364,28 @@ class CurrentApplicationConfigurationManager(models.Manager):
 
         return ApplicationConfiguration.objects.none()
 
+    def create_application_config(
+            self, project, application_name, deployOption,):
+
+        traffic_information_list = TrafficInformation.current_objects.all()
+
+        if traffic_information_list.count() > 0:
+            traffic_information = traffic_information_list[0]
+            activeSubscriber = traffic_information.activeSubscriber
+            inactiveSubscriber = traffic_information.inactiveSubscriber
+        else:
+            activeSubscriber = 0
+            inactiveSubscriber = 0
+
+        application_config = self.create(
+            project=project,
+            applicationName=application_name,
+            deployOption=deployOption,
+            activeSubscriber=activeSubscriber,
+            inactiveSubscriber=inactiveSubscriber,
+        )
+        return application_config
+
 
 class ApplicationConfiguration(models.Model):
     BOUND_TYPE_OPTION = (('CPU Bound', 'CPU Bound'), ('Memory Bound', 'Memory Bound'))
@@ -1411,8 +1435,17 @@ class ApplicationConfiguration(models.Model):
     ldapSizePerSecond = models.FloatField(default=0)
     diameterSizePerSecond = models.FloatField(default=0)
     muTCPSize = models.FloatField(default=0)  # Mate update Size
+    featureSS7InSize = models.FloatField(default=0)
+    featureSS7OutSize = models.FloatField(default=0)
     featureLDAPSize = models.FloatField(default=0)
     featureDiameterSize = models.FloatField(default=0)
+    spaDataSize = models.FloatField(default=0)
+
+    featureCost = models.FloatField(default=0)
+    counterCost = models.FloatField(default=0)
+    groupCounterCost = models.FloatField(default=0)
+
+    ndbCPULimitation = models.FloatField(default=0)
 
     memoryUsage = models.FloatField(default=0)
     clientCPUUsagePercentage = models.FloatField(default=0)
@@ -1466,40 +1499,46 @@ class ApplicationConfiguration(models.Model):
             self.boundType = 'Memory Bound'
 
     def calculate_cost_for_epay(self):
-        if not self.traffic_information_list:
-            for traffic in self.traffic_information_list:
-                self.serverCPUCost += traffic.serverCPUCost
-                self.clientCPUCost += traffic.clientCPUCost
-                self.totalCPUCost += traffic.totalCPUCost
-                self.ss7CPUCost += traffic.ss7CPUCost
-                self.tcpCPUCost += traffic.tcpCPUCost
-                self.diamCPUCost += traffic.diamCPUCost
-                self.aprocCPUCost += traffic.aprocCPUCost
-                self.asCPUCost += traffic.asCPUCost
 
-                self.spaDataSize += traffic.spaDataSize
+        for traffic in self.traffic_information_list:
+            traffic.calculate_for_traffic()
+            self.serverCPUCost += traffic.serverCPUCost
+            self.clientCPUCost += traffic.cpuCostPerCall
+            self.totalCPUCost += traffic.totalCPUCost
+            self.ss7CPUCost += traffic.ss7CPUCost
+            self.tcpCPUCost += traffic.tcpCPUCost
+            self.diamCPUCost += traffic.diamCPUCost
+            self.aprocCPUCost += traffic.aprocCPUCost
+            self.asCPUCost += traffic.asCPUCost
 
-                self.ss7InSizePerSecond += traffic.ss7InSizePerSecond
-                self.ss7OutSizePerSecond += traffic.ss7OutSizePerSecond
-                self.ldapSizePerSecond += traffic.ldapSizePerSecond
-                self.diameterSizePerSecond += traffic.diameterSizePerSecond
-                self.muTCPSize += traffic.muTCPSize  # Mate update Size
-                self.featureSS7InSize += traffic.featureSS7InSize
-                self.featureSS7OutSize += traffic.featureSS7OutSize
-                self.featureLDAPSize += traffic.featureLDAPSize
-                self.featureDiameterSize += traffic.featureDiameterSize
+            self.spaDataSize += traffic.spaDataSize
 
-                self.ndbCPULimitation += traffic.ndbCPUUsageLimitation * self.trafficTPS
-                self.trafficTPS += traffic.trafficTPS
+            self.ss7InSizePerSecond += traffic.ss7InSizePerSecond
+            self.ss7OutSizePerSecond += traffic.ss7OutSizePerSecond
+            self.ldapSizePerSecond += traffic.ldapSizePerSecond
+            self.diameterSizePerSecond += traffic.diameterSizePerSecond
+            self.muTCPSize += traffic.muTCPSize  # Mate update Size
+            self.featureSS7InSize += traffic.featureSS7InSize
+            self.featureSS7OutSize += traffic.featureSS7OutSize
+            self.featureLDAPSize += traffic.featureLDAPSize
+            self.featureDiameterSize += traffic.featureDiameterSize
 
-                self.featureCost += traffic.featureCost
+            self.ndbCPULimitation += traffic.ndbCPULimitation * self.trafficTPS
+            self.trafficTPS += traffic.trafficTPS
 
-                self.counterCost += traffic.counterCost
-                self.groupCounterCost += traffic.groupCounterCost
+            self.featureCost += traffic.featureCost
+
+            self.counterCost += traffic.counterCost
+            self.groupCounterCost += traffic.groupCounterCost
 
         self.totalCPUCost = self.serverCPUCost + self.clientCPUCost
         self.miscCPUCost = self.ss7CPUCost + self.tcpCPUCost + self.diamCPUCost
-        self.ndbCPULimitation = self.ndbCPULimitation / self.trafficTPS
+        if self.trafficTPS > 0:
+            self.ndbCPULimitation = self.ndbCPULimitation / self.trafficTPS
+        else:
+            self.ndbCPULimitation = 0
+
+        self.save()
 
     @property
     def total_client_cpu_cost(self):
@@ -1514,7 +1553,7 @@ class ApplicationConfiguration(models.Model):
 
     @property
     def total_sever_cpu_cost(self):
-        if not self.current_application_information:
+        if self.current_application_information is not None:
             total_call_cost = 0
 
             for traffic in self.traffic_information_list:
@@ -1537,7 +1576,7 @@ class ApplicationConfiguration(models.Model):
 
     @property
     def ss7_cpu_cost(self):
-        if not self.current_application_information:
+        if self.current_application_information is not None:
             total_call_cost = 0
 
             for traffic in self.traffic_information_list:
