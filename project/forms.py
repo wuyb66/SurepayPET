@@ -371,7 +371,7 @@ class FeatureConfigurationForm(forms.ModelForm):
     )
 
     colocateMemberGroup = forms.BooleanField(
-        label='Group Colocated with Member',
+        label='Group Collocated with Member',
         initial=True,
         required=False,
     )
@@ -705,7 +705,7 @@ class ApplicationConfigurationForm(forms.ModelForm):
 
     inactiveSubscriber = forms.IntegerField(
         initial=0,
-        label='Inctive Subscriber',
+        label='Inactive Subscriber',
     )
 
     trafficTPS = forms.FloatField(

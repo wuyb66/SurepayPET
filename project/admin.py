@@ -14,6 +14,7 @@ from .forms import ProjectForm1, ProjectInformationForm, \
     TrafficInformationForm, FeatureConfigurationForm, CounterConfigurationForm, \
     CallTypeCounterConfigurationForm, DBConfigurationForm, SystemConfigurationForm, ApplicationConfigurationForm
 from django.contrib import messages
+from django.db.models import Q
 
 
 # from ajax_select import make_ajax_form
@@ -347,8 +348,9 @@ class TrafficInformationAdmin(admin.ModelAdmin):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return TrafficInformation.objects.none()
-        return super(TrafficInformationAdmin, self).get_queryset(request). \
-            filter(project=WorkingProject.objects.all()[0].project)
+        return super(TrafficInformationAdmin, self).get_queryset(request).filter(
+            project=WorkingProject.objects.all()[0].project,
+        )
 
         # def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
         #     if WorkingProject.objects.count() == 0:
@@ -361,6 +363,22 @@ class TrafficInformationAdmin(admin.ModelAdmin):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return TrafficInformation.objects.none()
+
+        app_epay_list = ApplicationName.objects.all().filter(
+            name='EPAY',
+        )
+
+        # Insert one record for EPAY to ApplicationConfiguration if no EPAY record existed.
+        if app_epay_list.count() > 0:
+            app_config_epay_list = ApplicationConfiguration.current_objects.all().filter(
+                applicationName=app_epay_list[0],
+            )
+            if app_config_epay_list.count() == 0:
+                ApplicationConfiguration.current_objects.create_application_config(
+                    project=WorkingProject.objects.all()[0].project,
+                    application_name=app_epay_list[0],
+                    deployOption='EPAY Node',
+                )
         obj.project = WorkingProject.objects.all()[0].project
         super(TrafficInformationAdmin, self).save_model(request, obj, form, change)
 
@@ -715,7 +733,7 @@ class SystemConfigurationAdmin(admin.ModelAdmin):
         )
         if application_epay_list.count() > 0:
             app_conf_list = SystemConfiguration.current_objects.all().filter(
-                applicationName=application_epay_list[0],
+                applicationName__name='EPAY',
             )
 
             if app_conf_list.count() == 0:
@@ -785,10 +803,11 @@ class ApplicationConfigurationAdmin(admin.ModelAdmin):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return ApplicationConfiguration.objects.none()
-        return super(ApplicationConfigurationAdmin, self).get_queryset(request). \
-            filter(
+
+        return super(ApplicationConfigurationAdmin, self).get_queryset(request).filter(
             project=WorkingProject.objects.all()[0].project,
-        )
+        ).exclude(applicationName__name='EPAY')
+
 
     def get_fieldsets(self, request, obj=None):
         addition_message = ''
@@ -926,6 +945,12 @@ class CalculatedResultAdmin(admin.ModelAdmin):
             db_node_number=2,
             io_node_number=2,
         )
+
+        app_config_list = ApplicationConfiguration.current_objects.all()
+
+        for app_config in app_config_list:
+            if app_config.applicationName.name == 'EPAY':
+                app_config.calculate_cost_for_epay()
 
         return redirect('/admin/project/calculatedresult/')
 
