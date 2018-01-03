@@ -16,6 +16,11 @@ from .forms import ProjectForm1, ProjectInformationForm, \
 from django.contrib import messages
 from django.db.models import Q
 
+from common import logger
+from common.logger import logged
+import sys
+import os.path
+
 
 # from ajax_select import make_ajax_form
 # from ajax_select.admin import AjaxSelectAdmin, AjaxSelectAdminTabularInline, AjaxSelectAdminStackedInline
@@ -133,10 +138,12 @@ class ProjectAdmin(admin.ModelAdmin):
 
     actions = ['set_working_project']
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def save_model(self, request, obj, form, change):
         obj.user = request.user
         super(ProjectAdmin, self).save_model(request, obj, form, change)
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def set_working_project(self, request, queryset):
         n = queryset.count()
 
@@ -171,12 +178,14 @@ class ProjectInformationAdmin(admin.ModelAdmin):
 
     form = ProjectInformationForm
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def has_add_permission(self, request):
         if ProjectInformation.current_objects.all().count() > 0:
             return False
         else:
             return True
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_readonly_fields(self, request, obj=None):
         if WorkingProject.objects.count() == 0:
             return ['vmType', 'deploy_option', 'cpuNumber', 'memory', 'clientNumber',
@@ -189,6 +198,7 @@ class ProjectInformationAdmin(admin.ModelAdmin):
                     ]
         return self.readonly_fields
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_list_display(self, request):
         list_display = ('name',)
         if WorkingProject.objects.count() > 0:
@@ -202,6 +212,7 @@ class ProjectInformationAdmin(admin.ModelAdmin):
 
         return list_display
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_fieldsets(self, request, obj=None):
         addition_message = ''
         fields_row1 = ()
@@ -254,6 +265,7 @@ class ProjectInformationAdmin(admin.ModelAdmin):
               '/static/js/set_client_number.js',
               )
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_queryset(self, request):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
@@ -268,6 +280,7 @@ class ProjectInformationAdmin(admin.ModelAdmin):
     #
     #     return super(ProjectInformationAdmin,self).changeform_view(request,object_id,form_url,extra_context)
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def save_model(self, request, obj, form, change):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
@@ -277,6 +290,7 @@ class ProjectInformationAdmin(admin.ModelAdmin):
 
 
 class TrafficInformationAdmin(admin.ModelAdmin):
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_readonly_fields(self, request, obj=None):
         if WorkingProject.objects.count() == 0:
             return ['callType', 'activeSubscriber', 'inactiveSubscriber', 'trafficBHTA', 'trafficTPS',
@@ -286,6 +300,7 @@ class TrafficInformationAdmin(admin.ModelAdmin):
                     ]
         return self.readonly_fields
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_total_bhta_tps(self):
         traffic_information_list = TrafficInformation.current_objects.all()
 
@@ -312,6 +327,7 @@ class TrafficInformationAdmin(admin.ModelAdmin):
 
     form = TrafficInformationForm
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_fieldsets(self, request, obj=None):
         addition_message = ''
         fields_row1 = ()
@@ -344,6 +360,7 @@ class TrafficInformationAdmin(admin.ModelAdmin):
               '/static/js/traffic_information.js',
               )
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_queryset(self, request):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
@@ -359,6 +376,7 @@ class TrafficInformationAdmin(admin.ModelAdmin):
         #
         #     return super(ProjectInformationAdmin,self).changeform_view(request,object_id,form_url,extra_context)
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def save_model(self, request, obj, form, change):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
@@ -392,6 +410,7 @@ class FeatureConfigurationAdmin(admin.ModelAdmin):
 
     form = FeatureConfigurationForm
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_readonly_fields(self, request, obj=None):
         if WorkingProject.objects.count() == 0:
             return ['feature', 'featurePenetration', 'colocateMemberGroup', 'rtdbSolution',
@@ -404,6 +423,7 @@ class FeatureConfigurationAdmin(admin.ModelAdmin):
               '/static/js/feature_configuration.js',
               )
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_queryset(self, request):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
@@ -411,6 +431,7 @@ class FeatureConfigurationAdmin(admin.ModelAdmin):
         return super(FeatureConfigurationAdmin, self).get_queryset(request). \
             filter(project=WorkingProject.objects.all()[0].project)
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_fieldsets(self, request, obj=None):
         addition_message = ''
         fields_row1 = ()
@@ -431,6 +452,7 @@ class FeatureConfigurationAdmin(admin.ModelAdmin):
                 ]}),
         ]
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def save_model(self, request, obj, form, change):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
@@ -458,12 +480,15 @@ class CallTypeCounterConfigurationAdmin(admin.ModelAdmin):
                     'appliedUBDNumber',)
     list_filter = ('project', 'callType',)
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def has_delete_permission(self, request, obj=None):
         return False
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def has_add_permission(self, request, obj=None):
         return False
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_readonly_fields(self, request, obj=None):
         if WorkingProject.objects.count() == 0:
             return ['averageBundleNumberPerSubscriber', 'average24hBundleNumberPerSubscriber',
@@ -474,6 +499,7 @@ class CallTypeCounterConfigurationAdmin(admin.ModelAdmin):
         #     return ['callType', 'totalCounterNumber']
         return self.readonly_fields
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_queryset(self, request):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
@@ -516,6 +542,7 @@ class CallTypeCounterConfigurationAdmin(admin.ModelAdmin):
         return super(CallTypeCounterConfigurationAdmin, self).get_queryset(request). \
             filter(project=WorkingProject.objects.all()[0].project)
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_fieldsets(self, request, obj=None):
         addition_message = ''
         fields_row1 = ()
@@ -540,6 +567,7 @@ class CallTypeCounterConfigurationAdmin(admin.ModelAdmin):
                 ]}),
         ]
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def save_model(self, request, obj, form, change):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
@@ -569,12 +597,14 @@ class CounterConfigurationAdmin(admin.ModelAdmin):
 
     form = CounterConfigurationForm
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def has_add_permission(self, request):
         if CounterConfiguration.current_objects.all().count() > 0:
             return False
         else:
             return True
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_readonly_fields(self, request, obj=None):
         if WorkingProject.objects.count() == 0:
             return ['averageBundleNumberPerSubscriber', 'average24hBundleNumberPerSubscriber',
@@ -589,6 +619,7 @@ class CounterConfigurationAdmin(admin.ModelAdmin):
               '/static/js/counter_configuration.js',
               )
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_queryset(self, request):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
@@ -596,6 +627,7 @@ class CounterConfigurationAdmin(admin.ModelAdmin):
         return super(CounterConfigurationAdmin, self).get_queryset(request). \
             filter(project=WorkingProject.objects.all()[0].project)
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_fieldsets(self, request, obj=None):
         addition_message = ''
         fields_row1 = ()
@@ -624,6 +656,7 @@ class CounterConfigurationAdmin(admin.ModelAdmin):
                 ]}),
         ]
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def save_model(self, request, obj, form, change):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
@@ -652,6 +685,7 @@ class DBConfigurationAdmin(admin.ModelAdmin):
     search_fields = ('dbInfo__db__name',)
     form = DBConfigurationForm
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_readonly_fields(self, request, obj=None):
         if WorkingProject.objects.count() == 0:
             return ['dbInfo', 'recordSize', 'subscriberNumber', 'dbFactor', 'recordNumber',
@@ -664,6 +698,7 @@ class DBConfigurationAdmin(admin.ModelAdmin):
               '/static/js/db_configuration.js',
               )
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_queryset(self, request):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
@@ -673,6 +708,7 @@ class DBConfigurationAdmin(admin.ModelAdmin):
             project=WorkingProject.objects.all()[0].project,
         )
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_fieldsets(self, request, obj=None):
         addition_message = ''
         fields_row1 = ()
@@ -689,6 +725,7 @@ class DBConfigurationAdmin(admin.ModelAdmin):
                 ]}),
         ]
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def save_model(self, request, obj, form, change):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
@@ -709,6 +746,7 @@ class SystemConfigurationAdmin(admin.ModelAdmin):
     #     else:
     #         return True
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_readonly_fields(self, request, obj=None):
         if WorkingProject.objects.count() == 0:
             return [  # 'cabinetNumberPerSystem',
@@ -723,6 +761,7 @@ class SystemConfigurationAdmin(admin.ModelAdmin):
             # '/static/js/db_configuration.js',
               )
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_queryset(self, request):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
@@ -751,6 +790,7 @@ class SystemConfigurationAdmin(admin.ModelAdmin):
             project=WorkingProject.objects.all()[0].project,
         )
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_fieldsets(self, request, obj=None):
         addition_message = ''
         fields_row1 = ()
@@ -766,6 +806,7 @@ class SystemConfigurationAdmin(admin.ModelAdmin):
                 ]}),
         ]
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def save_model(self, request, obj, form, change):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
@@ -792,6 +833,7 @@ class ApplicationConfigurationAdmin(admin.ModelAdmin):
     #     else:
     #         return True
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_readonly_fields(self, request, obj=None):
         if WorkingProject.objects.count() == 0:
             return ['applicationName', 'activeSubscriber', 'inactiveSubscriber',
@@ -799,6 +841,7 @@ class ApplicationConfigurationAdmin(admin.ModelAdmin):
                     ]
         return self.readonly_fields
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_queryset(self, request):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
@@ -809,6 +852,7 @@ class ApplicationConfigurationAdmin(admin.ModelAdmin):
         ).exclude(applicationName__name='EPAY')
 
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_fieldsets(self, request, obj=None):
         addition_message = ''
         fields_row1 = ()
@@ -830,6 +874,7 @@ class ApplicationConfigurationAdmin(admin.ModelAdmin):
                 ]}),
         ]
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def save_model(self, request, obj, form, change):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
@@ -874,6 +919,7 @@ class CalculatedResultAdmin(admin.ModelAdmin):
 
     # change_list_template = "path/to/change_list.html"
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def has_add_permission(self, request):
         return False
         # if CalculatedResult.objects.all().filter(project=WorkingProject.objects.all()[0].project).count() > 0:
@@ -881,9 +927,11 @@ class CalculatedResultAdmin(admin.ModelAdmin):
         # else:
         #     return True
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def has_delete_permission(self, request, obj=None):
         return False
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_readonly_fields(self, request, obj=None):
         if WorkingProject.objects.count() == 0:
             return ['applicationName', 'appNodeNumber', 'dbNodeNumber',
@@ -891,6 +939,7 @@ class CalculatedResultAdmin(admin.ModelAdmin):
                     ]
         return self.readonly_fields
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_queryset(self, request):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
@@ -900,6 +949,7 @@ class CalculatedResultAdmin(admin.ModelAdmin):
             project=WorkingProject.objects.all()[0].project,
         )
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_fieldsets(self, request, obj=None):
         addition_message = ''
         fields_row1 = ()
@@ -918,6 +968,7 @@ class CalculatedResultAdmin(admin.ModelAdmin):
                 ]}),
         ]
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def save_model(self, request, obj, form, change):
         if WorkingProject.objects.count() == 0:
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
@@ -925,12 +976,14 @@ class CalculatedResultAdmin(admin.ModelAdmin):
         obj.project = WorkingProject.objects.all()[0].project
         super(CalculatedResultAdmin, self).save_model(request, obj, form, change)
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_urls(self):
         urls = super().get_urls()
         my_urls = [url(r'^project/calculatedresult/calculate/$', self.admin_site.admin_view(self.calculate)), ]
 
         return my_urls + urls
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def calculate(self, request):
         # print('doing evil with', CalculatedResult.objects.get(pk=int(pk)))
         if WorkingProject.objects.count() == 0:

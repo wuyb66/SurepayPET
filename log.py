@@ -48,9 +48,6 @@ Example 2: Use set_logger to change settings
     log.set_logger(fmt = '[%(levelname)s] %(message)s'
 '''
 
-__author__ = "tuantuan.lv <dangoakachan@foxmail.com>"
-__status__ = "Development"
-
 __all__ = ['set_logger', 'debug', 'info', 'warning', 'error',
            'critical', 'exception']
 

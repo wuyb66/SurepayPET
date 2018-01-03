@@ -24,6 +24,11 @@ from clever_selects.forms import ChainedChoicesForm, ChainedChoicesModelForm
 
 from django.contrib import messages
 
+from common import logger
+from common.logger import logged
+import sys
+import os.path
+
 
 # class AddressForm(forms.Form):
     # country = AutoCompleteSelectField('countries', required=True, help_text="")
@@ -90,7 +95,6 @@ class ProjectForm1(ChainedChoicesModelForm):
         label='Database Type',
         initial=DBMode.objects.all().filter(name='NDB')[0].pk,
     )
-
 
     hardwareType = ModelChoiceField(queryset=HardwareType.objects.all(), required=True,
                                     empty_label=_(u'Select a hardware type'), label='Hardware Type')
@@ -186,7 +190,7 @@ class ProjectInformationForm(forms.ModelForm):
         model = ProjectInformation
         fields = '__all__'
 
-
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def clean(self):
         cleaned_data = super(ProjectInformationForm, self).clean()
         if WorkingProject.objects.count() == 0:
@@ -241,9 +245,6 @@ class TrafficInformationForm(forms.ModelForm):
                 label='Inactive Subscribers',
                 initial=0,
             )
-
-
-
     else:
         callType = forms.ModelChoiceField(
             CallType.objects.none(),
@@ -322,6 +323,7 @@ class TrafficInformationForm(forms.ModelForm):
 
         fields = '__all__'
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def clean(self):
         cleaned_data = super(TrafficInformationForm, self).clean()
         if WorkingProject.objects.count() == 0:
@@ -399,6 +401,7 @@ class FeatureConfigurationForm(forms.ModelForm):
 
         fields = '__all__'
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def clean(self):
         cleaned_data = super(FeatureConfigurationForm, self).clean()
         if WorkingProject.objects.count() == 0:
@@ -500,9 +503,9 @@ class CounterConfigurationForm(forms.ModelForm):
 
     class Meta:
         model = CounterConfiguration
-
         fields = '__all__'
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def clean(self):
         cleaned_data = super(CounterConfigurationForm, self).clean()
         if WorkingProject.objects.count() == 0:
@@ -655,6 +658,7 @@ class SystemConfigurationForm(forms.ModelForm):
         label='Number of Spare DB Node Pair Per System'
     )
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def clean(self):
         cleaned_data = super(SystemConfigurationForm, self).clean()
         if WorkingProject.objects.count() == 0:
@@ -717,6 +721,7 @@ class ApplicationConfigurationForm(forms.ModelForm):
         model = ApplicationConfiguration
         fields = '__all__'
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def clean(self):
         cleaned_data = super(ApplicationConfigurationForm, self).clean()
         if WorkingProject.objects.count() == 0:
@@ -745,6 +750,7 @@ class LoginForm(forms.Form):
 
     title = "Login form"
 
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def clean(self):
         cleaned_data = super(LoginForm, self).clean()
         if cleaned_data.get('email') == 'john@doe.com':
