@@ -340,8 +340,8 @@ class TrafficInformation(models.Model):
     objects = models.Manager()  # The default manager.
     current_objects = CurrentTrafficInformationManager()  # The project-specific manager.
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def counter_configuration(self):
         counter_configuration_list = CallTypeCounterConfiguration.current_objects.all().filter(
             callType=self.callType
@@ -350,8 +350,8 @@ class TrafficInformation(models.Model):
             return counter_configuration_list[0]
         return None
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def application(self):
         application_name_list = ApplicationName.objects.all().filter(
             name='EPAY',
@@ -361,8 +361,8 @@ class TrafficInformation(models.Model):
             return application_name_list[0]
         return None
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def application_information(self):
         application_information_list = ApplicationInformation.objects.all().filter(
             release=self.project.release,
@@ -372,27 +372,27 @@ class TrafficInformation(models.Model):
             return application_information_list[0]
         return None
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def feature_information(self):
         if ProjectInformation.current_objects.all().count() > 0:
             return ProjectInformation.current_objects.all()[0]
         return None
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def feature_call_type_config_list(self):
         return FeatureCallTypeConfiguration.objects.all().filter(
             callType=self.callType,
         )
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def feature_list(self):
         return FeatureConfiguration.current_objects.all()
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def feature_cost(self):
         feature_total_cost = 0
 
@@ -414,8 +414,8 @@ class TrafficInformation(models.Model):
 
         return feature_total_cost
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def feature_ss7_in_size(self):
         feature_ss7_in_size = 0
 
@@ -432,8 +432,8 @@ class TrafficInformation(models.Model):
 
         return feature_ss7_in_size
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def feature_ss7_out_size(self):
         feature_ss7_out_size = 0
 
@@ -450,8 +450,8 @@ class TrafficInformation(models.Model):
 
         return feature_ss7_out_size
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def feature_ldap_size(self):
         feature_ldap_size = 0
 
@@ -468,8 +468,8 @@ class TrafficInformation(models.Model):
 
         return feature_ldap_size
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def feature_diameter_size(self):
         feature_diameter_size = 0
 
@@ -589,7 +589,10 @@ class TrafficInformation(models.Model):
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_tcp_cost(self):
         if (self.application_information is not None) and (self.callType.tcpipNumber > 0):
+            logger.g_logger.info('trafficTPS: %s, tcpCost: %s' % (
+                self.trafficTPS, self.application_information.tcpCost))
             return self.trafficTPS * self.application_information.tcpCost
+
         return 0
 
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
@@ -735,8 +738,8 @@ class FeatureConfiguration(models.Model):
     def __str__(self):
         return self.project.name + "_" + self.feature.name
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def feature_cpu_impact(self):
         feature_cpu_impact_list = FeatureCPUImpact.objects.all().filter(
             featureName=self.feature
@@ -745,36 +748,36 @@ class FeatureConfiguration(models.Model):
             return feature_cpu_impact_list[0]
         return None
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def ss7_in_size(self):
         if self.feature_cpu_impact:
             return self.feature_cpu_impact.ss7In
         return 0
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def ss7_out_size(self):
         if self.feature_cpu_impact:
             return self.feature_cpu_impact.ss7Out
         return 0
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def ldap_message_size(self):
         if self.feature_cpu_impact:
             return self.feature_cpu_impact.ldapMessageSize
         return 0
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def diameter_message_size(self):
         if self.feature_cpu_impact:
             return self.feature_cpu_impact.diameterMessageSize
         return 0
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def cpu_time(self):
         if self.feature_cpu_impact:
             return self.feature_cpu_impact.ccImpactCPUTime + self.feature_cpu_impact.reImpactCPUTime
@@ -930,13 +933,13 @@ class DBConfiguration(models.Model):
         b = 3600 * maintenance_window_hour * traffic_percentage_under_maintenance_window / BYTES_TO_MILLION
         return math.ceil(impact_size * traffic * b / 10) * 10
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def ndb_reference_placeholder_ratio(self):
         return self.dbInfo.db.ndbRefPlaceholderRatio
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def reference_db_factor(self):
         if WorkingProject.objects.all().count() > 0:
             feature_list = FeatureConfiguration.objects.all().filter(
@@ -1061,19 +1064,19 @@ class CounterConfiguration(models.Model):
     objects = models.Manager()  # The default manager.
     current_objects = CurrentCounterConfigurationManager()  # The current project specific manager.
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def total_bundle_number(self):
         return self.averageBundleNumberPerSubscriber + self.average24hBundleNumberPerSubscriber
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def total_counter_number(self):
         return self.nonAppliedBucketNumber + self.nonAppliedUBDNumber + \
                self.appliedBucketNumber + self.appliedUBDNumber
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def total_group_counter_number(self):
         return self.groupBundleNumber + self.groupBucketNumber
 
@@ -1150,14 +1153,14 @@ class CallTypeCounterConfiguration(models.Model):
     objects = models.Manager()  # The default manager.
     current_objects = CurrentCallTypeCounterConfigurationManager()  # The current project specific manager.
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def total_counter_number(self):
         return self.nonAppliedBucketNumber + self.nonAppliedUBDNumber + \
                self.appliedBucketNumber + self.appliedUBDNumber
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def total_bundle_number(self):
         return self.averageBundleNumberPerSubscriber + self.average24hBundleNumberPerSubscriber
 
@@ -1557,8 +1560,8 @@ class ApplicationConfiguration(models.Model):
     objects = models.Manager()  # The default manager.
     current_objects = CurrentApplicationConfigurationManager()  # The current project specific manager.
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def current_application_information(self):
         current_application_information_list = ApplicationInformation.objects.all().filter(
             release=self.project.release,
@@ -1569,8 +1572,8 @@ class ApplicationConfiguration(models.Model):
 
         return None
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def traffic_information_list(self):
         return TrafficInformation.current_objects.all()
 
@@ -1626,8 +1629,8 @@ class ApplicationConfiguration(models.Model):
 
         self.save()
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def total_client_cpu_cost(self):
         if WorkingProject.objects.count() == 0:
             return 0
@@ -1638,8 +1641,8 @@ class ApplicationConfiguration(models.Model):
 
         return total_call_cost
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def total_sever_cpu_cost(self):
         if self.current_application_information is not None:
             total_call_cost = 0
@@ -1651,8 +1654,8 @@ class ApplicationConfiguration(models.Model):
 
         return 0
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def tcp_cpu_cost(self):
         if WorkingProject.objects.count() == 0:
             return 0
@@ -1660,11 +1663,12 @@ class ApplicationConfiguration(models.Model):
         total_call_cost = 0
         for traffic in self.traffic_information_list:
             total_call_cost += traffic.tcpCPUCost
+            logger.g_logger.info('tcpCPUCost: %s, total_call_cost: %s' % (traffic.tcpCPUCost, total_call_cost))
 
         return total_call_cost
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def ss7_cpu_cost(self):
         if self.current_application_information is not None:
             total_call_cost = 0
@@ -1676,8 +1680,8 @@ class ApplicationConfiguration(models.Model):
 
         return 0
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def db_cpu_cost(self):
         # if not self.current_application_information:
         #     total_call_cost = 0
@@ -1689,13 +1693,13 @@ class ApplicationConfiguration(models.Model):
 
         return 0
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def misc_cpu_cost(self):
         return self.ss7_cpu_cost + self.tcp_cpu_cost + self.db_cpu_cost + self.total_sever_cpu_cost
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def total_cpu_cost(self):
         return self.misc_cpu_cost + self.total_client_cpu_cost
 
@@ -1771,6 +1775,9 @@ class CalculatedResult(models.Model):
     objects = models.Manager()  # The default manager.
     current_objects = CurrentCalculatedResultManager()  # The current project specific manager.
 
+    def __str__(self):
+        return self.applicationName.name
+
     class Meta:
         verbose_name = 'Calculated Result'
         verbose_name_plural = 'Calculated Result'
@@ -1829,6 +1836,8 @@ class DimensioningResult(models.Model):
         verbose_name = 'Dimensioning Result'
         verbose_name_plural = 'Dimensioning Result'
 
+    def __str__(self):
+        return self.applicationName.name
 
 class CurrentDimensioningResultPerSystemManager(models.Manager):
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))

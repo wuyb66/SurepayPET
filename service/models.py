@@ -249,6 +249,16 @@ class CallCost(models.Model):
 
     callCost = models.FloatField()
 
+    cpuCostForServer = models.FloatField(default=0.15)      # Call cost(ms) for server based on Bono blade
+    cpuCostForRoutingClient = models.FloatField(default=0.15)      # Call cost(ms) for routing client based on Bono blade
+    aprocCost = models.FloatField(default=0)            # APROC cost(ms) based on Bono blade
+    aprocRoutingCost = models.FloatField(default=0)            # APROC cost(ms) based on Bono blade
+    asdCost = models.FloatField(default=0)            # Aerospike cost(ms) based on Bono blade
+    asdMateCost = models.FloatField(default=0)            # Aerospike cost(ms) based on Bono blade
+    tcpCost = models.FloatField(default=0)            # TCP cost(ms) based on Bono blade
+    diamCost = models.FloatField(default=0)            # Diameter cost(ms) based on Bono blade
+    ss7Cost = models.FloatField(default=0)            # SS7 cost(ms) based on Bono blade
+
     def __str__(self):
         return self.callType.name + '_' + self.release.name + '_' + self.hardwareModel.name + '_' + self.dbMode.name
 

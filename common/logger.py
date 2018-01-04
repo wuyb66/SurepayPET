@@ -39,8 +39,9 @@ def logged (level, message):
         @functools.wraps(f)
         def wrapper(*args,**kargs):
             func = log_funcs.get(level, g_logger.info)
-            func(outputMessage(f,args,kargs))
-            return f(*args,**kargs)
+            retval = f(*args,**kargs)
+            func(outputMessage(f,args,kargs) + ' - return: %s'%retval)
+            return retval
         return wrapper
     return pre_logged
 
