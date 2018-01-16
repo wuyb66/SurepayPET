@@ -341,6 +341,67 @@ class TrafficInformation(models.Model):
     current_objects = CurrentTrafficInformationManager()  # The project-specific manager.
 
     @property
+    def call_cost(self):
+        # get call cost list for current call type and release
+        call_cost_orig_list = CallCost.objects.all().filter(
+            callType=self.callType,
+            release=self.project.release,
+        )
+
+        if call_cost_orig_list.count() > 0:
+            call_cost_list = call_cost_orig_list.filter(
+                hardwareModel=self.project.hardwareModel,
+                dbMode=self.project.database_type,
+            )
+
+            if call_cost_list.count() > 0:  # exact match
+                return call_cost_list[0]
+
+            call_cost_list = call_cost_orig_list.filter(
+                hardwareModel=self.project.hardwareModel,
+            )
+            if call_cost_list.count() > 0:  # Database type not match
+                return call_cost_list[0]
+
+            call_cost_list = call_cost_orig_list.filter(
+                dbMode=self.project.database_type,
+            )
+            call_cost_record = None
+            call_cost_priority = 0
+            if call_cost_list.count() > 0:
+                for call_cost_object in call_cost_list:
+                    if call_cost_object.hardwareModel.hardwareType == self.project.hardwareModel.hardwareType:
+                        call_cost_record = call_cost_object
+                        call_cost_priority = 3
+                    elif call_cost_object.hardwareModel.cpu == self.project.hardwareModel.cpu:
+                        if (call_cost_record is None) or (call_cost_priority < 2):
+                            call_cost_priority = 2
+                            call_cost_record = call_cost_object
+                    else:
+                        if call_cost_record is None:
+                            call_cost_priority = 1
+                            call_cost_record = call_cost_object
+
+                return call_cost_record
+        else:
+            raise ValidationError(
+                f'Call Cost for Call Type: {self.callType} of Release {self.project.release} not configured!')
+
+    @property
+    def cost_ratio(self):
+        cost_ratio = self.call_cost.hardwareModel.cpu.singleThreadCapacity
+
+        if self.call_cost.dbMode.name != self.project.database_type.name:
+            if self.call_cost.dbMode.name == 'RTDB':  # RTDB cost --> NDB cost
+                cost_ratio = cost_ratio * GlobalConfiguration.objects.all()[0].ndbRTDBCostRatio
+            else:  # NDB cost --> RTDB cost
+                if GlobalConfiguration.objects.all()[0].ndbRTDBCostRatio > 0:
+                    cost_ratio = cost_ratio / GlobalConfiguration.objects.all()[0].ndbRTDBCostRatio
+
+        return cost_ratio
+
+
+    @property
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def counter_configuration(self):
         counter_configuration_list = CallTypeCounterConfiguration.current_objects.all().filter(
@@ -396,7 +457,6 @@ class TrafficInformation(models.Model):
     def feature_cost(self):
         feature_total_cost = 0
 
-        call_cost = self.get_call_cost()
         for feature in self.feature_list:
             feature_call_type_conf = self.feature_call_type_config_list.filter(
                 featureName=feature.feature,
@@ -408,7 +468,7 @@ class TrafficInformation(models.Model):
                 feature_total_cost += feature.featurePenetration * \
                                       ((feature_cpu_impact[0].ccImpactCPUPercentage +
                                         feature_cpu_impact[0].reImpactCPUPercentage) *
-                                       feature_call_type_conf[0].featureApplicable * call_cost +
+                                       feature_call_type_conf[0].featureApplicable * self.cost_ratio +
                                        (feature_cpu_impact[0].ccImpactCPUTime +
                                         feature_cpu_impact[0].reImpactCPUTime))
 
@@ -582,29 +642,53 @@ class TrafficInformation(models.Model):
 
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_server_cost(self):
+        if self.call_cost.cpuCostForServer > 0:
+            return self.trafficTPS * self.call_cost.cpuCostForServer
         if self.application_information is not None:
             return self.trafficTPS * self.application_information.cpuCostForServer
         return 0
 
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_tcp_cost(self):
-        if (self.application_information is not None) and (self.callType.tcpipNumber > 0):
-            logger.g_logger.info('trafficTPS: %s, tcpCost: %s' % (
-                self.trafficTPS, self.application_information.tcpCost))
-            return self.trafficTPS * self.application_information.tcpCost
+        if self.callType.tcpipNumber > 0:
+            if self.call_cost.tcpCost > 0:
+                logger.g_logger.info('Traffic (TPS): %s, TCP Cost: %s' % (
+                    self.trafficTPS, self.call_cost.tcpCost))
+                return self.trafficTPS * self.call_cost.tcpCost
+
+            if (self.application_information is not None):
+                logger.g_logger.info('Traffic (TPS): %s, tcpCost: %s' % (
+                    self.trafficTPS, self.application_information.tcpCost))
+                return self.trafficTPS * self.application_information.tcpCost
 
         return 0
 
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_diam_cost(self):
-        if (self.application_information is not None) and (self.callType.diameterNumber > 0):
-            return self.trafficTPS * self.application_information.diamCost
+        if self.callType.diameterNumber > 0:
+            if self.call_cost.diamCost > 0:
+                logger.g_logger.info('Traffic (TPS): %s, Diam Cost: %s' % (
+                    self.trafficTPS, self.call_cost.diamCost))
+                return self.trafficTPS * self.call_cost.diamCost
+
+            if (self.application_information is not None):
+                logger.g_logger.info('Traffic (TPS): %s, Diam Cost: %s' % (
+                    self.trafficTPS, self.application_information.diamCost))
+                return self.trafficTPS * self.application_information.diamCost
         return 0
 
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_ss7_cost(self):
-        if (self.application_information is not None) and (self.callType.ss7Number > 0):
-            return self.trafficTPS * self.application_information.ss7Cost
+        if self.callType.ss7Number > 0:
+            if self.call_cost.ss7Cost > 0:
+                logger.g_logger.info('Traffic (TPS): %s, SS7 Cost: %s' % (
+                    self.trafficTPS, self.call_cost.ss7Cost))
+                return self.trafficTPS * self.call_cost.ss7Cost
+
+            if (self.application_information is not None):
+                logger.g_logger.info('Traffic (TPS): %s, SS7 Cost: %s' % (
+                    self.trafficTPS, self.application_information.ss7Cost))
+                return self.trafficTPS * self.application_information.ss7Cost
         return 0
 
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
