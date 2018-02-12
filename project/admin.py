@@ -143,6 +143,7 @@ class ProjectAdmin(admin.ModelAdmin):
         obj.user = request.user
         super(ProjectAdmin, self).save_model(request, obj, form, change)
 
+
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def set_working_project(self, request, queryset):
         n = queryset.count()
@@ -207,7 +208,10 @@ class ProjectInformationAdmin(admin.ModelAdmin):
             if WorkingProject.objects.all()[0].project.database_type.name == 'NDB':
                 list_display += ('deploy_option',)
 
-        list_display += ('cpuNumber', 'memory', 'clientNumber', 'numberReleaseToEstimate',
+            if WorkingProject.objects.all()[0].project.hardwareType.isVM:
+                list_display += ('cpuNumber', )
+
+        list_display += ('memory', 'clientNumber', 'numberReleaseToEstimate',
                          'activeSubscriber', 'inactiveSubscriber', 'groupAccountNumber',)
 
         return list_display
@@ -216,9 +220,15 @@ class ProjectInformationAdmin(admin.ModelAdmin):
     def get_fieldsets(self, request, obj=None):
         addition_message = ''
         fields_row1 = ()
+        fields_row2 = ()
+        fields_row3 = ()
         if WorkingProject.objects.count() > 0:
             if WorkingProject.objects.all()[0].project.hardwareModel.hardwareType.isVM:
                 fields_row1 += ('vmType',)
+                fields_row2 = ('cpuNumber', 'clientNumber',)
+                fields_row3 = ('memory')
+            else:
+                fields_row2 = ('cpuNumber', 'memory')
             if WorkingProject.objects.all()[0].project.database_type.name == 'NDB':
                 fields_row1 += ('deploy_option',)
         else:
@@ -231,8 +241,8 @@ class ProjectInformationAdmin(admin.ModelAdmin):
             ('Hardware Information' + addition_message, {
                 'fields': [
                     fields_row1,
-                    ('cpuNumber', 'memory',),
-                    ('clientNumber',),
+                    fields_row2,
+                    fields_row3,
                 ]}),
             ('Network Information', {
                 'fields': [
@@ -286,6 +296,8 @@ class ProjectInformationAdmin(admin.ModelAdmin):
             self.message_user(request, 'Please set working project first!', level=messages.ERROR)
             return ProjectInformation.objects.none()
         obj.project = WorkingProject.objects.all()[0].project
+        obj.clientNumber = obj.cpuNumber.clientNumber
+
         super(ProjectInformationAdmin, self).save_model(request, obj, form, change)
 
 

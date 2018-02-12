@@ -108,7 +108,10 @@ class CPUList(models.Model):
         return self.capacityRatio * self.hardwareModel.cpu.singleThreadCapacity * self.clientNumber
 
     def __str__(self):
-        return str(self.cpuNumber)
+        if self.hardwareModel.hardwareType.isVM:
+            return str(self.cpuNumber)
+        else:
+            return str(self.clientNumber)
 
     @property
     def name(self):

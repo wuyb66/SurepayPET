@@ -235,7 +235,7 @@ class ProjectInformation(models.Model):
     cpuNumber = models.ForeignKey(CPUList, verbose_name='CPU Number', )
 
     memory = models.ForeignKey(MemoryList, verbose_name='Memory')
-    clientNumber = models.IntegerField(verbose_name='Client Number')
+    clientNumber = models.IntegerField(verbose_name='Client Number', default=0)
 
     sigtranLinkSpeed = models.IntegerField(verbose_name='SIGTRAN Link Speed')
     sigtranLinkNumber = models.IntegerField(verbose_name='SIGTRAN Link Number')
@@ -262,6 +262,8 @@ class ProjectInformation(models.Model):
 
     objects = models.Manager()  # The default manager.
     current_objects = CurrentProjectInformationManager()  # The project-specific manager.
+
+
 
     def __str__(self):
         return self.project.name
@@ -311,13 +313,16 @@ class TrafficInformation(models.Model):
     timeCCRtBHTA = models.FloatField(default=0)
 
     serverCPUCost = models.FloatField(default=0)
+    cpuCostForRoutingClient = models.FloatField(default=0)
+    aprocRoutingCost = models.FloatField(default=0)
     cpuCostPerCall = models.FloatField(default=0)
     totalCPUCost = models.FloatField(default=0)
     ss7CPUCost = models.FloatField(default=0)
     tcpCPUCost = models.FloatField(default=0)
     diamCPUCost = models.FloatField(default=0)
     aprocCPUCost = models.FloatField(default=0)  # APROC
-    asCPUCost = models.FloatField(default=0)  # Aerospike Server
+    asdCPUCost = models.FloatField(default=0)  # Aerospike Server
+    asdMateCost = models.FloatField(default=0)
 
     spaDataSize = models.IntegerField(default=0)
 
@@ -339,6 +344,13 @@ class TrafficInformation(models.Model):
 
     objects = models.Manager()  # The default manager.
     current_objects = CurrentTrafficInformationManager()  # The project-specific manager.
+
+    @property
+    def total_counter_number(self):
+        if CounterConfiguration.current_objects.count() > 0:
+            return CounterConfiguration.current_objects.all()[0].total_counter_number
+        else:
+            return 0
 
     @property
     def call_cost(self):
@@ -449,6 +461,20 @@ class TrafficInformation(models.Model):
 
     @property
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+    def gprs_cps(self):
+        return (self.volumeCCRiBHTA + self.timeCCRiBHTA) * self.activeSubscriber / 3600
+
+    @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+    def data_session_cip_size(self):
+        if self.feature_information is not None:
+            return self.application_information.sessionCIPSize + \
+                   self.application_information.ldapCIPSize  * self.averageCategoryPerSession + \
+                   self.application_information.otherCIPSize
+        return 0
+
+    @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def feature_list(self):
         return FeatureConfiguration.current_objects.all()
 
@@ -488,7 +514,7 @@ class TrafficInformation(models.Model):
             )
             if (feature_call_type_conf.count() > 0) and (feature_cpu_impact.count() > 0):
                 penetration = feature.featurePenetration * feature_call_type_conf[0].featureApplicable
-                feature_ss7_in_size += penetration * feature.ss7_in_size
+                feature_ss7_in_size += penetration * feature.ss7_in_size * self.trafficTPS
 
         return feature_ss7_in_size
 
@@ -506,7 +532,7 @@ class TrafficInformation(models.Model):
             )
             if (feature_call_type_conf.count() > 0) and (feature_cpu_impact.count() > 0):
                 penetration = feature.featurePenetration * feature_call_type_conf[0].featureApplicable
-                feature_ss7_out_size += penetration * feature.ss7_out_size
+                feature_ss7_out_size += penetration * feature.ss7_out_size  * self.trafficTPS
 
         return feature_ss7_out_size
 
@@ -524,7 +550,7 @@ class TrafficInformation(models.Model):
             )
             if (feature_call_type_conf.count() > 0) and (feature_cpu_impact.count() > 0):
                 penetration = feature.featurePenetration * feature_call_type_conf[0].featureApplicable
-                feature_ldap_size += penetration * feature.ldap_message_size
+                feature_ldap_size += penetration * feature.ldap_message_size * self.trafficTPS
 
         return feature_ldap_size
 
@@ -542,7 +568,7 @@ class TrafficInformation(models.Model):
             )
             if (feature_call_type_conf.count() > 0) and (feature_cpu_impact.count() > 0):
                 penetration = feature.featurePenetration * feature_call_type_conf[0].featureApplicable
-                feature_diameter_size += penetration * feature.diameter_message_size
+                feature_diameter_size += penetration * feature.diameter_message_size * self.trafficTPS
         return feature_diameter_size
 
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
@@ -581,60 +607,7 @@ class TrafficInformation(models.Model):
 
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_call_cost(self):
-        # get call cost list for current call type and release
-        call_cost_orig_list = CallCost.objects.all().filter(
-            callType=self.callType,
-            release=self.project.release,
-        )
-
-        if call_cost_orig_list.count() > 0:
-            call_cost_list = call_cost_orig_list.filter(
-                hardwareModel=self.project.hardwareModel,
-                dbMode=self.project.database_type,
-            )
-
-            if call_cost_list.count() > 0:  # exact match
-                return call_cost_list[0].callCost * call_cost_list[0].hardwareModel.cpu.singleThreadCapacity
-
-            call_cost_list = call_cost_orig_list.filter(
-                hardwareModel=self.project.hardwareModel,
-            )
-            if call_cost_list.count() > 0:  # Database type not match
-                cost_ratio = 1
-                if GlobalConfiguration.objects.all().count() > 0:
-                    if call_cost_list[0].dbMode.name == 'RTDB':  # RTDB cost --> NDB cost
-                        cost_ratio = GlobalConfiguration.objects.all()[0].ndbRTDBCostRatio
-                    else:  # NDB cost --> RTDB cost
-                        if GlobalConfiguration.objects.all()[0].ndbRTDBCostRatio > 0:
-                            cost_ratio = 1 / GlobalConfiguration.objects.all()[0].ndbRTDBCostRatio
-                return call_cost_list[0].callCost * call_cost_list[
-                    0].hardwareModel.cpu.singleThreadCapacity * cost_ratio
-
-            call_cost_list = call_cost_orig_list.filter(
-                dbMode=self.project.database_type,
-            )
-            call_cost = 0
-            call_cost_priority = 0
-            if call_cost_list.count() > 0:
-                for call_cost_object in call_cost_list:
-                    if call_cost_object.hardwareModel.hardwareType == self.project.hardwareModel.hardwareType:
-                        call_cost = call_cost_object.callCost * call_cost_object.hardwareModel.cpu.singleThreadCapacity
-                        call_cost_priority = 3
-                    elif call_cost_object.hardwareModel.cpu == self.project.hardwareModel.cpu:
-                        if (call_cost == 0) or (call_cost_priority < 2):
-                            call_cost_priority = 2
-                            call_cost = call_cost_object.callCost * \
-                                        call_cost_object.hardwareModel.cpu.singleThreadCapacity
-                    else:
-                        if call_cost == 0:
-                            call_cost_priority = 1
-                            call_cost = call_cost_object.callCost * \
-                                        call_cost_object.hardwareModel.cpu.singleThreadCapacity
-
-                return call_cost
-        else:
-            raise ValidationError(
-                f'Call Cost for Call Type: {self.callType} of Release {self.project.release} not configured!')
+        return self.call_cost.callCost * self.trafficTPS
 
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_total_cost(self):
@@ -643,7 +616,7 @@ class TrafficInformation(models.Model):
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_server_cost(self):
         if self.call_cost.cpuCostForServer > 0:
-            return self.trafficTPS * self.call_cost.cpuCostForServer
+            return self.trafficTPS * self.call_cost.cpuCostForServer * self.cost_ratio
         if self.application_information is not None:
             return self.trafficTPS * self.application_information.cpuCostForServer
         return 0
@@ -654,7 +627,7 @@ class TrafficInformation(models.Model):
             if self.call_cost.tcpCost > 0:
                 logger.g_logger.info('Traffic (TPS): %s, TCP Cost: %s' % (
                     self.trafficTPS, self.call_cost.tcpCost))
-                return self.trafficTPS * self.call_cost.tcpCost
+                return self.trafficTPS * self.call_cost.tcpCost * self.cost_ratio
 
             if (self.application_information is not None):
                 logger.g_logger.info('Traffic (TPS): %s, tcpCost: %s' % (
@@ -669,7 +642,7 @@ class TrafficInformation(models.Model):
             if self.call_cost.diamCost > 0:
                 logger.g_logger.info('Traffic (TPS): %s, Diam Cost: %s' % (
                     self.trafficTPS, self.call_cost.diamCost))
-                return self.trafficTPS * self.call_cost.diamCost
+                return self.trafficTPS * self.call_cost.diamCost * self.cost_ratio
 
             if (self.application_information is not None):
                 logger.g_logger.info('Traffic (TPS): %s, Diam Cost: %s' % (
@@ -683,7 +656,7 @@ class TrafficInformation(models.Model):
             if self.call_cost.ss7Cost > 0:
                 logger.g_logger.info('Traffic (TPS): %s, SS7 Cost: %s' % (
                     self.trafficTPS, self.call_cost.ss7Cost))
-                return self.trafficTPS * self.call_cost.ss7Cost
+                return self.trafficTPS * self.call_cost.ss7Cost * self.cost_ratio
 
             if (self.application_information is not None):
                 logger.g_logger.info('Traffic (TPS): %s, SS7 Cost: %s' % (
@@ -693,31 +666,98 @@ class TrafficInformation(models.Model):
 
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_aproc_cost(self):
-        if self.application_information is not None:
-            return self.trafficTPS * self.application_information.aprocCost
+        if self.project.database_type.name == 'NDB':
+            if self.call_cost.aprocCost > 0:
+                logger.g_logger.info('Traffic (TPS): %s, APROC Cost: %s' % (
+                    self.trafficTPS, self.call_cost.aprocCost))
+                return self.trafficTPS * self.call_cost.aprocCost * self.cost_ratio
+            if self.application_information is not None:
+                logger.g_logger.info('Traffic (TPS): %s, APROC Cost: %s' % (
+                    self.trafficTPS, self.application_information.aprocCost))
+                return self.trafficTPS * self.application_information.aprocCost
         return 0
 
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
-    def get_as_cost(self):
-        if self.application_information is not None:
-            return self.trafficTPS * self.application_information.asCost
+    def get_asd_cost(self):
+        if self.project.database_type.name == 'NDB':
+            if self.call_cost.asCost > 0:
+                logger.g_logger.info('Traffic (TPS): %s, ASD Cost: %s' % (
+                    self.trafficTPS, self.call_cost.asCost))
+                return self.trafficTPS * self.call_cost.asdCost * self.cost_ratio
+            if self.application_information is not None:
+                logger.g_logger.info('Traffic (TPS): %s, ASD Cost: %s' % (
+                    self.trafficTPS, self.application_information.asdCost))
+                return self.trafficTPS * self.application_information.asdCost
         return 0
+
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+    def get_asd_mate_cost(self):
+        if self.project.database_type.name == 'NDB':
+            if self.call_cost.asCost > 0:
+                logger.g_logger.info('Traffic (TPS): %s, ASD Cost on Mate: %s' % (
+                    self.trafficTPS, self.call_cost.asdMateCost))
+                return self.trafficTPS * self.call_cost.asdMateCost * self.cost_ratio
+            if self.application_information is not None:
+                logger.g_logger.info('Traffic (TPS): %s, ASD Cost on Mate: %s' % (
+                    self.trafficTPS, self.application_information.asdMateCost))
+                return self.trafficTPS * self.application_information.asdMateCost
+        return 0
+
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+    def get_routing_client_cost(self):
+        if self.project.database_type.name == 'NDB':
+            if self.call_cost.asCost > 0:
+                logger.g_logger.info('Traffic (TPS): %s, Routing Client Cost: %s' % (
+                    self.trafficTPS, self.call_cost.cpuCostForRoutingClient))
+                return self.trafficTPS * self.call_cost.cpuCostForRoutingClient * self.cost_ratio
+            if self.application_information is not None:
+                logger.g_logger.info('Traffic (TPS): %s, Routing Client Cost: %s' % (
+                    self.trafficTPS, self.application_information.cpuCostForRoutingClient))
+                return self.trafficTPS * self.application_information.cpuCostForRoutingClient
+        return 0
+
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+    def get_aproc_routing_cost(self):
+        if self.project.database_type.name == 'NDB':
+            if self.call_cost.asCost > 0:
+                logger.g_logger.info('Traffic (TPS): %s, APROC Routing Cost: %s' % (
+                    self.trafficTPS, self.call_cost.aprocRoutingCost))
+                return self.trafficTPS * self.call_cost.aprocRoutingCost * self.cost_ratio
+            if self.application_information is not None:
+                logger.g_logger.info('Traffic (TPS): %s, APROC Routing Cost: %s' % (
+                    self.trafficTPS, self.application_information.aprocRoutingCost))
+                return self.trafficTPS * self.application_information.aprocRoutingCost
+        return 0
+
+    @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+    def counter_memory(self):
+        if (self.application_information is not None) and (self.application_information.counterMemoryImpact > 0):
+            return self.application_information.counterMemoryImpact * self.total_counter_number
+        else:
+            return self.project.release.counterMemoryImpact * self.total_counter_number
 
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_spa_data_size_for_diameter_session(self):
-        diameter_cps = self.activeSubscriber * (self.timeCCRiBHTA + self.volumeCCRiBHTA) / 3600
-        diameter_session_size = self.project.release.ldapCIPSize + self.project.release.otherCIPSize + \
-                                self.project.release.sessionCIPSize * self.averageCategoryPerSession
+        diameter_session_size = self.data_session_cip_size + self.counter_memory
         if self.averageActiveSessionPerSubscriber > 0:
             return diameter_session_size * self.averageActiveSessionPerSubscriber * \
                    self.activeSubscriber / BYTES_TO_MILLION
-        return diameter_session_size * diameter_cps * self.callHoldingTime / BYTES_TO_MILLION
+        return diameter_session_size * self.gprs_cps * self.callHoldingTime / BYTES_TO_MILLION
+
+    @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+    def call_record_size(self):
+        if (self.application_information is not None) and (self.application_information.callRecordSize > 0):
+            return self.application_information.callRecordSize
+        else:
+            return self.project.release.callRecordSize
 
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_spa_data_size(self):
         if self.volumeCCRiBHTA > 0 or self.timeCCRiBHTA > 0:
             return self.get_spa_data_size_for_diameter_session()
-        return self.trafficTPS * self.callHoldingTime * self.project.release.callRecordSize
+        return self.trafficTPS * self.callHoldingTime * self.call_record_size / BYTES_TO_MILLION
 
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_ss7_in_size(self):
@@ -737,18 +777,21 @@ class TrafficInformation(models.Model):
 
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_mu_size(self):
-        return self.trafficTPS * self.callType.mateUpdateSize
+        return self.trafficTPS * self.callType.mateUpdateSize #* self.callType.mateUpdateNumber
 
     # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def calculate_for_traffic(self):
         self.serverCPUCost = self.get_server_cost()
-        self.cpuCostPerCall = self.get_total_cost()
-        self.totalCPUCost = self.cpuCostPerCall * self.trafficTPS
+        self.cpuCostPerCall = self.call_cost.callCost
+        self.cpuCostForRoutingClient = self.get_routing_client_cost()
+        self.totalCPUCost = self.get_total_cost()
         self.ss7CPUCost = self.get_ss7_cost()
         self.tcpCPUCost = self.get_tcp_cost()
         self.diamCPUCost = self.get_diam_cost()
         self.aprocCPUCost = self.get_aproc_cost()
-        self.asCPUCost = self.get_as_cost()
+        self.aprocRoutingCost = self.get_aproc_routing_cost()
+        self.asdCPUCost = self.get_asd_cost()
+        self.asdMateCost = self.get_asd_mate_cost()
 
         self.spaDataSize = self.get_spa_data_size()
 
@@ -766,8 +809,8 @@ class TrafficInformation(models.Model):
 
         self.featureCost = self.feature_cost
         if self.counter_configuration is not None:
-            self.counterCost = self.counter_configuration.get_counter_cost()
-            self.groupCounterCost = self.counter_configuration.get_group_counter_cost()
+            self.counterCost = self.counter_configuration.get_counter_cost() * self.trafficTPS
+            self.groupCounterCost = self.counter_configuration.get_group_counter_cost()* self.trafficTPS
         else:
             self.counterCost = 0
             self.groupCounterCost = 0
@@ -835,41 +878,41 @@ class FeatureConfiguration(models.Model):
     @property
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def ss7_in_size(self):
-        if self.feature_cpu_impact:
+        if self.feature_cpu_impact is not None:
             return self.feature_cpu_impact.ss7In
         return 0
 
     @property
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def ss7_out_size(self):
-        if self.feature_cpu_impact:
+        if self.feature_cpu_impact is not None:
             return self.feature_cpu_impact.ss7Out
         return 0
 
     @property
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def ldap_message_size(self):
-        if self.feature_cpu_impact:
+        if self.feature_cpu_impact is not None:
             return self.feature_cpu_impact.ldapMessageSize
         return 0
 
     @property
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def diameter_message_size(self):
-        if self.feature_cpu_impact:
+        if self.feature_cpu_impact is not None:
             return self.feature_cpu_impact.diameterMessageSize
         return 0
 
     @property
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def cpu_time(self):
-        if self.feature_cpu_impact:
+        if self.feature_cpu_impact is not None:
             return self.feature_cpu_impact.ccImpactCPUTime + self.feature_cpu_impact.reImpactCPUTime
         return 0
 
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def cpu_percentage(self):
-        if self.feature_cpu_impact:
+        if self.feature_cpu_impact is not None:
             return self.feature_cpu_impact.ccImpactCPUPercentage + self.feature_cpu_impact.reImpactCPUPercentage
         return 0
 
@@ -1274,8 +1317,9 @@ class CallTypeCounterConfiguration(models.Model):
         pass
         # return getCounterCPUImpact() + getMultipleAMANumber() + getMultipleAMAImpact()
 
+    @property
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
-    def get_counter_cost_record(self):
+    def counter_cost_record(self):
         if WorkingProject.objects.all().count() > 0:
             project = WorkingProject.objects.all()[0].project
             counter_cost_list = CounterCost.objects.all().filter(
@@ -1305,17 +1349,13 @@ class CallTypeCounterConfiguration(models.Model):
 
                     return counter_cost_list0[0]
 
-                return None
+            return None
         else:
             return None
 
+    @property
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
-    def get_counter_cost(self):
-        counter_cost_record = self.get_counter_cost_record()
-
-        if counter_cost_record is not None:
-            return 0
-
+    def release_impact(self):
         if GlobalConfiguration.objects.all().count() > 0:
             release_count_cpu_impact = GlobalConfiguration.objects.all()[0].releaseCountCPUImpact
         else:
@@ -1325,12 +1365,23 @@ class CallTypeCounterConfiguration(models.Model):
         if WorkingProject.objects.all().count() > 0:
             project = WorkingProject.objects.all()[0].project
 
-            release_gap = project.release.sequence - counter_cost_record.release.sequence
+            release_gap = project.release.sequence - self.counter_cost_record.release.sequence
 
             if release_gap < 0:
                 release_gap = 0
 
         release_impact = math.pow((1 + release_count_cpu_impact), release_gap)
+
+        logger.g_logger.info('Counter Release: %s, Release Gap: %s, Release Impact: %s' %
+                             (self.counter_cost_record.release, release_gap, release_impact))
+
+        return release_impact
+
+
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+    def get_counter_cost(self):
+        if self.counter_cost_record is None:
+            return 0
 
         counter_configuration_list = CounterConfiguration.objects.all().filter(
             project=self.project,
@@ -1342,12 +1393,12 @@ class CallTypeCounterConfiguration(models.Model):
             return 0
 
         if counter_configuration.turnOnBasicCriteriaCheck:
-            cpu_per_non_applied_counter = counter_cost_record.costPerUnappliedCounterWithBasicCriteria
-            cpu_per_non_applied_ubd = counter_cost_record.costPerUnappliedCounterWithBasicCriteria
+            cpu_per_non_applied_counter = self.counter_cost_record.costPerUnappliedCounterWithBasicCriteria
+            cpu_per_non_applied_ubd = self.counter_cost_record.costPerUnappliedCounterWithBasicCriteria
             total_used_ubd_number = self.appliedUBDNumber
             total_used_bucket_number = self.appliedBucketNumber
 
-            non_applied_counter_overhead = counter_cost_record.costCounterNumberImpact / 4
+            non_applied_counter_overhead = self.counter_cost_record.costCounterNumberImpact / 4
         else:
             cpu_per_non_applied_counter = 0
             cpu_per_non_applied_ubd = 0
@@ -1368,58 +1419,40 @@ class CallTypeCounterConfiguration(models.Model):
                          cpu_per_non_applied_ubd * self.nonAppliedUBDNumber
 
         if self.appliedBucketNumber > 0:  # need to include overhead for bucket
-            cpu_impact = cpu_impact + counter_cost_record.costTurnOnbucket + \
-                         self.appliedBucketNumber * counter_cost_record.costPerAppliedBucket
+            cpu_impact = cpu_impact + self.counter_cost_record.costTurnOnBucket + \
+                         self.appliedBucketNumber * self.counter_cost_record.costPerAppliedBucket
 
         if self.appliedUBDNumber > 0:  # need to include overhead for UBD
-            cpu_impact = cpu_impact + counter_cost_record.costTurnOnUBD + \
-                         self.appliedUBDNumber * counter_cost_record.costPerAppliedUBD
+            cpu_impact = cpu_impact + self.counter_cost_record.costTurnOnUBD + \
+                         self.appliedUBDNumber * self.counter_cost_record.costPerAppliedUBD
 
         if total_counter_number > 0:  # need to include RTDB read/update overhead
-            cpu_impact = cpu_impact + math.ceil(total_counter_number / counter_cost_record.counterNumberPerRecord) * \
-                         counter_cost_record.costDBReadUpdatePerRecord
+            cpu_impact = cpu_impact + math.ceil(total_counter_number / self.counter_cost_record.counterNumberPerRecord) * \
+                         self.counter_cost_record.costDBReadUpdatePerRecord
 
         if total_used_ubd_number > 0:
-            cpu_impact = cpu_impact + counter_cost_record.costCounterNumberImpact * \
-                         math.pow(1 + counter_cost_record.percentageCounterNumberImpact, total_used_ubd_number)
+            cpu_impact = cpu_impact + self.counter_cost_record.costCounterNumberImpact * \
+                         math.pow(1 + self.counter_cost_record.percentageCounterNumberImpact, total_used_ubd_number)
 
         if total_used_bucket_number > 0:
-            cpu_impact = cpu_impact + counter_cost_record.costCounterNumberImpact * \
-                         math.pow(1 + counter_cost_record.percentageCounterNumberImpact, total_used_bucket_number)
+            cpu_impact = cpu_impact + self.counter_cost_record.costCounterNumberImpact * \
+                         math.pow(1 + self.counter_cost_record.percentageCounterNumberImpact, total_used_bucket_number)
 
         if counter_configuration.generateMultipleAMAForCounter:  # Multiple AMA
             cpu_impact = cpu_impact + self.project.release.cPUCostForMultipleAMA * math.ceil(total_counter_number / 10)
 
         if self.averageBundleNumberPerSubscriber > 0:
-            cpu_impact = cpu_impact + counter_cost_record.costBundlePerRecord * self.averageBundleNumberPerSubscriber
+            cpu_impact = cpu_impact + self.counter_cost_record.costBundlePerRecord * self.averageBundleNumberPerSubscriber
 
         if self.average24hBundleNumberPerSubscriber > 0:
-            cpu_impact = cpu_impact + counter_cost_record.costPer24hBundle * self.average24hBundleNumberPerSubscriber
+            cpu_impact = cpu_impact + self.counter_cost_record.costPer24hBundle * self.average24hBundleNumberPerSubscriber
 
-        return cpu_impact * release_impact
+        return cpu_impact * self.release_impact * self.counter_cost_record.hardwareModel.cpu.singleThreadCapacity
 
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def get_group_counter_cost(self):
-        counter_cost_record = self.get_counter_cost_record()
-
-        if counter_cost_record is not None:
+        if self.counter_cost_record is not None:
             return 0
-
-        if GlobalConfiguration.objects.all().count() > 0:
-            release_count_cpu_impact = GlobalConfiguration.objects.all()[0].releaseCountCPUImpact
-        else:
-            release_count_cpu_impact = 0.05
-
-        release_gap = 0
-        if WorkingProject.objects.all().count() > 0:
-            project = WorkingProject.objects.all()[0].project
-
-            release_gap = project.release.sequence - counter_cost_record.release.sequence
-
-            if release_gap < 0:
-                release_gap = 0
-
-        release_impact = math.pow((1 + release_count_cpu_impact), release_gap)
 
         counter_configuration_list = CounterConfiguration.objects.all().filter(
             project=self.project,
@@ -1432,12 +1465,12 @@ class CallTypeCounterConfiguration(models.Model):
 
         total_group_counter_number = counter_configuration.total_group_counter_number
 
-        cpu_impact = math.ceil(total_group_counter_number / counter_cost_record.counterNumberPerRecord) * \
-                     counter_cost_record.costGroupDBReadUpdatePerRecord + \
-                     counter_cost_record.costTurnOnGroupBucket + \
-                     counter_cost_record.costPerGroupSideBucket * total_group_counter_number
+        cpu_impact = math.ceil(total_group_counter_number / self.counter_cost_record.counterNumberPerRecord) * \
+                     self.counter_cost_record.costGroupDBReadUpdatePerRecord + \
+                     self.counter_cost_record.costTurnOnGroupBucket + \
+                     self.counter_cost_record.costPerGroupSideBucket * total_group_counter_number
 
-        return cpu_impact * release_impact
+        return cpu_impact * self.release_impact
 
     class Meta:
         verbose_name = 'Counter Configuration for Call Type'
@@ -1588,15 +1621,20 @@ class ApplicationConfiguration(models.Model):
         default=0,
     )
 
+    trafficBHTA = models.FloatField(default=0)
     serverCPUCost = models.FloatField(default=0)
     clientCPUCost = models.FloatField(default=0)
     totalCPUCost = models.FloatField(default=0)
+    cpuCostForRoutingClient = models.FloatField(default=0)
     ss7CPUCost = models.FloatField(default=0)
     tcpCPUCost = models.FloatField(default=0)
     diamCPUCost = models.FloatField(default=0)
     aprocCPUCost = models.FloatField(default=0)  # APROC
-    asCPUCost = models.FloatField(default=0)  # Aerospike Server
+    aprocRoutingCost = models.FloatField(default=0)
+    asdCPUCost = models.FloatField(default=0)  # Aerospike Server
+    asdMateCost = models.FloatField(default=0)
     miscCPUCost = models.FloatField(default=0)
+
     cpuBudget = models.FloatField(default=0)
 
     ss7InSizePerSecond = models.FloatField(default=0)
@@ -1670,19 +1708,95 @@ class ApplicationConfiguration(models.Model):
             self.nodeNumberNeeded = self.memoryBaseNodeNumber
             self.boundType = 'Memory Bound'
 
-    # @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+    @property
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+    def project_information(self):
+        if ProjectInformation.current_objects.all().count() > 0:
+            return ProjectInformation.current_objects.all()[0]
+        return None
+
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+    def get_cpu_budget_per_node(self):
+        if self.project_information is None:
+            return 0
+
+        if self.project is None:
+            return 0
+
+        max_client_cpu_usage = self.project_information.cpuUsageTuning.clientCPUUsage
+
+        if self.project.hardwareModel.hardwareType.isVM:
+            client_number = self.project_information.cpuNumber.clientNumber
+            if self.project.database_type.name == 'NDB':
+                if (self.ndbCPULimitation > 0) and (self.ndbCPULimitation < max_client_cpu_usage):
+                    max_client_cpu_usage = self.ndbCPULimitation
+        else:
+            client_number = self.project.hardwareModel.defaultClientNumber
+
+        capacity_ratio = self.project_information.cpuNumber.capacityRatio
+
+        vm_capacity = self.project_information.vmType.capacity
+
+        cpu_budget = client_number * 1000 * max_client_cpu_usage * capacity_ratio * vm_capacity
+
+        return cpu_budget
+
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+    def init_calc_fields(self):
+        self.serverCPUCost = 0
+        self.clientCPUCost = 0
+        self.totalCPUCost = 0
+        self.cpuCostForRoutingClient = 0
+        self.ss7CPUCost = 0
+        self.tcpCPUCost = 0
+        self.diamCPUCost = 0
+        self.aprocCPUCost = 0
+        self.aprocRoutingCost = 0
+        self.asdCPUCost = 0
+        self.asdMateCost = 0
+
+        self.spaDataSize = 0
+
+        self.ss7InSizePerSecond = 0
+        self.ss7OutSizePerSecond = 0
+        self.ldapSizePerSecond = 0
+        self.diameterSizePerSecond = 0
+        self.muTCPSize = 0
+        self.featureSS7InSize = 0
+        self.featureSS7OutSize = 0
+        self.featureLDAPSize = 0
+        self.featureDiameterSize = 0
+
+        self.ndbCPULimitation = 0
+        self.trafficTPS = 0
+        self.trafficBHTA = 0
+
+        self.featureCost = 0
+
+        self.counterCost = 0
+        self.groupCounterCost = 0
+        self.totalCPUCost = 0
+        self.miscCPUCost = 0
+
+
+
+    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def calculate_cost_for_epay(self):
+        self.init_calc_fields()
 
         for traffic in self.traffic_information_list:
             traffic.calculate_for_traffic()
             self.serverCPUCost += traffic.serverCPUCost
-            self.clientCPUCost += traffic.cpuCostPerCall
+            self.clientCPUCost += traffic.cpuCostPerCall * traffic.trafficTPS
             self.totalCPUCost += traffic.totalCPUCost
+            self.cpuCostForRoutingClient += traffic.cpuCostForRoutingClient
             self.ss7CPUCost += traffic.ss7CPUCost
             self.tcpCPUCost += traffic.tcpCPUCost
             self.diamCPUCost += traffic.diamCPUCost
             self.aprocCPUCost += traffic.aprocCPUCost
-            self.asCPUCost += traffic.asCPUCost
+            self.aprocRoutingCost += traffic.aprocRoutingCost
+            self.asdCPUCost += traffic.asdCPUCost
+            self.asdMateCost += traffic.asdMateCost
 
             self.spaDataSize += traffic.spaDataSize
 
@@ -1698,6 +1812,7 @@ class ApplicationConfiguration(models.Model):
 
             self.ndbCPULimitation += traffic.ndbCPULimitation * self.trafficTPS
             self.trafficTPS += traffic.trafficTPS
+            self.trafficBHTA += traffic.trafficBHTA
 
             self.featureCost += traffic.featureCost
 
@@ -1711,7 +1826,25 @@ class ApplicationConfiguration(models.Model):
         else:
             self.ndbCPULimitation = 0
 
+        self.cpuBudget = self.get_cpu_budget_per_node()
+
+        self.cpuBaseNodeNumber = self.get_cpu_based_node_number()
+
+
         self.save()
+
+    def get_cpu_based_node_number(self):
+        cpu_base_node_number = math.ceil(self.totalCPUCost / self.cpuBudget)
+        return cpu_base_node_number
+
+    def get_memory_based_node_number(self):
+        pass
+
+    def get_io_based_node_number(self):
+        pass
+
+    def get_ss7_based_node_number(self):
+        pass
 
     @property
     @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))

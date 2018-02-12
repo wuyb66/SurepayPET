@@ -296,8 +296,6 @@ NUMBER_GROUPING = (3, 2, 0)
 
 
 
-
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 

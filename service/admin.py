@@ -70,11 +70,13 @@ class FeatureCPUImpactAdmin(admin.ModelAdmin):
 
 class CallTypeAdmin(admin.ModelAdmin):
     list_display = ('name', 'ss7InSize', 'ss7OutSize', 'ss7Number', 'tcpipSize', 'tcpipNumber', 'diameterSize',
-                    'diameterNumber', 'mateUpdateNumber', 'ndbCPUUsageLimitation')
+                    'diameterNumber', 'mateUpdateNumber', 'mateUpdateSize', 'ndbCPUUsageLimitation')
 
 
 class CallCostAdmin(admin.ModelAdmin):
-    list_display = ('name', 'callCost')
+    list_display = ('callType', 'release', 'hardwareModel', 'dbMode', 'callCost', 'cpuCostForServer',
+                    'cpuCostForRoutingClient', 'aprocCost', 'aprocRoutingCost', 'asdCost', 'asdMateCost',
+                    'tcpCost', 'diamCost', 'ss7Cost')
     list_filter = ('callType', 'release', 'hardwareModel', 'dbMode')
     search_fields = ('callType__name', 'release__name', 'hardwareModel__hardwareType__name',
                      'hardwareModel__cpu__name', 'dbMode__name')

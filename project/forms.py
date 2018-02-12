@@ -109,38 +109,72 @@ class ProjectForm1(ChainedChoicesModelForm):
 
 
 class ProjectInformationForm(forms.ModelForm):
+
     if WorkingProject.objects.count() > 0:
         project = WorkingProject.objects.all()[0].project
-        vmType = forms.ModelChoiceField(
-            VMType.objects.all(),
-            empty_label=_(u'Select a VM Type'),
-            # help_text=_(u'Select a VM Type'),
-            label='VM Type',
-            initial=VMType.objects.all().filter(type='CBIS')[0].pk
-        )
 
-        if CPUList.objects.all().filter(
-                hardwareModel=project.hardwareModel,
-                cpuNumber=project.hardwareModel.defaultCPUNumber
-        ).count() > 0:
-            cpuNumber = forms.ModelChoiceField(
-                CPUList.objects.all().filter(
-                    hardwareModel=project.hardwareModel),
-                empty_label=_(u'Select a CPU Number'),
-                label='CPU Number',
-                initial=CPUList.objects.all().filter(
+
+
+        if project.hardwareType.isVM:
+            vmType = forms.ModelChoiceField(
+                VMType.objects.all(),
+                empty_label=_(u'Select a VM Type'),
+                # help_text=_(u'Select a VM Type'),
+                label='VM Type',
+                initial=VMType.objects.all().filter(type='CBIS')[0].pk
+            )
+
+            if CPUList.objects.all().filter(
                     hardwareModel=project.hardwareModel,
                     cpuNumber=project.hardwareModel.defaultCPUNumber
-                )[0].pk,
-            )
+            ).count() > 0:
+                cpuNumber = forms.ModelChoiceField(
+                    CPUList.objects.all().filter(
+                        hardwareModel=project.hardwareModel),
+                    empty_label=_(u'Select a CPU Number'),
+                    label='CPU Number',
+                    initial=CPUList.objects.all().filter(
+                        hardwareModel=project.hardwareModel,
+                        cpuNumber=project.hardwareModel.defaultCPUNumber
+                    )[0].pk,
+                )
+
+            else:
+                cpuNumber = forms.ModelChoiceField(
+                    CPUList.objects.all().filter(
+                        hardwareModel=project.hardwareModel),
+                    empty_label=_(u'Select a CPU Number'),
+                    label='CPU Number',
+                    initial=CPUList.objects.none(),
+                )
+
+            clientNumber = forms.IntegerField(initial=project.hardwareModel.defaultClientNumber)
+
         else:
-            cpuNumber = forms.ModelChoiceField(
-                CPUList.objects.all().filter(
-                    hardwareModel=project.hardwareModel),
-                empty_label=_(u'Select a CPU Number'),
-                label='CPU Number',
-                initial=CPUList.objects.none(),
-            )
+            vmType = VMType.objects.all().filter(type='Native')[0].pk
+            if CPUList.objects.all().filter(
+                    hardwareModel=project.hardwareModel,
+                    cpuNumber=project.hardwareModel.defaultCPUNumber
+            ).count() > 0:
+                cpuNumber = forms.ModelChoiceField(
+                    CPUList.objects.all().filter(
+                        hardwareModel=project.hardwareModel),
+                    empty_label=_(u'Select a client Number'),
+                    label='Client Number',
+                    initial=CPUList.objects.all().filter(
+                        hardwareModel=project.hardwareModel,
+                        cpuNumber=project.hardwareModel.defaultCPUNumber
+                    )[0].pk,
+                )
+
+            else:
+                cpuNumber = forms.ModelChoiceField(
+                    CPUList.objects.all().filter(
+                        hardwareModel=project.hardwareModel),
+                    empty_label=_(u'Select a client Number'),
+                    label='Client Number',
+                    initial=CPUList.objects.none(),
+                )
 
         memory = forms.ModelChoiceField(
             MemoryList.objects.all().filter(
@@ -153,7 +187,7 @@ class ProjectInformationForm(forms.ModelForm):
             )[0].pk,
         )
 
-        clientNumber = forms.IntegerField(initial=project.hardwareModel.defaultCPUNumber/2)
+
         cpuUsageTuning = forms.ModelChoiceField(
             CPUTuning.objects.all().filter(
                 dbMode=project.database_type,

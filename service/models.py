@@ -18,6 +18,7 @@ class Release(models.Model):
     amaNumberPerGroupCall = models.IntegerField(default=1)
 
     counterNumberPerRecord = models.IntegerField(default=6)     # Counter number per CTRTDB record
+    counterMemoryImpact = models.FloatField(default=0)
 
     def __str__(self):
         return self.name
@@ -54,12 +55,17 @@ class ApplicationInformation(models.Model):
     otherCIPSize = models.IntegerField(default=0)       # Bytes
     callCost = models.FloatField(default=0)            # Call cost(ms) based on Bono blade
     cpuCostForServer = models.FloatField(default=0.15)      # Call cost(ms) for server based on Bono blade
+    cpuCostForRoutingClient = models.FloatField(default=0)
 
     aprocCost = models.FloatField(default=0)            # APROC cost(ms) based on Bono blade
-    asCost = models.FloatField(default=0)            # Aerospike cost(ms) based on Bono blade
+    aprocRoutingCost = models.FloatField(default=0)
+    asdCost = models.FloatField(default=0)            # Aerospike cost(ms) based on Bono blade
+    asdMateCost = models.FloatField(default=0)
     tcpCost = models.FloatField(default=0)            # TCP cost(ms) based on Bono blade
     diamCost = models.FloatField(default=0)            # Diameter cost(ms) based on Bono blade
     ss7Cost = models.FloatField(default=0)            # SS7 cost(ms) based on Bono blade
+
+    counterMemoryImpact = models.FloatField(default=0)
 
     def __str__(self):
         return self.application.name
