@@ -61,6 +61,7 @@ class CPU(models.Model):
 class HardwareType(models.Model):
     name = models.CharField(max_length=24)
     isVM = models.BooleanField(default=False)
+    isSingleServer = models.BooleanField(default=False)
 
     # cpus = models.ManyToManyField('CPU')
 
@@ -80,10 +81,24 @@ class HardwareModel(models.Model):
 
     defaultCPUNumber = models.IntegerField()
     defaultClientNumber = models.IntegerField()
+    defaultPilotCPUNumber = models.IntegerField(default=8)
+    defaultIOCPUNumber = models.IntegerField(default=16)
     defaultMemory = models.IntegerField()
+    defaultPilotMemory = models.IntegerField(default=32)    # G
+    defaultIOMemory = models.IntegerField(default=32)   # G
     maxSIGTRANPerIONode = models.IntegerField()
     maxLDAPPerIONode = models.IntegerField()
     maxDiameterPerIONode = models.IntegerField()
+
+    # Max node number per system
+    maxPilotNodeNumber = models.IntegerField(default=2)
+    minPilotNodeNumber = models.IntegerField(default=2)
+    maxIONodeNumber = models.IntegerField(default=4)
+    minIONodeNumber = models.IntegerField(default=2)
+    maxDBNodeNumber = models.IntegerField(default=8)
+    minDBNodeNumber = models.IntegerField(default=2)
+    maxAppNodeNumber = models.IntegerField(default=26)
+    minAppNodeNumber = models.IntegerField(default=1)
 
     def __str__(self):
         return self.name
@@ -124,6 +139,7 @@ class CPUList(models.Model):
 class MemoryList(models.Model):
     hardwareModel = models.ForeignKey(HardwareModel, on_delete=models.CASCADE)
     memory = models.IntegerField()
+
 
     def __str__(self):
         return str(self.memory)

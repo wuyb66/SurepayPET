@@ -15,7 +15,7 @@ from common.models import DBMode
 from django.forms.models import ModelForm
 from django.db.models import Q
 
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.forms import ChoiceField, ModelChoiceField
 from django.utils.translation import ugettext_lazy as _
 
@@ -80,7 +80,7 @@ import os.path
 #         model = Project
 #         fields = '__all__'
 
-class ProjectForm1(ChainedChoicesModelForm):
+class ProjectForm(ChainedChoicesModelForm):
     release = forms.ModelChoiceField(
         Release.objects.all().order_by('-sequence'),
         empty_label=_(u'Select a Release'),
@@ -96,28 +96,55 @@ class ProjectForm1(ChainedChoicesModelForm):
         initial=DBMode.objects.all().filter(name='NDB')[0].pk,
     )
 
-    hardwareType = ModelChoiceField(queryset=HardwareType.objects.all(), required=True,
-                                    empty_label=_(u'Select a hardware type'), label='Hardware Type')
-    hardwareModel = ChainedModelChoiceField(parent_field='hardwareType', ajax_url=reverse_lazy('ajax_hardware_models'),
-                                    empty_label=_(u'Select a CPU model'), model=HardwareModel, required=True,
-                                    label='CPU Model')
+    hardwareType = ModelChoiceField(queryset=HardwareType.objects.all(),
+                                    required=True,
+                                    empty_label=_(u'Select a hardware type'),
+                                    label='Hardware Type')
+    hardwareModel = ChainedModelChoiceField(parent_field='hardwareType',
+                                            ajax_url=reverse_lazy('ajax_hardware_models'),
+                                            empty_label=_(u'Select a CPU model'),
+                                            model=HardwareModel,
+                                            required=True,
+                                            label='CPU Model')
 
     class Meta:
         model = Project
         fields = ['name', 'release', 'hardwareType', 'hardwareModel', 'customer', 'version', 'database_type', 'comment',]
-        # fields = ['brand', 'model', ]
 
+    # def __init__(self, data=None, *args, **kwargs):
+    #     super(ProjectForm, self).__init__(*args, **kwargs)
+    #
+    #     project_list = Project.objects.all().filter(
+    #         name=self.fields['name'],
+    #     )
+    #
+    #     if project_list.count() > 0:
+    #         self.initial['hardwareType'] = project_list[0].hardwareType
+    #         self.initial['hardwareModel'] = project_list[0].hardwareModel
+    # #
+    #     project = WorkingProject.objects.all()[0].project
+    #
+    #     if project_information_list.count() > 0:
+    #         a = project_information_list[0]
+    #         b = a.cpuNumber
+    #         self.initial['cpuNumber'] =project_information_list[0].cpuNumber
+    #     else:
+    #         self.initial['cpuNumber'] = CPUList.objects.all().filter(
+    #             hardwareModel=project.hardwareModel,
+    #             cpuNumber=project.hardwareModel.defaultCPUNumber
+    #         )[0].pk
 
 class ProjectInformationForm(forms.ModelForm):
 
     if WorkingProject.objects.count() > 0:
         project = WorkingProject.objects.all()[0].project
 
-
-
         if project.hardwareType.isVM:
+        # if 1:
             vmType = forms.ModelChoiceField(
-                VMType.objects.all(),
+                queryset=VMType.objects.all().filter(
+                    ~Q(type='Native'),
+                ),
                 empty_label=_(u'Select a VM Type'),
                 # help_text=_(u'Select a VM Type'),
                 label='VM Type',
@@ -129,8 +156,9 @@ class ProjectInformationForm(forms.ModelForm):
                     cpuNumber=project.hardwareModel.defaultCPUNumber
             ).count() > 0:
                 cpuNumber = forms.ModelChoiceField(
-                    CPUList.objects.all().filter(
-                        hardwareModel=project.hardwareModel),
+                    queryset=CPUList.objects.all().filter(
+                        hardwareModel=project.hardwareModel
+                    ),
                     empty_label=_(u'Select a CPU Number'),
                     label='CPU Number',
                     initial=CPUList.objects.all().filter(
@@ -141,14 +169,18 @@ class ProjectInformationForm(forms.ModelForm):
 
             else:
                 cpuNumber = forms.ModelChoiceField(
-                    CPUList.objects.all().filter(
-                        hardwareModel=project.hardwareModel),
+                    queryset=CPUList.objects.all().filter(
+                        hardwareModel=project.hardwareModel
+                    ),
                     empty_label=_(u'Select a CPU Number'),
                     label='CPU Number',
                     initial=CPUList.objects.none(),
                 )
 
-            clientNumber = forms.IntegerField(initial=project.hardwareModel.defaultClientNumber)
+            clientNumber = forms.IntegerField(
+                label='Client Number',
+                initial=project.hardwareModel.defaultClientNumber,
+            )
 
         else:
             vmType = VMType.objects.all().filter(type='Native')[0].pk
@@ -157,8 +189,9 @@ class ProjectInformationForm(forms.ModelForm):
                     cpuNumber=project.hardwareModel.defaultCPUNumber
             ).count() > 0:
                 cpuNumber = forms.ModelChoiceField(
-                    CPUList.objects.all().filter(
-                        hardwareModel=project.hardwareModel),
+                    queryset=CPUList.objects.all().filter(
+                        hardwareModel=project.hardwareModel
+                    ),
                     empty_label=_(u'Select a client Number'),
                     label='Client Number',
                     initial=CPUList.objects.all().filter(
@@ -169,16 +202,18 @@ class ProjectInformationForm(forms.ModelForm):
 
             else:
                 cpuNumber = forms.ModelChoiceField(
-                    CPUList.objects.all().filter(
-                        hardwareModel=project.hardwareModel),
+                    queryset=CPUList.objects.all().filter(
+                        hardwareModel=project.hardwareModel
+                    ),
                     empty_label=_(u'Select a client Number'),
                     label='Client Number',
                     initial=CPUList.objects.none(),
                 )
 
         memory = forms.ModelChoiceField(
-            MemoryList.objects.all().filter(
-                hardwareModel=project.hardwareModel),
+            queryset=MemoryList.objects.all().filter(
+                hardwareModel=project.hardwareModel
+            ),
             empty_label=_(u'Select a Memory'),
             label='Memory (G)',
             initial=MemoryList.objects.all().filter(
@@ -187,50 +222,158 @@ class ProjectInformationForm(forms.ModelForm):
             )[0].pk,
         )
 
+        dbMemory = forms.ModelChoiceField(
+            queryset=MemoryList.objects.all().filter(
+                hardwareModel=project.hardwareModel
+            ),
+            empty_label=_(u'Select a Memory for DB Node'),
+            label='DB Memory (G)',
+            required=False,
+            initial=MemoryList.objects.all().filter(
+                hardwareModel=project.hardwareModel,
+                memory=project.hardwareModel.defaultMemory
+            )[0].pk,
+        )
+
+        dbCPUNumber = forms.ModelChoiceField(
+            queryset=CPUList.objects.all().filter(
+                hardwareModel=project.hardwareModel
+            ),
+            empty_label=_(u'Select a CPU Number for DB Node'),
+            label='DB CPU Number',
+            required=False,
+            initial=CPUList.objects.all().filter(
+                hardwareModel=project.hardwareModel,
+                cpuNumber=project.hardwareModel.defaultCPUNumber
+            )[0].pk,
+        )
+
+        pilotMemory = forms.ModelChoiceField(
+            queryset=MemoryList.objects.all().filter(
+                hardwareModel=project.hardwareModel
+            ),
+            empty_label=_(u'Select a Memory for Pilot Node'),
+            label='Pilot Memory (G)',
+            required=False,
+            initial=MemoryList.objects.all().filter(
+                hardwareModel=project.hardwareModel,
+                memory=project.hardwareModel.defaultPilotMemory,
+            )[0].pk,
+        )
+
+        pilotCPUNumber = forms.ModelChoiceField(
+            queryset=CPUList.objects.all().filter(
+                hardwareModel=project.hardwareModel
+            ),
+            empty_label=_(u'Select a CPU Number for Pilot Node'),
+            label='Pilot CPU Number',
+            required=False,
+            initial=CPUList.objects.all().filter(
+                hardwareModel=project.hardwareModel,
+                cpuNumber=project.hardwareModel.defaultPilotCPUNumber,
+            )[0].pk,
+        )
+
+        ioMemory = forms.ModelChoiceField(
+            queryset=MemoryList.objects.all().filter(
+                hardwareModel=project.hardwareModel
+            ),
+            empty_label=_(u'Select a Memory for IO Node'),
+            label='IO Memory (G)',
+            required=False,
+            initial=MemoryList.objects.all().filter(
+                hardwareModel=project.hardwareModel,
+                memory=project.hardwareModel.defaultIOMemory,
+            )[0].pk,
+        )
+
+        ioCPUNumber = forms.ModelChoiceField(
+            queryset=CPUList.objects.all().filter(
+                hardwareModel=project.hardwareModel
+            ),
+            empty_label=_(u'Select a CPU Number for IO Node'),
+            label='IO CPU Number',
+            required=False,
+            initial=CPUList.objects.all().filter(
+                hardwareModel=project.hardwareModel,
+                cpuNumber=project.hardwareModel.defaultIOCPUNumber,
+            )[0].pk,
+        )
+
+
 
         cpuUsageTuning = forms.ModelChoiceField(
             CPUTuning.objects.all().filter(
                 dbMode=project.database_type,
-                hardwareType=project.hardwareType),
+                hardwareType=project.hardwareType
+            ),
             empty_label=_(u'Select a CPU Usage Tuning Option'),
             label='CPU Usage Tuning',
 
             initial=CPUTuning.objects.all().filter(
                 dbMode=project.database_type,
                 hardwareType=project.hardwareType,
-                tuningOption='Normal')[0].pk
+                tuningOption='Normal'
+            )[0].pk
         )
 
         memoryUsageTuning = forms.ModelChoiceField(
             MemoryUsageTuning.objects.all(),
             empty_label=_(u'Select a Memory Usage Tuning Option'),
             label='Memory Usage Tuning',
-            initial=MemoryUsageTuning.objects.all().filter(name='Normal')[0].pk
+            initial=MemoryUsageTuning.objects.all().filter(
+                name='Normal'
+            )[0].pk
         )
+        activeSubscriber = forms.IntegerField(
+            localize = True,
+            label='Active Subscribers',
+        )
+
+        inactiveSubscriber = forms.IntegerField(
+            localize = True,
+            label='Inactive Subscribers',
+        )
+
+        groupAccountNumber = forms.IntegerField(
+            localize = True,
+            label='Number of Group Account',
+        )
+
+        # sigtranLinkSpeed = forms.IntegerField(initial=10000)
+        # sigtranLinkNumber = forms.IntegerField(initial=1)
+        # sigtranPortUtil = forms.FloatField(initial=0.3)
     else:
         cpuNumber = forms.ModelChoiceField(CPUList.objects.none())
         memory = forms.ModelChoiceField(MemoryList.objects.none())
+        dbCPUNumber = forms.ModelChoiceField(CPUList.objects.none())
+        dbMemory = forms.ModelChoiceField(MemoryList.objects.none())
         cpuUsageTuning = forms.ModelChoiceField(CPUTuning.objects.none())
         memoryUsageTuning = forms.ModelChoiceField(MemoryUsageTuning.objects.none())
-
-
-
-    # cpuUsageTuning = models.ForeignKey(CPUTuning, on_delete=models.CASCADE, verbose_name='CPU Usage Tuning')
-    # memoryUsageTuning = models.ForeignKey(MemoryUsageTuning, on_delete=models.CASCADE,
-    #
-    #                                       verbose_name='Memory Usage Tuning')
 
     class Meta:
         model = ProjectInformation
         fields = '__all__'
 
-    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+    @logged('info', '%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def clean(self):
+        # if 'cpuNumber' not in self.cleaned_data:
+        #     self.cleaned_data['cpuNumber'] = self.data['cpuNumber']
+        #
+        # if 'memory' not in self.cleaned_data:
+        #     self.cleaned_data['memory'] = self.data['memory']
+
+        if 'dbCPUNumber' not in self.cleaned_data:
+            self.cleaned_data['dbCPUNumber'] = self.cleaned_data['cpuNumber']
+            self.cleaned_data['dbMemory'] = self.cleaned_data['memory']
+
         cleaned_data = super(ProjectInformationForm, self).clean()
+
         if WorkingProject.objects.count() == 0:
             raise forms.ValidationError(
                 "Please set working project first!"
             )
+
 
     # def __init__(self, data=None, *args, **kwargs):
     #     super(ProjectInformationForm, self).__init__(*args, **kwargs)
@@ -239,6 +382,24 @@ class ProjectInformationForm(forms.ModelForm):
     #         raise forms.ValidationError(
     #             "Please set working project first!"
     #         )
+    #
+    #     project_information_list = ProjectInformation.current_objects.all()
+    #
+    #     project = WorkingProject.objects.all()[0].project
+    #
+    #     if project_information_list.count() > 0:
+    #         a = project_information_list[0]
+    #         b = a.cpuNumber
+    #         self.initial['cpuNumber'] =project_information_list[0].cpuNumber
+    #     else:
+    #         self.initial['cpuNumber'] = CPUList.objects.all().filter(
+    #             hardwareModel=project.hardwareModel,
+    #             cpuNumber=project.hardwareModel.defaultCPUNumber
+    #         )[0].pk
+
+
+
+
 
 
 
@@ -248,12 +409,12 @@ class ProjectInformationForm(forms.ModelForm):
     #     return super(ProjectInformationForm, self).is_valid()
 
 class TrafficInformationForm(forms.ModelForm):
-
     if WorkingProject.objects.count() > 0:
         callType = forms.ModelChoiceField(
-            CallType.objects.all(),
+            queryset= CallType.objects.all().filter(
+                isShow=True,
+            ),
             empty_label=_(u'Select a Call Type'),
-            # help_text=_(u'Select a VM Type'),
             label='Call Type',
         )
 
@@ -261,23 +422,26 @@ class TrafficInformationForm(forms.ModelForm):
             activeSubscriber = forms.IntegerField(
                 localize = True,
                 label='Active Subscribers',
-                initial=ProjectInformation.objects.all().
-                    filter(project=WorkingProject.objects.all()[0].project)[0].activeSubscriber
+                # initial=ProjectInformation.objects.all().filter(
+                    # project=WorkingProject.objects.all()[0].project
+                # )[0].activeSubscriber
             )
             inactiveSubscriber = forms.IntegerField(
                 localize = True,
                 label='Inactive Subscribers',
-                initial=ProjectInformation.objects.all().filter(
-                    project=WorkingProject.objects.all()[0].project)[0].inactiveSubscriber,
+                # initial=ProjectInformation.objects.all().filter(
+                #     project=WorkingProject.objects.all()[0].project)[0].inactiveSubscriber,
             )
         else:
             activeSubscriber = forms.IntegerField(
                 label='Active Subscribers',
                 initial=0,
+                localize = True,
             )
             inactiveSubscriber = forms.IntegerField(
                 label='Inactive Subscribers',
                 initial=0,
+                localize = True,
             )
     else:
         callType = forms.ModelChoiceField(
@@ -286,16 +450,19 @@ class TrafficInformationForm(forms.ModelForm):
         activeSubscriber = forms.IntegerField(
             label='Active Subscribers',
             initial=0,
+            localize = True,
         )
         inactiveSubscriber = forms.IntegerField(
             label='Inactive Subscribers',
             initial=0,
+            localize = True,
         )
 
     callHoldingTime = forms.FloatField(
         label='Call Holding Time (s)',
         initial=0,
-        widget=forms.NumberInput(attrs={'style': 'width:100px'}),
+        localize = True,
+        # widget=forms.NumberInput(attrs={'style': 'width:100px'}),
     )
 
     averageActiveSessionPerSubscriber = forms.FloatField(
@@ -357,7 +524,7 @@ class TrafficInformationForm(forms.ModelForm):
 
         fields = '__all__'
 
-    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+    @logged('info', '%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def clean(self):
         cleaned_data = super(TrafficInformationForm, self).clean()
         if WorkingProject.objects.count() == 0:
@@ -435,7 +602,7 @@ class FeatureConfigurationForm(forms.ModelForm):
 
         fields = '__all__'
 
-    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+    @logged('info', '%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def clean(self):
         cleaned_data = super(FeatureConfigurationForm, self).clean()
         if WorkingProject.objects.count() == 0:
@@ -539,7 +706,7 @@ class CounterConfigurationForm(forms.ModelForm):
         model = CounterConfiguration
         fields = '__all__'
 
-    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+    @logged('info', '%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def clean(self):
         cleaned_data = super(CounterConfigurationForm, self).clean()
         if WorkingProject.objects.count() == 0:
@@ -606,7 +773,7 @@ class CallTypeCounterConfigurationForm(forms.ModelForm):
         label='Total Counter Number',
         initial=0,
         disabled=True,
-        # widget=forms.NumberInput(attrs={'style': 'width:100px'}),
+        widget=forms.NumberInput(attrs={'style': 'width:100px'}),
     )
 
     class Meta:
@@ -615,6 +782,13 @@ class CallTypeCounterConfigurationForm(forms.ModelForm):
 
 
 class DBConfigurationForm(forms.ModelForm):
+    application = forms.ModelChoiceField(
+        ApplicationName.objects.all().filter(
+            needConfigDB=True,
+        ),
+        empty_label=_(u'Select a Application Name'),
+        label='Application Name',
+    )
     if WorkingProject.objects.count() > 0:
         dbInfo = forms.ModelChoiceField(
             DBInformation.objects.all().filter(
@@ -634,10 +808,18 @@ class DBConfigurationForm(forms.ModelForm):
         initial=0,
         label='DB Factor',
     )
+    referenceDBFactor = forms.FloatField(
+        initial=0,
+        label='Reference for DB Factor',
+        #disabled=True,
+        widget=forms.TextInput(attrs={'readonly': 'readonly', 'style': 'width:129px'}),
+    )
     recordSize = forms.IntegerField(
         initial=0,
+        localize = True,
         label='Record Size',
-        disabled=True,
+        #disabled=True,
+        widget=forms.TextInput(attrs={'readonly': 'readonly'}),
     )
     placeholderRatio = forms.FloatField(
         initial=0,
@@ -647,18 +829,34 @@ class DBConfigurationForm(forms.ModelForm):
         initial=0,
         label='Reference for Placeholder Ratio',
         disabled=True,
+        #widget=forms.TextInput(attrs={'readonly': 'readonly'}),
+        widget=forms.TextInput(attrs={'readonly': 'readonly', 'style': 'width:88px'}),
     )
+
     MEMBER_GROUP_OPTION = (('Member', 'Member'), ('Group', 'Group'))
     memberGroupOption = forms.ChoiceField(
         initial='Member',
         choices=MEMBER_GROUP_OPTION,
-        label='DB Option'
+        label='DB Location'
     )
     subscriberNumber = forms.IntegerField(
         initial=0,
         label='Subscriber Number',
-        disabled=True,
+        localize = True,
+        #disabled=True,
+        widget=forms.TextInput(attrs={'readonly': 'readonly', 'style': 'width:155px'}),
     )
+
+    @logged('info', '%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+    def clean(self):
+        cleaned_data = super(DBConfigurationForm, self).clean()
+        if WorkingProject.objects.count() == 0:
+            raise forms.ValidationError(
+                "Please set working project first!"
+            )
+
+
+
     class Meta:
         model = DBConfiguration
         fields = '__all__'
@@ -678,21 +876,25 @@ class SystemConfigurationForm(forms.ModelForm):
     backupAppNodeNumberPerSystem = forms.IntegerField(
         initial=0,
         label='Number of Backup App Node Per System',
+        # widget=forms.NumberInput(attrs={'Style': 'width:100px'}),
     )
     spareAppNodeNumberPerSystem = forms.IntegerField(
         initial=0,
         label='Number of Spare App Node Per System',
+        # widget=forms.NumberInput(attrs={'Style': 'width:100px'}),
     )
     backupDBNodeNumberPerSystem = forms.IntegerField(
         initial=0,
         label='Number of Backup DB Node Per System',
+        # widget=forms.NumberInput(attrs={'Style': 'width:100px'}),
     )
     spareDBNodePairNumberPerSystem = forms.IntegerField(
         initial=0,
-        label='Number of Spare DB Node Pair Per System'
+        label='Number of Spare DB Node Pair Per System',
+        # widget=forms.NumberInput(attrs={'Style': 'width:100px'}),
     )
 
-    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+    @logged('info', '%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def clean(self):
         cleaned_data = super(SystemConfigurationForm, self).clean()
         if WorkingProject.objects.count() == 0:
@@ -724,7 +926,7 @@ class SystemConfigurationForm(forms.ModelForm):
 class ApplicationConfigurationForm(forms.ModelForm):
     applicationName = forms.ModelChoiceField(
         ApplicationName.objects.all().filter(
-            ~Q(name='EPAY'),
+            ~Q(name__contains='EPAY') & ~Q(name__contains='Group'),
         ),
         empty_label=_(u'Select an Application Name'),
         label='Application Name'
@@ -738,16 +940,19 @@ class ApplicationConfigurationForm(forms.ModelForm):
 
     activeSubscriber = forms.IntegerField(
         initial=0,
+        localize=True,
         label='Active Subscriber',
     )
 
     inactiveSubscriber = forms.IntegerField(
         initial=0,
+        localize=True,
         label='Inactive Subscriber',
     )
 
     trafficTPS = forms.FloatField(
         label='CPS/TPS',
+        localize=True,
         initial=0,
     )
 
@@ -755,7 +960,7 @@ class ApplicationConfigurationForm(forms.ModelForm):
         model = ApplicationConfiguration
         fields = '__all__'
 
-    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+    @logged('info', '%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def clean(self):
         cleaned_data = super(ApplicationConfigurationForm, self).clean()
         if WorkingProject.objects.count() == 0:
@@ -784,7 +989,7 @@ class LoginForm(forms.Form):
 
     title = "Login form"
 
-    @logged('info','%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+    @logged('info', '%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
     def clean(self):
         cleaned_data = super(LoginForm, self).clean()
         if cleaned_data.get('email') == 'john@doe.com':

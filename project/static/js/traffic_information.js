@@ -26,8 +26,8 @@ $(document).ready(function() {
             $('#id_averageActiveSessionPerSubscriber').parents('fieldset').hide();
             $('#id_trafficBHTA').removeAttr("readonly");
             $('#id_trafficTPS').removeAttr("readonly");
-            $('#id_trafficBHTA').val(0);
-            $('#id_trafficTPS').val(0);
+            // $('#id_trafficBHTA').val(0);
+            // $('#id_trafficTPS').val(0);
         }
         // $('#id_averageActiveSessionPerSubscriber').parent().parent().parent().parent().parent().parent().hide();
     };
@@ -44,7 +44,7 @@ $(document).ready(function() {
 
     $.fn.setTrafficBHTA = function() {
         if ($(this).toNumber($('#id_activeSubscriber').val()) > 0) {
-            $('#id_trafficBHTA').val(($('#id_trafficTPS').val() * 3600 / $(this).toNumber($('#id_activeSubscriber')).val()).toPrecision(4));
+            $('#id_trafficBHTA').val($('#id_trafficTPS').val() * 3600 / $(this).toNumber($('#id_activeSubscriber').val()).toPrecision(4));
         }
     };
 

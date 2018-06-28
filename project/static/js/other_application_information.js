@@ -18,11 +18,11 @@ $(document).ready(function() {
     })
 
     $.fn.setForApplication = function() {
-        if ($("#id_applicationName").find("option:selected").text().indexOf('DRouter') >= 0) {
-            $('#id_activeSubscriber').parents('fieldset').show();
-        } else {
-            $('#id_activeSubscriber').parents('fieldset').hide();
-        }
+        // if ($("#id_applicationName").find("option:selected").text().indexOf('DRouter') >= 0) {
+        //     $('#id_activeSubscriber').parents('fieldset').show();
+        // } else {
+        //     $('#id_activeSubscriber').parents('fieldset').hide();
+        // }
     };
 
     $(this).setForApplication();

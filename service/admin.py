@@ -3,8 +3,7 @@ from django.forms import ModelForm, TextInput, NumberInput
 from suit.widgets import EnclosedInput
 from .models import Release, ApplicationName, ApplicationInformation, DBName, DBInformation, FeatureName, \
     FeatureCPUImpact, FeatureDBImpact, CallCost, CallType, CounterCost, CounterCostName, OtherApplicationInformation, \
-    CurrentRelease, FeatureCallTypeConfiguration
-
+    CurrentRelease, FeatureCallTypeConfiguration, FeatureAdditionalImpact
 
 class ReleaseForm(ModelForm):
     class Meta:
@@ -18,9 +17,7 @@ class ReleaseForm(ModelForm):
             'cpuCostForNormalAMA': EnclosedInput(append='ms'),
             'cPUCostForMultipleAMA': EnclosedInput(append='ms'),
             'amaSizePerBlock': EnclosedInput(append='byte'),
-
         }
-
 
 class ReleaseAdmin(admin.ModelAdmin):
     form = ReleaseForm
@@ -28,10 +25,8 @@ class ReleaseAdmin(admin.ModelAdmin):
                     'cpuCostForNormalAMA', 'cPUCostForMultipleAMA', 'amaSizePerBlock', 'amaNumberPerGroupCall',
                     'counterNumberPerRecord')
 
-
 class CurrentReleaseAdmin(admin.ModelAdmin):
     list_display = ('name',)
-
 
 class ApplicationInformationAdmin(admin.ModelAdmin):
     list_display = ('name', 'callRecordSize', 'textSize', 'initialDataSize', 'ldapCIPSize',
@@ -39,39 +34,32 @@ class ApplicationInformationAdmin(admin.ModelAdmin):
     list_filter = ('release', 'application')
     search_fields = ('release__name', 'application__name')
 
-
 class OtherApplicationInformationAdmin(admin.ModelAdmin):
     list_display = ('name', 'maxTrafficPerNode', 'clientNumber', 'minClient', 'maxNodePerSystem')
     list_filter = ('application', 'hardwareModel')
     search_fields = ('application__name', 'hardwareModel__hardwareType__name',
                      'hardwareModel__cpu__name')
 
-
 class DBInformationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'recordSize',)
+    list_display = ('name', 'mode', 'release', 'recordSize',)
     list_filter = ('db', 'mode', 'release')
     search_fields = ('db__name', 'mode__name', 'release__name')
 
-
 class FeatureNameAdmin(admin.ModelAdmin):
     list_display = ('name', 'impactDB', 'comment')
-
 
 class FeatureDBImpactAdmin(admin.ModelAdmin):
     list_display = ('name', 'memberImpactFactor', 'groupImpactFactor')
     list_filter = ('dbName', 'featureName')
     search_fields = ('dbName__name', 'featureName__name')
 
-
 class FeatureCPUImpactAdmin(admin.ModelAdmin):
     list_display = ('name', 'ccImpactCPUTime', 'ccImpactCPUPercentage', 'ss7In', 'ss7Out',
                     'reImpactCPUTime', 'reImpactCPUPercentage', 'ldapMessageSize', 'diameterMessageSize')
 
-
 class CallTypeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'ss7InSize', 'ss7OutSize', 'ss7Number', 'tcpipSize', 'tcpipNumber', 'diameterSize',
+    list_display = ('name', 'type', 'ss7InSize', 'ss7OutSize', 'ss7Number', 'tcpipSize', 'tcpipNumber', 'diameterSize',
                     'diameterNumber', 'mateUpdateNumber', 'mateUpdateSize', 'ndbCPUUsageLimitation')
-
 
 class CallCostAdmin(admin.ModelAdmin):
     list_display = ('callType', 'release', 'hardwareModel', 'dbMode', 'callCost', 'cpuCostForServer',
@@ -80,7 +68,6 @@ class CallCostAdmin(admin.ModelAdmin):
     list_filter = ('callType', 'release', 'hardwareModel', 'dbMode')
     search_fields = ('callType__name', 'release__name', 'hardwareModel__hardwareType__name',
                      'hardwareModel__cpu__name', 'dbMode__name')
-
 
 class CounterCostAdmin(admin.ModelAdmin):
     list_display = ('name', 'counterNumberPerRecord', 'costDBReadUpdatePerRecord', 'costPerAppliedBucket',
@@ -94,6 +81,10 @@ class CounterCostAdmin(admin.ModelAdmin):
     search_fields = ('release__name', 'hardwareModel__hardwareType__name',
                      'hardwareModel__cpu__name')
 
+class FeatureCallTypeConfigurationAdmin(admin.ModelAdmin):
+    list_display = ('callType', 'featureName', 'featureApplicable')
+    list_filter = ('callType', 'featureName',)
+    search_fields = ('callType__name', 'featureName__name',)
 
 admin.site.register(Release, ReleaseAdmin)
 admin.site.register(CurrentRelease, CurrentReleaseAdmin)
@@ -109,4 +100,5 @@ admin.site.register(CallCost, CallCostAdmin)
 admin.site.register(CallType, CallTypeAdmin)
 admin.site.register(CounterCost, CounterCostAdmin)
 admin.site.register(CounterCostName)
-admin.site.register(FeatureCallTypeConfiguration)
+admin.site.register(FeatureCallTypeConfiguration, FeatureCallTypeConfigurationAdmin)
+admin.site.register(FeatureAdditionalImpact)

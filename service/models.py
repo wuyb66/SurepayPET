@@ -20,6 +20,13 @@ class Release(models.Model):
     counterNumberPerRecord = models.IntegerField(default=6)     # Counter number per CTRTDB record
     counterMemoryImpact = models.FloatField(default=0)
 
+    ndbStopWriteRatio = models.FloatField(default=0.8)
+    ndbReplicationFactor = models.IntegerField(default=2)
+    trafficRequireDedicateMate = models.IntegerField(default=2000)
+    capacityPerNDBMateVhost = models.IntegerField(default=15000)
+    capacityPerNDBRoutingVhost = models.IntegerField(default=15000)
+    capacityPerNDBNode = models.IntegerField(default=4000)
+
     def __str__(self):
         return self.name
 
@@ -28,7 +35,7 @@ class Release(models.Model):
 
 
 class CurrentRelease(models.Model):
-    release = models.ForeignKey(Release)
+    release = models.ForeignKey(Release, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.release.name
@@ -38,6 +45,10 @@ class CurrentRelease(models.Model):
 
 class ApplicationName(models.Model):
     name = models.CharField(max_length=20)
+    needConfigDB = models.BooleanField(
+        default=False,
+        verbose_name='Need to Config DB?',
+    )
 
     def __str__(self):
         return self.name
@@ -137,6 +148,21 @@ class DBName(models.Model):
         verbose_name='Default Factor for Group',
     )
 
+    defaultDRouterFactor = models.FloatField(
+        default=0,
+        verbose_name='Default Factor for DRouter',
+    )
+
+    defaultEppsmFactor = models.FloatField(
+        default=0,
+        verbose_name='Default Factor for EPPSM',
+    )
+
+    defaultEctrlFactor = models.FloatField(
+        default=0,
+        verbose_name='Default Factor for ECTRL',
+    )
+
     defaultMemberCounterFactor = models.FloatField(
         default=0,
         verbose_name='Default Factor for Member Counter',
@@ -147,8 +173,31 @@ class DBName(models.Model):
         verbose_name='Default Factor for Group Counter',
     )
 
+    featureMemberImpactFactor = models.FloatField(
+        default=0,
+        verbose_name='Feature Member Impact Factor',
+    )
+
+    featureGroupImpactFactor = models.FloatField(
+        default=0,
+        verbose_name='Feature Group Impact Factor',
+    )
+
+    isIncludeInactiveSubscriber = models.BooleanField(
+        default=False,
+        verbose_name='Is Including Inactive Subscriber?',
+    )
+
     def __str__(self):
         return self.name
+
+    @property
+    def member_factor(self):
+        return self.defaultMemberFactor + self.defaultMemberCounterFactor + self.featureMemberImpactFactor
+
+    @property
+    def group_factor(self):
+        return self.defaultGroupFactor + self.defaultGroupCounterFactor + self.featureGroupImpactFactor
 
     class Meta:
         ordering = ['name']
@@ -222,8 +271,19 @@ class FeatureCPUImpact(models.Model):
 
     name = property(__str__)
 
+class FeatureAdditionalImpact(models.Model):
+    sameSys1GroupLevel1 = models.FloatField(default=1)
+    sameSys1GroupLevel2 = models.FloatField(default=1.15)
+    sameSys2GroupLevel1 = models.FloatField(default=1.2)
+    sameSys2GroupLevel2 = models.FloatField(default=1.12)
+    diffSys1GroupLevel1 = models.FloatField(default=1.3)
+    diffSys1GroupLevel2 = models.FloatField(default=1.46)
+    diffSys2GroupLevel1 = models.FloatField(default=1)
+    diffSys2GroupLevel2 = models.FloatField(default=1.08)
+    uncorrelatedCCRUTHandling = models.FloatField(default=0.6)
 
 class CallType(models.Model):
+    TYPE_OPTION = (('Voice', 'Voice'), ('LDAP', 'LDAP'), ('Diameter', 'Diameter'))
     name = models.CharField(max_length=64, verbose_name='Call Type')
 
     isShow = models.BooleanField(default=True)
@@ -239,6 +299,17 @@ class CallType(models.Model):
     mateUpdateNumber = models.IntegerField(default=0)
 
     ndbCPUUsageLimitation = models.FloatField(default=0.6)
+
+    type = models.CharField(
+        max_length=30,
+        choices=TYPE_OPTION,
+        verbose_name='Type Option',
+        default='Voice',
+    )
+
+    groupTransactionNumber = models.IntegerField(default=3)
+    groupTransactionNumber2 = models.IntegerField(default=4)
+    groupTransactionNumber3 = models.IntegerField(default=2)
 
     def __str__(self):
         return self.name
@@ -275,7 +346,12 @@ class FeatureCallTypeConfiguration(models.Model):
     callType = models.ForeignKey(CallType, on_delete=models.CASCADE)
     featureName = models.ForeignKey(FeatureName, on_delete=models.CASCADE)
 
-    featureApplicable = models.FloatField(default=1)
+    featureApplicable = models.FloatField(default=0)
+
+    def __str__(self):
+        return self.callType.name + '_' + self.featureName.name
+
+    name = property(__str__)
 
 
 class CounterCostName(models.Model):

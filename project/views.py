@@ -8,6 +8,7 @@ from hardware.models import HardwareModel, HardwareType
 from service.models import DBInformation, FeatureDBImpact, FeatureName, ApplicationName
 
 import json
+import math
 
 from clever_selects.views import ChainedSelectChoicesView
 
@@ -122,59 +123,93 @@ def add(request, a, b):
     r = HttpResponse(ajax_string + str(c))
     return r
 
-
+@logged('info', '%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
 def get_record_size(request):
     pk = request.GET['pk']
     member_group_option = request.GET['memberGroupOption']
+    application = request.GET['application']
+    try:
+        application_id = int(application)
+    except:
+        application_id = 1
+
     db_information = get_object_or_404(DBInformation, pk=pk)
     record_size = db_information.recordSize
     ref_db_factor = get_ref_db_factor(db_information.db, member_group_option)
-    subscriber_number = get_subscriber_number(member_group_option)
+    subscriber_number = get_subscriber_number(member_group_option, application_id, db_information.db)
     data = {'RecordSize': record_size, 'RefDBFactor': ref_db_factor, 'SubscriberNumber': subscriber_number}
     return HttpResponse(json.dumps(data), content_type='application/json')
 
-
+@logged('info', '%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
 def get_ref_db_factor(db, member_group_option):
     feature_db_impact_list = FeatureDBImpact.objects.all().filter(
         dbName=db,
     )
     ref_db_factor = 0
     if member_group_option == 'Member':
+        if db.name == 'SIM':
+            ref_db_factor = 1
         for feature_db_impact in feature_db_impact_list:
             ref_db_factor += feature_db_impact.memberImpactFactor
     else:
+        if db.name == 'AI':
+            ref_db_factor = 1
         for feature_db_impact in feature_db_impact_list:
             ref_db_factor += feature_db_impact.groupImpactFactor
     return ref_db_factor
 
-
-def get_subscriber_number(member_group_option):
+@logged('info', '%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
+def get_subscriber_number(member_group_option, application_id, db):
     if WorkingProject.objects.all().count() > 0:
         traffic_information_list = TrafficInformation.objects.all().filter(
             project=WorkingProject.objects.all()[0].project
         )
+        feature_db_impact_list = FeatureDBImpact.objects.all().filter(
+            dbName=db,
+        )
+        inactive_subscriber = 0
+
+        application = ApplicationName.objects.get(id=application_id)
         if traffic_information_list.count() > 0:
-            active_subscriber = traffic_information_list[0].activeSubscriber
+            if db.isIncludeInactiveSubscriber:
+                active_subscriber = traffic_information_list[0].activeSubscriber + \
+                                    traffic_information_list[0].inactiveSubscriber
+            else:
+                active_subscriber = traffic_information_list[0].activeSubscriber
         else:
             active_subscriber = 0
-        if member_group_option == 'Member':
-            return active_subscriber
+        if member_group_option == 'Member' and application.name == 'EPAY':
+                return active_subscriber
         else:
             feature_name_list = FeatureName.objects.all().filter(
                 name='Online Hierarchy',
             )
             if feature_name_list.count() > 0:
-                penetration_olh = FeatureConfiguration.objects.all().filter(
+                penetration_olh_list = FeatureConfiguration.objects.all().filter(
                     project=WorkingProject.objects.all()[0].project,
                     feature=feature_name_list[0],
                 )
+                if penetration_olh_list.count() > 0:
+                    penetration_olh = penetration_olh_list[0].featurePenetration / 100
+                else:
+                    penetration_olh = 0
             else:
                 penetration_olh = 0
-            return active_subscriber * penetration_olh
+
+            group_subscriber = math.ceil(active_subscriber * penetration_olh)
+
+            if application.name == 'DRouter': #'DROUTER'
+                return group_subscriber + active_subscriber
+
+            if member_group_option == 'Member':
+                return active_subscriber
+            else:
+                return group_subscriber
+
     else:
         return 0
 
-
+@logged('info', '%s[line:%4s]'%(os.path.split(sys._getframe().f_code.co_filename)[1], sys._getframe().f_lineno + 1))
 def get_other_application_information(request):
     active_subscriber = 0
     inactive_subscriber = 0
@@ -182,21 +217,47 @@ def get_other_application_information(request):
     application_id = request.GET['pk']
     application_name = get_object_or_404(ApplicationName, pk=application_id)
 
-    if application_name.name == 'DRouter':
-        if WorkingProject.objects.all().count() > 0:
-            project_information = ProjectInformation.objects.all().filter(
-                project=WorkingProject.objects.all()[0].project,
-            )
-            if project_information.count() > 0:
-                active_subscriber = project_information[0].activeSubscriber
-                inactive_subscriber = project_information[0].inactiveSubscriber
+    app_config = ApplicationConfiguration.current_objects.create_application_config(
+        project=WorkingProject.objects.all()[0].project,
+        application_name=application_name,
+        deployOption=application_name.name + ' Node',
+    )
+    if ProjectInformation.current_objects.count() > 0:
+        project_information = ProjectInformation.current_objects.all()[0]
+        if application_name.name == 'Group':
+            active_subscriber = project_information.groupAccountNumber
+            inactive_subscriber = 0
+        else:
+            active_subscriber = project_information.activeSubscriber
+            inactive_subscriber = project_information.inactiveSubscriber
 
-            traffic_information_list = TrafficInformation.objects.all().filter(
-                project=WorkingProject.objects.all()[0].project,
-            )
-            for traffic_information in traffic_information_list:
-                if 'Diameter' in traffic_information.callType.name:
-                    traffic_tps += traffic_information.trafficTPS
+    # if application_name.name == 'DRouter':
+    #     if WorkingProject.objects.all().count() > 0:
+    #         project_information = ProjectInformation.objects.all().filter(
+    #             project=WorkingProject.objects.all()[0].project,
+    #         )
+    #         if project_information.count() > 0:
+    #             active_subscriber = project_information[0].activeSubscriber
+    #             inactive_subscriber = project_information[0].inactiveSubscriber
+    #
+    #         traffic_information_list = TrafficInformation.objects.all().filter(
+    #             project=WorkingProject.objects.all()[0].project,
+    #         )
+    #         for traffic_information in traffic_information_list:
+    #             if 'Diameter' in traffic_information.callType.name:
+    #                 traffic_tps += traffic_information.trafficTPS
+    if app_config.applicationName.name == 'EPAY':
+        traffic_tps = app_config.get_tps_for_epay()
+    elif app_config.applicationName.name == 'DRouter':
+        traffic_tps = app_config.get_tps_for_drouter()
+    elif app_config.applicationName.name == 'EPPSM':
+        traffic_tps = app_config.get_tps_for_eppsm()
+    elif app_config.applicationName.name == 'Group':
+        traffic_tps = app_config.get_tps_for_group()
+    elif app_config.applicationName.name == 'eCTRL':
+        traffic_tps = app_config.get_tps_for_ectrl()
+
+    app_config.delete()
 
     data = {'ActiveSubscriber': active_subscriber,
             'InactiveSubscriber': inactive_subscriber,

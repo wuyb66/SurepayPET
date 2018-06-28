@@ -1,46 +1,40 @@
 $(document).ready(function() {
     $('#id_dbInfo').change(function(){
-    //     var id = $('#id_dbInfo').val();
-    //     $.getJSON("{% url 'select:getrecordsize' %}?pk="+id, function(data,textStatus){
-    //         var content='';
-    //         $.each(data, function(i, item){
-    //             content+='<option value='+item.pk+'>'+item.fields.name+'</option>'
-    //         });
-    //         $('#id_recordSize').val(content)
-    //     });
-    // });
-    // function get_record_size(dbInfo_id){
+        $(this).get_record_size();
+    });
+
+    $('#id_application').change(function(){
+        $(this).get_record_size();
+    });
+
+    $('#id_memberGroupOption').change(function(){
+        $(this).get_record_size();
+    });
+
+    $.fn.get_record_size = function(){
         var dbInfo_id = $('#id_dbInfo').val();
         var memberGroupOption = $('#id_memberGroupOption').val();
+        var application = $('#id_application').val();
 
-        $.ajax({
-            type: "GET",
-            url: "/getrecordsize?pk="+dbInfo_id+"&memberGroupOption="+memberGroupOption,
-            dataType:'json',
-            success: function(data,textStatus){
-                var content=data.RecordSize;
-                // $.each(data, function(i, item){
-                //     content+='<option value='+item.pk+'>'+item.fields.name+'</option>'
-                // });
-                $('#id_recordSize').val(data.RecordSize);
-                $('#id_dbFactor').val(data.RefDBFactor);
-                $('#id_subscriberNumber').val(data.SubscriberNumber);
+        if ((dbInfo_id != "") && (application != "")) {
+            $.ajax({
+                type: "GET",
+                url: "/getrecordsize?pk=" + dbInfo_id + "&memberGroupOption=" + memberGroupOption + "&application=" + application,
+                dataType: 'json',
+                success: function (data, textStatus) {
+                    var content = data.RecordSize;
+                    // $.each(data, function(i, item){
+                    //     content+='<option value='+item.pk+'>'+item.fields.name+'</option>'
+                    // });
+                    $('#id_recordSize').val(data.RecordSize);
+                    $('#id_referenceDBFactor').val(data.RefDBFactor);
+                    if ($('#id_dbFactor').val() <= 0) {
+                        $('#id_dbFactor').val(data.RefDBFactor);
+                    }
 
-                //         $('#id_recordSize').val(content)
-                // var citySelect = document.getElementById("id_city");
-                // for ( var i=citySelect.options.length-1; i>-1; i--){
-                //     citySelect[i] = null;
-                // }
-                // if(data.length > 0) {
-                //     $("#id_city").show();
-                //     for(i=0;i<data.length;i++){
-                //         citySelect.options[i] = new Option();
-                //         citySelect.options[i].text = data[i].label;
-                //         citySelect.options[i].value = data[i].text;
-                //     }
-                // }else
-                //     $("#id_city").hide();
-            }
-        })
-    })
+                    $('#id_subscriberNumber').val(data.SubscriberNumber);
+                }
+            });
+        }
+    };
 });
